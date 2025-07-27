@@ -1,4 +1,5 @@
-# Sonic-2-Nick-Arcade-Disassembly
-A disassembly of the Nick Arcade prototype of Sonic the Hedgehog 2 for the Genesis/Mega Drive; it was originally dumped in 2006 by drx on Hidden Palace after a community fund, and is quite unfinished, having many leftovers from Sonic 1 and only four of the levels, one of which was scrapped.
+A disassembly of the Nick Arcade prototype of _Sonic the Hedgehog 2_ for the Sega Genesis, based on the 2006 disassembly text disassembly; it is named as such since it is believed to be the same version as shown on the _Nick Arcade_ show in its final four episodes (they can be viewed on Paramount+). Compiles into a bit-perfect binary. Based on documents released by artist Tom Payne, it was likely built around May 1992, making it represent around six months of progress (project started November 1991). It was aquired by drx and dumped on 7 November 2006.
+
+At this point, its _Sonic 1_ roots remain evident. The level select text has not been changed from the first game, Green Hill is still present, and the physics have not been changed yet, among other leftovers. Still, some major changes have already been made, with Emerald Hill, Chemical Plant, Hill Top, and the notorious Hidden Palace already playable to various degrees. drx's original disassembly had several errors such as raw addresses and incorrectly disassembled code, which have all been corrected here.
 
 See: http://info.sonicretro.org/Disassemblies
