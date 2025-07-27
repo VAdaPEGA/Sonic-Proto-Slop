@@ -128,6 +128,21 @@ Camera_BG2_Y_pos:		equ Camera_RAM+$14
 Camera_BG3_X_pos:		equ Camera_RAM+$18
 Camera_BG3_Y_pos:		equ Camera_RAM+$1C
 
+Horiz_block_crossed_flag:	equ Camera_RAM+$40
+Verti_block_crossed_flag:	equ Camera_RAM+$41
+Horiz_block_crossed_flag_BG:	equ Camera_RAM+$42
+Verti_block_crossed_flag_BG:	equ Camera_RAM+$43
+Horiz_block_crossed_flag_BG2:	equ Camera_RAM+$44
+Horiz_block_crossed_flag_BG3:	equ Camera_RAM+$46
+Horiz_block_crossed_flag_P2:	equ Camera_RAM+$48
+Verti_block_crossed_flag_P2:	equ Camera_RAM+$49
+
+Camera_Min_X_pos:		equ Camera_RAM+$C8
+Camera_Max_X_pos:		equ Camera_RAM+$CA
+Camera_Min_Y_pos:		equ Camera_RAM+$CC
+Camera_Max_Y_pos:		equ Camera_RAM+$CE
+
+Horiz_scroll_delay_val:		equ $FFFFEED0
 Sonic_Pos_Record_Index:		equ $FFFFEED2
 
 Game_Mode:			equ $FFFFF600
