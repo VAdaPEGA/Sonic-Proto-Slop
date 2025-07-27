@@ -269,3 +269,17 @@ SFXToPlay3:			equ $C	; third (broken) sound queue
 ; Extended RAM constants (for routines that would convert data for STI's use)
 
 ConvertedChunksLoc:		equ $00FE0000
+
+; ---------------------------------------------------------------------------
+; Redrawing routine constants and macros
+
+; This and the macro are used by stages that employ a more advanced redraw
+; routine, basing it off the various background positions other than just
+; BG1; this is to stop tiles from being accidentally overwritten
+
+; Note that internally, they were called Plane B, C, and D (A is the foreground
+; layer, Z was the unused effect seen in the TTS'90 demo)
+static1:		equ 0
+dynamic1:		equ 2
+dynamic2:		equ 4
+dynamic3:		equ 6

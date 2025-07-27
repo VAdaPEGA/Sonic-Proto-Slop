@@ -261,68 +261,73 @@ Checksum_Red:
 
 ChecksumFailed_Loop:
 		bra.s	ChecksumFailed_Loop
+
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Subroutines to print error messages and freeze execution if the
+; 68000's error handler is ever triggered
+; ---------------------------------------------------------------------------
 
 BusError:
 		move.b	#2,($FFFFFC44).w
 		bra.s	ErrorMsg_TwoAddresses
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 AddressError:
 		move.b	#4,($FFFFFC44).w
 		bra.s	ErrorMsg_TwoAddresses
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 IllegalInstr:
 		move.b	#6,($FFFFFC44).w
 		addq.l	#2,2(sp)
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 ZeroDivide:
 		move.b	#8,($FFFFFC44).w
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 ChkInstr:
 		move.b	#$A,($FFFFFC44).w
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 TrapvInstr:
 		move.b	#$C,($FFFFFC44).w
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 PrivilegeViol:
 		move.b	#$E,($FFFFFC44).w
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 Trace:
 		move.b	#$10,($FFFFFC44).w
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 Line1010Emu:
 		move.b	#$12,($FFFFFC44).w
 		addq.l	#2,2(sp)
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 Line1111Emu:
 		move.b	#$14,($FFFFFC44).w
 		addq.l	#2,2(sp)
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 ErrorExcept:
 		move.b	#0,($FFFFFC44).w
 		bra.s	ErrorMessage
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 ErrorMsg_TwoAddresses:
-		move	#$2700,sr
+		move	#$2700,sr		; disable interrupts
 		addq.w	#2,sp
 		move.l	(sp)+,($FFFFFC40).w
 		addq.w	#2,sp
@@ -333,10 +338,10 @@ ErrorMsg_TwoAddresses:
 		move.l	($FFFFFC40).w,d0
 		bsr.w	ShowErrAddress
 		bra.s	ErrorMsg_Wait
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 ErrorMessage:
-		move	#$2700,sr
+		move	#$2700,sr		; disable interrupts
 		movem.l	d0-a7,($FFFFFC00).w
 		bsr.w	ShowErrorMsg
 		move.l	2(sp),d0
@@ -345,7 +350,7 @@ ErrorMessage:
 ErrorMsg_Wait:
 		bsr.w	Error_WaitForC
 		movem.l	($FFFFFC00).w,d0-a7
-		move	#$2300,sr
+		move	#$2300,sr		; re-enable interrupts
 		rte
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
@@ -390,17 +395,18 @@ ErrorText:	dc.w ErrText_Exept-ErrorText
 		dc.w ErrText_Trace-ErrorText
 		dc.w ErrText_Line1010-ErrorText
 		dc.w ErrText_Line1111-ErrorText
-ErrText_Exept:		dc.b 'ERROR EXCEPTION    '
-ErrText_BusErr:		dc.b 'BUS ERROR          '
-ErrText_AddrErr:	dc.b 'ADDRESS ERROR      '
-ErrText_IllInstr:	dc.b 'ILLEGAL INSTRUCTION'
-ErrText_ZeroDiv:	dc.b '@ERO DIVIDE        '
-ErrText_ChkInstr:	dc.b 'CHK INSTRUCTION    '
-ErrText_TrapV:		dc.b 'TRAPV INSTRUCTION  '
-ErrText_PrivViol:	dc.b 'PRIVILEGE VIOLATION'
-ErrText_Trace:		dc.b 'TRACE              '
-ErrText_Line1010:	dc.b 'LINE 1010 EMULATOR '
-ErrText_Line1111:	dc.b 'LINE 1111 EMULATOR ',0
+ErrText_Exept:		dc.b "ERROR EXCEPTION    "
+ErrText_BusErr:		dc.b "BUS ERROR          "
+ErrText_AddrErr:	dc.b "ADDRESS ERROR      "
+ErrText_IllInstr:	dc.b "ILLEGAL INSTRUCTION"
+ErrText_ZeroDiv:	dc.b "@ERO DIVIDE        "
+ErrText_ChkInstr:	dc.b "CHK INSTRUCTION    "
+ErrText_TrapV:		dc.b "TRAPV INSTRUCTION  "
+ErrText_PrivViol:	dc.b "PRIVILEGE VIOLATION"
+ErrText_Trace:		dc.b "TRACE              "
+ErrText_Line1010:	dc.b "LINE 1010 EMULATOR "
+ErrText_Line1111:	dc.b "LINE 1111 EMULATOR "
+			even
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -630,8 +636,6 @@ Vint_Level:
 loc_D24:
 		lea	(VDP_control_port).l,a5
 		move.l	#$94009340,(a5)
-
-loc_D30:
 		move.l	#$96FD9540,(a5)
 		move.w	#$977F,(a5)
 		move.w	#$C000,(a5)
@@ -643,8 +647,6 @@ loc_D48:
 		move.w	#$8230,(VDP_control_port).l
 		lea	(VDP_control_port).l,a5
 		move.l	#$940193C0,(a5)
-
-loc_D60:
 		move.l	#$96F09500,(a5)
 		move.w	#$977F,(a5)
 		move.w	#$7C00,(a5)
@@ -745,8 +747,6 @@ Vint_TitleCard:
 
 loc_EE4:
 		lea	(VDP_control_port).l,a5
-
-loc_EEA:
 		move.l	#$94009340,(a5)
 		move.l	#$96FD9540,(a5)
 		move.w	#$977F,(a5)
@@ -4697,7 +4697,7 @@ MusicList:	dc.b MusID_GHZ
 		dc.b MusID_HPZ
 		dc.b MusID_HTZ
 		dc.b $8D
-		dc.b 0
+		even
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Level
@@ -4925,7 +4925,7 @@ loc_3DD0:
 		jsr	(RingsManager).l
 		jsr	(RunObjects).l
 		jsr	(BuildSprites).l
-		bsr.w	j_AniArt_Load
+		bsr.w	JmpTo_AniArt_Load
 		moveq	#0,d0
 		tst.b	($FFFFFE30).w
 		bne.s	loc_3E00
@@ -5042,7 +5042,7 @@ loc_3F50:
 loc_3F54:
 		bsr.w	ChangeWaterSurfacePos
 		jsr	(RingsManager).l
-		bsr.w	j_AniArt_Load
+		bsr.w	JmpTo_AniArt_Load
 		bsr.w	PalCycle_Load
 		bsr.w	RunPLC_RAM
 		bsr.w	OscillateNumDo
@@ -6089,8 +6089,8 @@ Demo_S1SS:	dc.b   0,$26,  4,  5,  0,$2A,  8,$1B,  0,  6,  4,  9,  0,  6,$20,  1;
 ; Read more about it here:
 ; https://clownacy.wordpress.com/2022/03/30/everything-that-i-know-about-sonic-the-hedgehogs-source-code/
 ; ---------------------------------------------------------------------------
-
-j_AniArt_Load:
+; j_AniArt_Load:
+JmpTo_AniArt_Load:
 		jmp	(AniArt_Load).l
 		align 4
 
@@ -8622,14 +8622,15 @@ loc_6AAE:				; CODE XREF: sub_6A82+14j
 
 locret_6ACE:				; CODE XREF: sub_6A82+2j sub_6A82+30j
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-byte_6AD0:	dc.b 0			; DATA XREF: sub_6A82:loc_6B66t
-byte_6AD1:	dc.b   0,  0,  0,  0,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  4,  4; 0
-					; DATA XREF: sub_6A82:loc_6B04t
-					; ROM:0000720At
-		dc.b   4,  4,  4,  4,  4,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2; 16
-		dc.b 0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
+; byte_6AD0:
+SBZ_CameraSections:
+		dcb.b	80/16, static1		; background 1 (clouds, static)
+		dcb.b	160/16, dynamic3	; background 3 (furthest buildings)
+		dcb.b	112/16, dynamic2	; background 2 (closer buildings)
+		dcb.b	176/16, dynamic1	; background 1 (closest buildings)
+		even
+; ---------------------------------------------------------------------------
 
 loc_6AF2:				; CODE XREF: sub_6A82+Cj
 		moveq	#$FFFFFFF0,d4
@@ -8640,7 +8641,7 @@ loc_6AF2:				; CODE XREF: sub_6A82+Cj
 		move.w	#$E0,d4	; 'à'
 
 loc_6B04:				; CODE XREF: sub_6A82+76j
-		lea	byte_6AD1(pc),a0
+		lea	SBZ_CameraSections+1(pc),a0
 		move.w	(Camera_BG_Y_pos).w,d0
 		add.w	d4,d0
 		andi.w	#$1F0,d0
@@ -8682,7 +8683,7 @@ loc_6B52:				; CODE XREF: sub_6A82+CCj
 		move.w	#$140,d5
 
 loc_6B66:				; CODE XREF: sub_6A82+DAj
-		lea	byte_6AD0(pc),a0
+		lea	SBZ_CameraSections(pc),a0
 		move.w	(Camera_BG_Y_pos).w,d0
 		andi.w	#$1F0,d0
 		lsr.w	#4,d0
@@ -8722,16 +8723,16 @@ loc_6BA8:				; CODE XREF: sub_6B7C+14j
 
 locret_6BC8:				; CODE XREF: sub_6B7C+2j sub_6B7C+30j
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-byte_6BCA:	dc.b 0			; DATA XREF: sub_6B7C:loc_6C62t
-byte_6BCB:	dc.b   2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2; 0
-					; DATA XREF: sub_6B7C:loc_6C1Et
-					; ROM:000071E2t
-		dc.b   2,  2,  2,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4; 16
-		dc.b   4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4; 32
-		dc.b   4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4; 48
-		dc.b 0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
+; Each row is assigned a background camera to determine how to draw it,
+; see BGCameraSections for more information
+; byte_6BCA:
+MZ_CameraSections:
+		dcb.b	16/16, static1		; background 1 (just above the screen, static)
+		dcb.b	304/16, dynamic1	; background 1 (above ground)
+		dcb.b	720/16, dynamic2	; background 2 (underground)
+		even
+; ---------------------------------------------------------------------------
 
 loc_6C0C:				; CODE XREF: sub_6B7C+Cj
 		moveq	#$FFFFFFF0,d4
@@ -8742,7 +8743,7 @@ loc_6C0C:				; CODE XREF: sub_6B7C+Cj
 		move.w	#$E0,d4	; 'à'
 
 loc_6C1E:				; CODE XREF: sub_6B7C+96j
-		lea	byte_6BCB(pc),a0
+		lea	MZ_CameraSections+1(pc),a0
 		move.w	(Camera_BG_Y_pos).w,d0
 		add.w	d4,d0
 		andi.w	#$3F0,d0
@@ -8772,7 +8773,7 @@ loc_6C4E:				; CODE XREF: sub_6B7C+CEj
 		move.w	#$140,d5
 
 loc_6C62:				; CODE XREF: sub_6B7C+DCj
-		lea	byte_6BCA(pc),a0
+		lea	MZ_CameraSections(pc),a0
 		move.w	(Camera_BG_Y_pos).w,d0
 		andi.w	#$7F0,d0
 		lsr.w	#4,d0
@@ -9419,7 +9420,7 @@ loc_711E:
 		lea	(Level_Layout+$80).w,a4
 		move.w	#$6000,d2
 		tst.b	(Current_Zone).w
-		beq.w	loc_71A0
+		beq.w	DrawBackground_GHZ
 
 LoadTilesFromStart2:
 		moveq	#-16,d4
@@ -9463,74 +9464,108 @@ loc_7174:
 		rts
 ; End of function LoadTilesFromStart
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; START	OF FUNCTION CHUNK FOR LoadTilesFromStart
-
-loc_71A0:				; CODE XREF: LoadTilesFromStart+3Ej
-		moveq	#0,d4
-		moveq	#$F,d6
-
-loc_71A4:				; CODE XREF: LoadTilesFromStart+C6j
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Stage-specific background drawing routines
+; Green Hill Zone
+; ---------------------------------------------------------------------------
+; loc_71A0:
+DrawBackground_GHZ:
+		moveq	#0,d4		; start drawing at the top of the screen
+		moveq	#$F,d6		; 16 blocks per column
+; loc_71A4:
+.drawRow:
 		movem.l	d4-d6,-(sp)
-		lea	(byte_71CA).l,a0
+		lea	(GHZ_CameraSections).l,a0
 		move.w	(Camera_BG_Y_pos).w,d0
 		add.w	d4,d0
-		andi.w	#$F0,d0	; 'ğ'
-		bsr.w	sub_7232
+		andi.w	#$F0,d0
+		bsr.w	Draw_BackgroundRow
 		movem.l	(sp)+,d4-d6
-		addi.w	#$10,d4
-		dbf	d6,loc_71A4
+		; after we finish drawing the current row, head down to the next one
+		addi.w	#16,d4
+		dbf	d6,.drawRow
 		rts
-; END OF FUNCTION CHUNK	FOR LoadTilesFromStart
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-byte_71CA:	dc.b   0,  0,  0,  0,  6,  6,  6,  4,  4,  4,  0,  0,  0,  0,  0,  0; 0
-					; DATA XREF: LoadTilesFromStart+AAo
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		moveq	#$FFFFFFF0,d4
-		moveq	#$F,d6
+; ---------------------------------------------------------------------------
+; Each row is assigned a background camera to determine how to draw it,
+; see BGCameraSections for more information
+; byte_71CA:
+GHZ_CameraSections:
+		dcb.b	64/16, static1		; background 1 (clouds, static)
+		dcb.b	48/16, dynamic3		; background 3 (mountains)
+		dcb.b	48/16, dynamic2		; background 2 (hills/bushes)
+		dcb.b	96/16, static1		; background 1 (water, static)
+; End of function DrawBackground_GHZ
 
-loc_71DE:				; CODE XREF: ROM:000071FCj
+; ---------------------------------------------------------------------------
+; Marble Zone
+; ---------------------------------------------------------------------------
+; loc_71DA:
+DrawBackground_MZ:
+		moveq	#-16,d4		; start drawing just above the top of the screen
+		moveq	#$F,d6		; 16 blocks per column
+
+loc_71DE:
 		movem.l	d4-d6,-(sp)
-		lea	byte_6BCB(pc),a0
+		lea	MZ_CameraSections+1(pc),a0
 		move.w	(Camera_BG_Y_pos).w,d0
 		add.w	d4,d0
 		andi.w	#$3F0,d0
-		bsr.w	sub_7232
+		bsr.w	Draw_BackgroundRow
 		movem.l	(sp)+,d4-d6
-		addi.w	#$10,d4
+		; after we finish drawing the current row, head down to the next one
+		addi.w	#16,d4
 		dbf	d6,loc_71DE
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		moveq	#$FFFFFFF0,d4
-		moveq	#$F,d6
+; End of function DrawBackground_MZ
 
-loc_7206:				; CODE XREF: ROM:00007224j
+; ---------------------------------------------------------------------------
+; Scrap Brain Zone
+; ---------------------------------------------------------------------------
+; loc_7200:
+DrawBackground_SBZ:
+		moveq	#-16,d4		; start drawing just above the top of the screen
+		moveq	#$F,d6		; 16 blocks per column
+
+loc_7206:
 		movem.l	d4-d6,-(sp)
-		lea	byte_6AD1(pc),a0
+		lea	SBZ_CameraSections+1(pc),a0
 		move.w	(Camera_BG_Y_pos).w,d0
 		add.w	d4,d0
 		andi.w	#$1F0,d0
-		bsr.w	sub_7232
+		bsr.w	Draw_BackgroundRow
 		movem.l	(sp)+,d4-d6
-		addi.w	#$10,d4
+		; after we finish drawing the current row, head down to the next one
+		addi.w	#16,d4
 		dbf	d6,loc_7206
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-word_722A:	dc.w Camera_BG_X_pos
-		dc.w Camera_BG_X_pos
-		dc.w Camera_BG2_X_pos
-		dc.w Camera_BG3_X_pos
+; End of function DrawBackground_MZ
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ===========================================================================
+; This is a lookup table which the game uses to know what background the
+; block rows should update their tiles relative to, allowing for larger
+; backgrounds than normally possib.e
+; word_722A:
+BGCameraSections:
+		dc.w Camera_BG_X_pos		; Background A (static)
+		dc.w Camera_BG_X_pos		; Background A (dynamic)
+		dc.w Camera_BG2_X_pos		; Background B (dynamic)
+		dc.w Camera_BG3_X_pos		; Background C (dynamic)
 
+; ---------------------------------------------------------------------------
+; Subroutine to draw background block rows depending on the camera type
+; ---------------------------------------------------------------------------
 
-sub_7232:				; CODE XREF: LoadTilesFromStart+BAp
-					; ROM:000071F0p ...
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+
+; sub_7232:
+Draw_BackgroundRow:
 		lsr.w	#4,d0
 		move.b	(a0,d0.w),d0
-		movea.w	word_722A(pc,d0.w),a3
-		beq.s	loc_725A
-		moveq	#$FFFFFFF0,d5
+		movea.w	BGCameraSections(pc,d0.w),a3	; get camera type
+		beq.s	.staticRow		; if it's staic, branch
+
+		moveq	#-16,d5			; start drawing a row of blocks
 		movem.l	d4-d5,-(sp)
 		bsr.w	CalculateVRAMPosition
 		movem.l	(sp)+,d4-d5
@@ -9538,17 +9573,17 @@ sub_7232:				; CODE XREF: LoadTilesFromStart+BAp
 		bsr.w	sub_6D8C
 		move	#$2300,sr
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_725A:				; CODE XREF: sub_7232+Aj
-		moveq	#0,d5
+; ---------------------------------------------------------------------------
+; loc_725A:
+.staticRow:
+		moveq	#0,d5			; draw a static row of blocks
 		movem.l	d4-d5,-(sp)
 		bsr.w	CalculateVRAMPosition_Absolute
 		movem.l	(sp)+,d4-d5
 		moveq	#$1F,d6
 		bsr.w	sub_6D90
 		rts
-; End of function sub_7232
+; End of function Draw_BackgroundRow
 
 
 ; ===========================================================================
@@ -9571,7 +9606,8 @@ MainLevelLoadBlock:
 ; ---------------------------------------------------------------------------
 ; Sonic 1 compresses its 16x16 blocks in Enigma; Sonic 2 Nick Arcade leaves
 ; them uncompressed, likely so that the developers wouldn't have to recompress
-; them every time a change was made.
+; them every time a change was made. Based on the above code, Green Hill had
+; its blocks compressed in Enigma up to a certain point
 ; MainLevelLoadBlock_Skip16Convert:
 .enigmaBlocks:
 		lea	($FFFF9000).w,a1
@@ -9690,8 +9726,9 @@ locret_7382:
 ; ---------------------------------------------------------------------------
 ; Subroutine to load a level layout from RAM
 ;
-; Unlike Sonic 1, this variation is programmed to repeat level rows until
-; it fills up the designated memory, mainly used to repeat backgrounds
+; Unlike Sonic 1, this is programmed to repeat level rows until it fills up
+; all of $FF8000 to $FF9000, mainly used to repeat backgrounds without having
+; it bloating the ROM (the final game doesn't do this)
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
@@ -9760,7 +9797,7 @@ loc_73E6:
 ; End of function LevelLayoutLoad
 
 ; ===========================================================================
-; dynamically converts the Sonic 1 level layout into Sonic 2 Nick Arcade's,
+; Dynamically converts the Sonic 1 level layout into Sonic 2 Nick Arcade's,
 ; read more about it here: https://forums.sonicretro.org/index.php?posts/993641/
 LevelLayoutLoad_GHZ:
 		move.w	(Current_ZoneAndAct).w,d0
@@ -12855,7 +12892,7 @@ loc_966E:				; DATA XREF: ROM:S1Obj_1E_Indexo
 		move.b	#5,$20(a0)
 		move.b	#$C,width_pixels(a0)
 		bsr.w	ObjectMoveAndFall
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_96C0
 		add.w	d1,y_pos(a0)
@@ -12940,10 +12977,10 @@ loc_9742:				; DATA XREF: ROM:S1Obj20_Indexo
 		move.b	#4,mapping_frame(a0)
 
 loc_978A:				; DATA XREF: ROM:00009740o
-		jsr	ObjectMoveAndFall
+		jsr	(ObjectMoveAndFall).l
 		tst.w	y_vel(a0)
 		bmi.s	loc_97C6
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_97C6
 		add.w	d1,y_pos(a0)
@@ -13328,7 +13365,7 @@ loc_9CB8:				; DATA XREF: ROM:off_9AB6o
 		bsr.w	ObjectMoveAndFall
 		tst.w	y_vel(a0)
 		bmi.s	loc_9D0E
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_9D0E
 		add.w	d1,y_pos(a0)
@@ -13358,7 +13395,7 @@ loc_9D12:				; CODE XREF: ROM:00009E60j
 		tst.w	y_vel(a0)
 		bmi.s	loc_9D3C
 		move.b	#0,mapping_frame(a0)
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_9D3C
 		add.w	d1,y_pos(a0)
@@ -13379,7 +13416,7 @@ loc_9D4E:				; CODE XREF: ROM:00009E06j
 		addi.w	#$18,y_vel(a0)
 		tst.w	y_vel(a0)
 		bmi.s	loc_9D8A
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_9D8A
 		add.w	d1,y_pos(a0)
@@ -13482,7 +13519,7 @@ loc_9E64:				; DATA XREF: ROM:off_9AB6o
 		tst.w	y_vel(a0)
 		bmi.s	loc_9E9E
 		move.b	#0,mapping_frame(a0)
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_9E9E
 		not.b	$29(a0)
@@ -13520,7 +13557,7 @@ loc_9EC0:				; DATA XREF: ROM:off_9AB6o
 		tst.w	y_vel(a0)
 		bmi.s	loc_9EFA
 		move.b	#0,mapping_frame(a0)
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_9EFA
 		neg.w	x_vel(a0)
@@ -13540,7 +13577,7 @@ loc_9EFE:				; DATA XREF: ROM:off_9AB6o
 		addi.w	#$18,y_vel(a0)
 		tst.w	y_vel(a0)
 		bmi.s	loc_9F38
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_9F38
 		not.b	$29(a0)
@@ -13573,7 +13610,7 @@ sub_9F52:				; CODE XREF: ROM:00009E26p
 		tst.w	y_vel(a0)
 		bmi.s	locret_9F78
 		move.b	#0,mapping_frame(a0)
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_9F78
 		add.w	d1,y_pos(a0)
@@ -14397,7 +14434,7 @@ loc_A9FA:				; DATA XREF: ROM:0000A92Eo
 		add.b	d7,d0
 		andi.b	#3,d0
 		bne.s	loc_AA34
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_AA34
 		add.w	d1,y_pos(a0)
@@ -14743,7 +14780,7 @@ loc_AF00:				; CODE XREF: ROM:0000AEF4j
 
 loc_AF10:				; CODE XREF: ROM:0000AEDEj
 		bsr.w	ObjectMoveAndFall
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.w	loc_AFBA
 		add.w	d1,y_pos(a0)
@@ -16046,7 +16083,7 @@ loc_BE6A:				; DATA XREF: ROM:0000BD96o
 		beq.s	loc_BE9C
 		subi.w	#$A,($FFFFF7D4).w
 		moveq	#$A,d0
-		jsr	AddPoints
+		jsr	(AddPoints).l
 		move.b	($FFFFFE0F).w,d0
 		andi.b	#3,d0
 		bne.s	locret_BEC2
@@ -16529,7 +16566,7 @@ loc_C736:				; CODE XREF: ROM:0000C708j
 		asl.l	#8,d0
 		sub.l	d0,d3
 		move.l	d3,y_pos(a0)
-		jsr	HurtSonic
+		jsr	(HurtSonic).l
 
 loc_C764:				; CODE XREF: ROM:0000C74Aj
 		movea.l	(sp)+,a0
@@ -21843,7 +21880,6 @@ loc_FAFE:
 
 loc_FB0E:
 		bra.w	LoadSonicDynPLC
-
 ; ===========================================================================
 ; secondary states under state Obj01_Control
 Obj01_Modes:	dc.w Obj01_MdNormal-Obj01_Modes
@@ -21857,7 +21893,7 @@ MusicList_Sonic:dc.b MusID_GHZ
 		dc.b MusID_EHZ
 		dc.b MusID_HPZ
 		dc.b MusID_HTZ
-
+		even
 ; ===========================================================================
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
@@ -22285,7 +22321,7 @@ loc_FED2:
 ; ---------------------------------------------------------------------------
 
 loc_FED8:
-		cmpi.w	#$FA00,x_vel(a0)		; is Sonic at max speed?
+		cmpi.w	#$FA00,x_vel(a0)	; is Sonic at max speed?
 		ble.s	Sonic_WallRecoil	; if yes, branch
 		sub.w	d1,x_vel(a0)
 		bset	#5,status(a0)
@@ -22429,7 +22465,7 @@ locret_1000C:
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_RollSpeed:			; CODE XREF: ROM:0000FCFCp
+Sonic_RollSpeed:
 		move.w	(Sonic_top_speed).w,d6
 		asl.w	#1,d6
 		move.w	(Sonic_acceleration).w,d5
@@ -22444,13 +22480,12 @@ Sonic_RollSpeed:			; CODE XREF: ROM:0000FCFCp
 		beq.s	loc_1003A
 		bsr.w	Sonic_RollLeft
 
-loc_1003A:				; CODE XREF: Sonic_RollSpeed+26j
+loc_1003A:
 		btst	#3,($FFFFF602).w
 		beq.s	loc_10046
 		bsr.w	Sonic_RollRight
 
-loc_10046:				; CODE XREF: Sonic_RollSpeed+1Ej
-					; Sonic_RollSpeed+32j
+loc_10046:
 		move.w	inertia(a0),d0
 		beq.s	loc_10068
 		bmi.s	loc_1005C
@@ -22458,21 +22493,20 @@ loc_10046:				; CODE XREF: Sonic_RollSpeed+1Ej
 		bcc.s	loc_10056
 		move.w	#0,d0
 
-loc_10056:				; CODE XREF: Sonic_RollSpeed+42j
+loc_10056:
 		move.w	d0,inertia(a0)
 		bra.s	loc_10068
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_1005C:				; CODE XREF: Sonic_RollSpeed+3Ej
+loc_1005C:
 		add.w	d5,d0
 		bcc.s	loc_10064
 		move.w	#0,d0
 
-loc_10064:				; CODE XREF: Sonic_RollSpeed+50j
+loc_10064:
 		move.w	d0,inertia(a0)
 
-loc_10068:				; CODE XREF: Sonic_RollSpeed+3Cj
-					; Sonic_RollSpeed+4Cj
+loc_10068:
 		tst.w	inertia(a0)
 		bne.s	loc_1008A
 		bclr	#2,status(a0)
@@ -22481,8 +22515,7 @@ loc_10068:				; CODE XREF: Sonic_RollSpeed+3Cj
 		move.b	#5,anim(a0)
 		subq.w	#5,y_pos(a0)
 
-loc_1008A:				; CODE XREF: Sonic_RollSpeed+16j
-					; Sonic_RollSpeed+5Ej
+loc_1008A:
 		move.b	angle(a0),d0
 		jsr	(CalcSine).l
 		muls.w	inertia(a0),d0
@@ -22494,12 +22527,12 @@ loc_1008A:				; CODE XREF: Sonic_RollSpeed+16j
 		ble.s	loc_100AE
 		move.w	#$1000,d1
 
-loc_100AE:				; CODE XREF: Sonic_RollSpeed+9Aj
+loc_100AE:
 		cmpi.w	#$F000,d1
 		bge.s	loc_100B8
 		move.w	#$F000,d1
 
-loc_100B8:				; CODE XREF: Sonic_RollSpeed+A4j
+loc_100B8:
 		move.w	d1,x_vel(a0)
 		bra.w	Obj01_CheckWallsOnGround
 ; End of function Sonic_RollSpeed
@@ -22508,23 +22541,23 @@ loc_100B8:				; CODE XREF: Sonic_RollSpeed+A4j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_RollLeft:				; CODE XREF: Sonic_RollSpeed+28p
+Sonic_RollLeft:
 		move.w	inertia(a0),d0
 		beq.s	loc_100C8
 		bpl.s	loc_100D6
 
-loc_100C8:				; CODE XREF: Sonic_RollLeft+4j
+loc_100C8:
 		bset	#0,status(a0)
 		move.b	#2,anim(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_100D6:				; CODE XREF: Sonic_RollLeft+6j
+loc_100D6:
 		sub.w	d4,d0
 		bcc.s	loc_100DE
 		move.w	#$FF80,d0
 
-loc_100DE:				; CODE XREF: Sonic_RollLeft+18j
+loc_100DE:
 		move.w	d0,inertia(a0)
 		rts
 ; End of function Sonic_RollLeft
@@ -22533,7 +22566,7 @@ loc_100DE:				; CODE XREF: Sonic_RollLeft+18j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_RollRight:			; CODE XREF: Sonic_RollSpeed+34p
+Sonic_RollRight:
 		move.w	inertia(a0),d0
 		bmi.s	loc_100F8
 		bclr	#0,status(a0)
@@ -22541,12 +22574,12 @@ Sonic_RollRight:			; CODE XREF: Sonic_RollSpeed+34p
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_100F8:				; CODE XREF: Sonic_RollRight+4j
+loc_100F8:
 		add.w	d4,d0
 		bcc.s	loc_10100
-		move.w	#$80,d0	; '€'
+		move.w	#$80,d0
 
-loc_10100:				; CODE XREF: Sonic_RollRight+16j
+loc_10100:
 		move.w	d0,inertia(a0)
 		rts
 ; End of function Sonic_RollRight
@@ -22555,8 +22588,7 @@ loc_10100:				; CODE XREF: Sonic_RollRight+16j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_ChgJumpDir:			; CODE XREF: ROM:0000FCCEp
-					; ROM:0000FD18p
+Sonic_ChgJumpDir:
 		move.w	(Sonic_top_speed).w,d6
 		move.w	(Sonic_acceleration).w,d5
 		asl.w	#1,d5
@@ -22573,8 +22605,7 @@ Sonic_ChgJumpDir:			; CODE XREF: ROM:0000FCCEp
 		bgt.s	loc_10136
 		move.w	d1,d0
 
-loc_10136:				; CODE XREF: Sonic_ChgJumpDir+1Cj
-					; Sonic_ChgJumpDir+2Cj
+loc_10136:
 		btst	#3,($FFFFF602).w
 		beq.s	loc_1014C
 		bclr	#0,status(a0)
@@ -22583,20 +22614,19 @@ loc_10136:				; CODE XREF: Sonic_ChgJumpDir+1Cj
 		blt.s	loc_1014C
 		move.w	d6,d0
 
-loc_1014C:				; CODE XREF: Sonic_ChgJumpDir+36j
-					; Sonic_ChgJumpDir+42j
+loc_1014C:
 		move.w	d0,x_vel(a0)
 
-loc_10150:				; CODE XREF: Sonic_ChgJumpDir+10j
-		cmpi.w	#$60,($FFFFEED8).w ; '`'
+loc_10150:
+		cmpi.w	#$60,($FFFFEED8).w
 		beq.s	loc_10162
 		bcc.s	loc_1015E
 		addq.w	#4,($FFFFEED8).w
 
-loc_1015E:				; CODE XREF: Sonic_ChgJumpDir+52j
+loc_1015E:
 		subq.w	#2,($FFFFEED8).w
 
-loc_10162:				; CODE XREF: Sonic_ChgJumpDir+50j
+loc_10162:
 		cmpi.w	#$FC00,y_vel(a0)
 		bcs.s	locret_10190
 		move.w	x_vel(a0),d0
@@ -22608,21 +22638,20 @@ loc_10162:				; CODE XREF: Sonic_ChgJumpDir+50j
 		bcc.s	loc_1017E
 		move.w	#0,d0
 
-loc_1017E:				; CODE XREF: Sonic_ChgJumpDir+72j
+loc_1017E:
 		move.w	d0,x_vel(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_10184:				; CODE XREF: Sonic_ChgJumpDir+6Ej
+loc_10184:
 		sub.w	d1,d0
 		bcs.s	loc_1018C
 		move.w	#0,d0
 
-loc_1018C:				; CODE XREF: Sonic_ChgJumpDir+80j
+loc_1018C:
 		move.w	d0,x_vel(a0)
 
-locret_10190:				; CODE XREF: Sonic_ChgJumpDir+62j
-					; Sonic_ChgJumpDir+6Cj
+locret_10190:
 		rts
 ; End of function Sonic_ChgJumpDir
 
@@ -22645,21 +22674,21 @@ Sonic_LevelBound:
 		addi.w	#$128,d0
 		tst.b	($FFFFF7AA).w
 		bne.s	loc_101C0
-		addi.w	#$40,d0	; '@'
+		addi.w	#$40,d0
 
-loc_101C0:				; CODE XREF: Sonic_LevelBound+28j
+loc_101C0:
 		cmp.w	d1,d0
 		bls.s	loc_101FA
 
-loc_101C4:				; CODE XREF: Sonic_LevelBound+7Ej
+loc_101C4:
 		move.w	($FFFFEECE).w,d0
-		addi.w	#$E0,d0	; 'à'
+		addi.w	#$E0,d0
 		cmp.w	y_pos(a0),d0
 		blt.s	loc_101D4
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_101D4:				; CODE XREF: Sonic_LevelBound+3Ej
+loc_101D4:
 		cmpi.w	#$501,(Current_ZoneAndAct).w
 		bne.w	JmpTo_KillSonic
 		cmpi.w	#$2000,(MainCharacter+x_pos).w
@@ -22670,8 +22699,7 @@ loc_101D4:				; CODE XREF: Sonic_LevelBound+3Ej
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_101FA:				; CODE XREF: Sonic_LevelBound+1Aj
-					; Sonic_LevelBound+30j
+loc_101FA:
 		move.w	d0,x_pos(a0)
 		move.w	#0,x_sub(a0)
 		move.w	#0,x_vel(a0)
@@ -22683,15 +22711,15 @@ loc_101FA:				; CODE XREF: Sonic_LevelBound+1Aj
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_Roll:				; CODE XREF: ROM:0000FCB2p
+Sonic_Roll:
 		tst.b	($FFFFF7CA).w
 		bne.s	Obj01_NoRoll
 		move.w	inertia(a0),d0
 		bpl.s	loc_10220
 		neg.w	d0
 
-loc_10220:				; CODE XREF: Sonic_Roll+Aj
-		cmpi.w	#$80,d0	; '€'
+loc_10220:
+		cmpi.w	#$80,d0
 		bcs.s	Obj01_NoRoll
 		move.b	($FFFFF602).w,d0
 		andi.b	#$C,d0
@@ -22699,30 +22727,29 @@ loc_10220:				; CODE XREF: Sonic_Roll+Aj
 		btst	#1,($FFFFF602).w
 		bne.s	loc_1023A
 
-Obj01_NoRoll:				; CODE XREF: Sonic_Roll+4j
-					; Sonic_Roll+12j ...
+Obj01_NoRoll:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_1023A:				; CODE XREF: Sonic_Roll+24j
+loc_1023A:
 		btst	#2,status(a0)
 		beq.s	Obj01_DoRoll
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-Obj01_DoRoll:				; CODE XREF: Sonic_Roll+2Ej
+Obj01_DoRoll:
 		bset	#2,status(a0)
 		move.b	#$E,y_radius(a0)
 		move.b	#7,x_radius(a0)
 		move.b	#2,anim(a0)
 		addq.w	#5,y_pos(a0)
-		move.w	#$BE,d0	; '¾'
+		move.w	#$BE,d0
 		jsr	(PlaySound_Special).l
 		tst.w	inertia(a0)
 		bne.s	locret_10276
 		move.w	#$200,inertia(a0)
 
-locret_10276:				; CODE XREF: Sonic_Roll+5Cj
+locret_10276:
 		rts
 ; End of function Sonic_Roll
 
@@ -22730,10 +22757,9 @@ locret_10276:				; CODE XREF: Sonic_Roll+5Cj
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_Jump:				; CODE XREF: ROM:0000FCA6p
-					; ROM:Obj01_MdRollp
+Sonic_Jump:
 		move.b	($FFFFF603).w,d0
-		andi.b	#$70,d0	; 'p'
+		andi.b	#$70,d0
 		beq.w	locret_1031C
 		moveq	#0,d0
 		move.b	angle(a0),d0
@@ -22746,10 +22772,10 @@ Sonic_Jump:				; CODE XREF: ROM:0000FCA6p
 		beq.s	loc_102AA
 		move.w	#$380,d2
 
-loc_102AA:				; CODE XREF: Sonic_Jump+2Cj
+loc_102AA:
 		moveq	#0,d0
 		move.b	angle(a0),d0
-		subi.b	#$40,d0	; '@'
+		subi.b	#$40,d0
 		jsr	(CalcSine).l
 		muls.w	d2,d1
 		asr.l	#8,d1
@@ -22762,7 +22788,7 @@ loc_102AA:				; CODE XREF: Sonic_Jump+2Cj
 		addq.l	#4,sp
 		move.b	#1,jumping(a0)
 		clr.b	stick_to_convex(a0)
-		move.w	#$A0,d0	; ' '
+		move.w	#$A0,d0
 		jsr	(PlaySound_Special).l
 		move.b	#$13,y_radius(a0)
 		move.b	#9,x_radius(a0)
@@ -22774,12 +22800,11 @@ loc_102AA:				; CODE XREF: Sonic_Jump+2Cj
 		bset	#2,status(a0)
 		addq.w	#5,y_pos(a0)
 
-locret_1031C:				; CODE XREF: Sonic_Jump+8j
-					; Sonic_Jump+1Ej
+locret_1031C:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_1031E:				; CODE XREF: Sonic_Jump+86j
+loc_1031E:
 		bset	#4,status(a0)
 		rts
 ; End of function Sonic_Jump
@@ -22788,8 +22813,7 @@ loc_1031E:				; CODE XREF: Sonic_Jump+86j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_JumpHeight:			; CODE XREF: ROM:Obj01_MdJumpp
-					; ROM:Obj01_MdJump2p
+Sonic_JumpHeight:
 		tst.b	jumping(a0)
 		beq.s	loc_10352
 		move.w	#$FC00,d1
@@ -22797,25 +22821,24 @@ Sonic_JumpHeight:			; CODE XREF: ROM:Obj01_MdJumpp
 		beq.s	loc_1033C
 		move.w	#$FE00,d1
 
-loc_1033C:				; CODE XREF: Sonic_JumpHeight+10j
+loc_1033C:
 		cmp.w	y_vel(a0),d1
 		ble.s	locret_10350
 		move.b	($FFFFF602).w,d0
-		andi.b	#$70,d0	; 'p'
+		andi.b	#$70,d0
 		bne.s	locret_10350
 		move.w	d1,y_vel(a0)
 
-locret_10350:				; CODE XREF: Sonic_JumpHeight+1Aj
-					; Sonic_JumpHeight+24j
+locret_10350:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_10352:				; CODE XREF: Sonic_JumpHeight+4j
+loc_10352:
 		cmpi.w	#$F040,y_vel(a0)
 		bge.s	locret_10360
 		move.w	#$F040,y_vel(a0)
 
-locret_10360:				; CODE XREF: Sonic_JumpHeight+32j
+locret_10360:
 		rts
 ; End of function Sonic_JumpHeight
 
@@ -22881,16 +22904,16 @@ loc_103EA:
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_SlopeResist:			; CODE XREF: ROM:0000FCAAp
+Sonic_SlopeResist:
 		move.b	angle(a0),d0
-		addi.b	#$60,d0	; '`'
+		addi.b	#$60,d0
 		cmpi.b	#$C0,d0
 		bcc.s	locret_10422
 		move.b	angle(a0),d0
 
 loc_10400:
 		jsr	(CalcSine).l
-		muls.w	#$20,d0	; ' '
+		muls.w	#$20,d0
 		asr.l	#8,d0
 		tst.w	inertia(a0)
 		beq.s	locret_10422
@@ -22899,15 +22922,14 @@ loc_10400:
 		beq.s	locret_1041C
 		add.w	d0,inertia(a0)
 
-locret_1041C:				; CODE XREF: Sonic_SlopeResist+28j
+locret_1041C:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_1041E:				; CODE XREF: Sonic_SlopeResist+24j
+loc_1041E:
 		add.w	d0,inertia(a0)
 
-locret_10422:				; CODE XREF: Sonic_SlopeResist+Cj
-					; Sonic_SlopeResist+22j
+locret_10422:
 		rts
 ; End of function Sonic_SlopeResist
 
@@ -22915,14 +22937,14 @@ locret_10422:				; CODE XREF: Sonic_SlopeResist+Cj
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_RollRepel:			; CODE XREF: ROM:0000FCF8p
+Sonic_RollRepel:
 		move.b	angle(a0),d0
-		addi.b	#$60,d0	; '`'
+		addi.b	#$60,d0
 		cmpi.b	#$C0,d0
 		bcc.s	locret_1045E
 		move.b	angle(a0),d0
 		jsr	(CalcSine).l
-		muls.w	#$50,d0	; 'P'
+		muls.w	#$50,d0
 		asr.l	#8,d0
 		tst.w	inertia(a0)
 		bmi.s	loc_10454
@@ -22930,20 +22952,20 @@ Sonic_RollRepel:			; CODE XREF: ROM:0000FCF8p
 		bpl.s	loc_1044E
 		asr.l	#2,d0
 
-loc_1044E:				; CODE XREF: Sonic_RollRepel+26j
+loc_1044E:
 		add.w	d0,inertia(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_10454:				; CODE XREF: Sonic_RollRepel+22j
+loc_10454:
 		tst.w	d0
 		bmi.s	loc_1045A
 		asr.l	#2,d0
 
-loc_1045A:				; CODE XREF: Sonic_RollRepel+32j
+loc_1045A:
 		add.w	d0,inertia(a0)
 
-locret_1045E:				; CODE XREF: Sonic_RollRepel+Cj
+locret_1045E:
 		rts
 ; End of function Sonic_RollRepel
 
@@ -22951,34 +22973,32 @@ locret_1045E:				; CODE XREF: Sonic_RollRepel+Cj
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_SlopeRepel:			; CODE XREF: ROM:0000FCC4p
-					; ROM:0000FD0Ep
+Sonic_SlopeRepel:
 		nop
 		tst.b	stick_to_convex(a0)
 		bne.s	locret_1049A
 		tst.w	move_lock(a0)
 		bne.s	loc_1049C
 		move.b	angle(a0),d0
-		addi.b	#$20,d0	; ' '
+		addi.b	#$20,d0
 		andi.b	#$C0,d0
 		beq.s	locret_1049A
 		move.w	inertia(a0),d0
 		bpl.s	loc_10484
 		neg.w	d0
 
-loc_10484:				; CODE XREF: Sonic_SlopeRepel+20j
+loc_10484:
 		cmpi.w	#$280,d0
 		bcc.s	locret_1049A
 		clr.w	inertia(a0)
 		bset	#1,status(a0)
 		move.w	#$1E,move_lock(a0)
 
-locret_1049A:				; CODE XREF: Sonic_SlopeRepel+6j
-					; Sonic_SlopeRepel+1Aj	...
+locret_1049A:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_1049C:				; CODE XREF: Sonic_SlopeRepel+Cj
+loc_1049C:
 		subq.w	#1,move_lock(a0)
 		rts
 ; End of function Sonic_SlopeRepel
@@ -22987,8 +23007,7 @@ loc_1049C:				; CODE XREF: Sonic_SlopeRepel+Cj
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_JumpAngle:			; CODE XREF: ROM:loc_FCEAp
-					; ROM:loc_FD34p
+Sonic_JumpAngle:
 		move.b	angle(a0),d0
 		beq.s	loc_104BC
 		bpl.s	loc_104B2
@@ -22996,20 +23015,19 @@ Sonic_JumpAngle:			; CODE XREF: ROM:loc_FCEAp
 		bcc.s	loc_104B0
 		moveq	#0,d0
 
-loc_104B0:				; CODE XREF: Sonic_JumpAngle+Aj
+loc_104B0:
 		bra.s	loc_104B8
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_104B2:				; CODE XREF: Sonic_JumpAngle+6j
+loc_104B2:
 		subq.b	#2,d0
 		bcc.s	loc_104B8
 		moveq	#0,d0
 
-loc_104B8:				; CODE XREF: Sonic_JumpAngle:loc_104B0j
-					; Sonic_JumpAngle+12j
+loc_104B8:
 		move.b	d0,angle(a0)
 
-loc_104BC:				; CODE XREF: Sonic_JumpAngle+4j
+loc_104BC:
 		move.b	flip_angle(a0),d0
 		beq.s	locret_104FA
 		tst.w	inertia(a0)
@@ -23022,12 +23040,11 @@ loc_104BC:				; CODE XREF: Sonic_JumpAngle+4j
 		move.b	#0,flips_remaining(a0)
 		moveq	#0,d0
 
-loc_104DE:				; CODE XREF: Sonic_JumpAngle+2Cj
-					; Sonic_JumpAngle+32j
+loc_104DE:
 		bra.s	loc_104F6
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_104E0:				; CODE XREF: Sonic_JumpAngle+24j
+loc_104E0:
 		move.b	flip_speed(a0),d1
 		sub.b	d1,d0
 		bcc.s	loc_104F6
@@ -23036,11 +23053,10 @@ loc_104E0:				; CODE XREF: Sonic_JumpAngle+24j
 		move.b	#0,flips_remaining(a0)
 		moveq	#0,d0
 
-loc_104F6:				; CODE XREF: Sonic_JumpAngle:loc_104DEj
-					; Sonic_JumpAngle+44j ...
+loc_104F6:
 		move.b	d0,flip_angle(a0)
 
-locret_104FA:				; CODE XREF: Sonic_JumpAngle+1Ej
+locret_104FA:
 		rts
 ; End of function Sonic_JumpAngle
 
@@ -23054,14 +23070,14 @@ Sonic_DoLevelCollision:
 		beq.s	loc_10514
 		move.l	#$FFFFD600,($FFFFF796).w
 
-loc_10514:				; CODE XREF: Sonic_DoLevelCollision+Ej
+loc_10514:
 		move.b	lrb_solid_bit(a0),d5
 		move.w	x_vel(a0),d1
 		move.w	y_vel(a0),d2
 		jsr	(CalcAngle).l
-		subi.b	#$20,d0	; ' '
+		subi.b	#$20,d0
 		andi.b	#$C0,d0
-		cmpi.b	#$40,d0	; '@'
+		cmpi.b	#$40,d0
 		beq.w	loc_105E4
 		cmpi.b	#$80,d0
 		beq.w	loc_10646
@@ -23073,14 +23089,14 @@ loc_10514:				; CODE XREF: Sonic_DoLevelCollision+Ej
 		sub.w	d1,x_pos(a0)
 		move.w	#0,x_vel(a0)
 
-loc_10558:				; CODE XREF: Sonic_DoLevelCollision+50j
+loc_10558:
 		bsr.w	sub_132EE
 		tst.w	d1
 		bpl.s	loc_1056A
 		add.w	d1,x_pos(a0)
 		move.w	#0,x_vel(a0)
 
-loc_1056A:				; CODE XREF: Sonic_DoLevelCollision+62j
+loc_1056A:
 		bsr.w	loc_13146
 		tst.w	d1
 		bpl.s	locret_105E2
@@ -23092,48 +23108,46 @@ loc_1056A:				; CODE XREF: Sonic_DoLevelCollision+62j
 		cmp.b	d2,d0
 		blt.s	locret_105E2
 
-loc_10582:				; CODE XREF: Sonic_DoLevelCollision+80j
+loc_10582:
 		add.w	d1,y_pos(a0)
 		move.b	d3,angle(a0)
 		bsr.w	Sonic_ResetOnFloor
 		move.b	#0,anim(a0)
 		move.b	d3,d0
-		addi.b	#$20,d0	; ' '
-		andi.b	#$40,d0	; '@'
+		addi.b	#$20,d0
+		andi.b	#$40,d0
 		bne.s	loc_105C0
 		move.b	d3,d0
 		addi.b	#$10,d0
-		andi.b	#$20,d0	; ' '
+		andi.b	#$20,d0
 		beq.s	loc_105B2
 		asr	y_vel(a0)
 		bra.s	loc_105D4
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_105B2:				; CODE XREF: Sonic_DoLevelCollision+AEj
+loc_105B2:
 		move.w	#0,y_vel(a0)
 		move.w	x_vel(a0),inertia(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_105C0:				; CODE XREF: Sonic_DoLevelCollision+A2j
+loc_105C0:
 		move.w	#0,x_vel(a0)
 		cmpi.w	#$FC0,y_vel(a0)
 		ble.s	loc_105D4
 		move.w	#$FC0,y_vel(a0)
 
-loc_105D4:				; CODE XREF: Sonic_DoLevelCollision+B4j
-					; Sonic_DoLevelCollision+D0j
+loc_105D4:
 		move.w	y_vel(a0),inertia(a0)
 		tst.b	d3
 		bpl.s	locret_105E2
 		neg.w	inertia(a0)
 
-locret_105E2:				; CODE XREF: Sonic_DoLevelCollision+74j
-					; Sonic_DoLevelCollision+84j ...
+locret_105E2:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_105E4:				; CODE XREF: Sonic_DoLevelCollision+36j
+loc_105E4:
 		bsr.w	Sonic_HitWall
 		tst.w	d1
 		bpl.s	loc_105FE
@@ -23143,7 +23157,7 @@ loc_105E4:				; CODE XREF: Sonic_DoLevelCollision+36j
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_105FE:				; CODE XREF: Sonic_DoLevelCollision+EEj
+loc_105FE:
 		bsr.w	Sonic_DontRunOnWalls
 		tst.w	d1
 		bpl.s	loc_10618
@@ -23152,11 +23166,11 @@ loc_105FE:				; CODE XREF: Sonic_DoLevelCollision+EEj
 		bpl.s	locret_10616
 		move.w	#0,y_vel(a0)
 
-locret_10616:				; CODE XREF: Sonic_DoLevelCollision+112j
+locret_10616:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_10618:				; CODE XREF: Sonic_DoLevelCollision+108j
+loc_10618:
 		tst.w	y_vel(a0)
 		bmi.s	locret_10644
 		bsr.w	loc_13146
@@ -23169,39 +23183,38 @@ loc_10618:				; CODE XREF: Sonic_DoLevelCollision+108j
 		move.w	#0,y_vel(a0)
 		move.w	x_vel(a0),inertia(a0)
 
-locret_10644:				; CODE XREF: Sonic_DoLevelCollision+120j
-					; Sonic_DoLevelCollision+128j
+locret_10644:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_10646:				; CODE XREF: Sonic_DoLevelCollision+3Ej
+loc_10646:
 		bsr.w	Sonic_HitWall
 		tst.w	d1
 		bpl.s	loc_10658
 		sub.w	d1,x_pos(a0)
 		move.w	#0,x_vel(a0)
 
-loc_10658:				; CODE XREF: Sonic_DoLevelCollision+150j
+loc_10658:
 		bsr.w	sub_132EE
 		tst.w	d1
 		bpl.s	loc_1066A
 		add.w	d1,x_pos(a0)
 		move.w	#0,x_vel(a0)
 
-loc_1066A:				; CODE XREF: Sonic_DoLevelCollision+162j
+loc_1066A:
 		bsr.w	Sonic_DontRunOnWalls
 		tst.w	d1
 		bpl.s	locret_106A0
 		sub.w	d1,y_pos(a0)
 		move.b	d3,d0
-		addi.b	#$20,d0	; ' '
-		andi.b	#$40,d0	; '@'
+		addi.b	#$20,d0
+		andi.b	#$40,d0
 		bne.s	loc_1068A
 		move.w	#0,y_vel(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_1068A:				; CODE XREF: Sonic_DoLevelCollision+184j
+loc_1068A:
 		move.b	d3,angle(a0)
 		bsr.w	Sonic_ResetOnFloor
 		move.w	y_vel(a0),inertia(a0)
@@ -23209,12 +23222,11 @@ loc_1068A:				; CODE XREF: Sonic_DoLevelCollision+184j
 		bpl.s	locret_106A0
 		neg.w	inertia(a0)
 
-locret_106A0:				; CODE XREF: Sonic_DoLevelCollision+174j
-					; Sonic_DoLevelCollision+19Ej
+locret_106A0:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_106A2:				; CODE XREF: Sonic_DoLevelCollision+46j
+loc_106A2:
 		bsr.w	sub_132EE
 		tst.w	d1
 		bpl.s	loc_106BC
@@ -23224,7 +23236,7 @@ loc_106A2:				; CODE XREF: Sonic_DoLevelCollision+46j
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_106BC:				; CODE XREF: Sonic_DoLevelCollision+1ACj
+loc_106BC:
 		bsr.w	Sonic_DontRunOnWalls
 		tst.w	d1
 		bpl.s	loc_106D6
@@ -23233,11 +23245,11 @@ loc_106BC:				; CODE XREF: Sonic_DoLevelCollision+1ACj
 		bpl.s	locret_106D4
 		move.w	#0,y_vel(a0)
 
-locret_106D4:				; CODE XREF: Sonic_DoLevelCollision+1D0j
+locret_106D4:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_106D6:				; CODE XREF: Sonic_DoLevelCollision+1C6j
+loc_106D6:
 		tst.w	y_vel(a0)
 		bmi.s	locret_10702
 		bsr.w	loc_13146
@@ -23250,8 +23262,7 @@ loc_106D6:				; CODE XREF: Sonic_DoLevelCollision+1C6j
 		move.w	#0,y_vel(a0)
 		move.w	x_vel(a0),inertia(a0)
 
-locret_10702:				; CODE XREF: Sonic_DoLevelCollision+1DEj
-					; Sonic_DoLevelCollision+1E6j
+locret_10702:
 		rts
 ; End of function Sonic_DoLevelCollision
 
@@ -23259,15 +23270,14 @@ locret_10702:				; CODE XREF: Sonic_DoLevelCollision+1DEj
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_ResetOnFloor:			; CODE XREF: RideObject_SetRide+54p
-					; Sonic_Move+1C0p ...
+Sonic_ResetOnFloor:
 		btst	#4,status(a0)
 		beq.s	loc_10712
 		nop
 		nop
 		nop
 
-loc_10712:				; CODE XREF: Sonic_ResetOnFloor+6j
+loc_10712:
 		bclr	#5,status(a0)
 		bclr	#1,status(a0)
 		bclr	#4,status(a0)
@@ -23279,7 +23289,7 @@ loc_10712:				; CODE XREF: Sonic_ResetOnFloor+6j
 		move.b	#0,anim(a0)
 		subq.w	#5,y_pos(a0)
 
-loc_10748:				; CODE XREF: Sonic_ResetOnFloor+26j
+loc_10748:
 		move.b	#0,jumping(a0)
 		move.w	#0,($FFFFF7D0).w
 		move.b	#0,flip_angle(a0)
@@ -23288,27 +23298,27 @@ loc_10748:				; CODE XREF: Sonic_ResetOnFloor+26j
 
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-Obj01_Hurt:				; DATA XREF: ROM:0000FA1Ao
+Obj01_Hurt:
 		tst.b	routine_secondary(a0)
 		bmi.w	loc_107E8
-		jsr	ObjectMove
-		addi.w	#$30,y_vel(a0) ; '0'
+		jsr	(ObjectMove).l
+		addi.w	#$30,y_vel(a0)
 		btst	#6,status(a0)
 		beq.s	loc_1077E
-		subi.w	#$20,y_vel(a0) ; ' '
+		subi.w	#$20,y_vel(a0)
 
-loc_1077E:				; CODE XREF: ROM:00010776j
+loc_1077E:
 		bsr.w	Sonic_HurtStop
 		bsr.w	Sonic_LevelBound
 		bsr.w	Sonic_RecordPos
 		bsr.w	Sonic_Animate
 		bsr.w	LoadSonicDynPLC
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_HurtStop:				; CODE XREF: ROM:loc_1077Ep
+Sonic_HurtStop:
 		move.w	($FFFFEECE).w,d0
 		addi.w	#$E0,d0	; 'à'
 		cmp.w	y_pos(a0),d0
@@ -23327,47 +23337,47 @@ Sonic_HurtStop:				; CODE XREF: ROM:loc_1077Ep
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_107D6:				; CODE XREF: Sonic_HurtStop+2Ej
+loc_107D6:
 		move.b	#0,anim(a0)
 		subq.b	#2,routine(a0)
-		move.w	#$78,invulnerable_time(a0) ; 'x'
+		move.w	#$78,invulnerable_time(a0)
 
-locret_107E6:				; CODE XREF: Sonic_HurtStop+1Aj
+locret_107E6:
 		rts
 ; End of function Sonic_HurtStop
 
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_107E8:				; CODE XREF: ROM:00010760j
+loc_107E8:
 		cmpi.b	#$B,anim(a0)
 		bne.s	loc_107FA
 		move.b	($FFFFF605).w,d0
-		andi.b	#$7F,d0	; ''
+		andi.b	#$7F,d0
 		beq.s	loc_10804
 
-loc_107FA:				; CODE XREF: ROM:000107EEj
+loc_107FA:
 		subq.b	#2,routine(a0)
 		move.b	#0,routine_secondary(a0)
 
-loc_10804:				; CODE XREF: ROM:000107F8j
+loc_10804:
 		bsr.w	Sonic_RecordPos
 		bsr.w	Sonic_Animate
 		bsr.w	LoadSonicDynPLC
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; Obj01_Death:
-Obj01_Dead:				; DATA XREF: ROM:0000FA1Co
+Obj01_Dead:
 		bsr.w	Sonic_GameOver
-		jsr	ObjectMoveAndFall
+		jsr	(ObjectMoveAndFall).l
 		bsr.w	Sonic_RecordPos
 		bsr.w	Sonic_Animate
 		bsr.w	LoadSonicDynPLC
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_GameOver:				; CODE XREF: ROM:Obj01_Deadp
+Sonic_GameOver:
 		move.w	($FFFFEECE).w,d0
 		addi.w	#$100,d0
 		cmp.w	y_pos(a0),d0
@@ -23379,46 +23389,44 @@ Sonic_GameOver:				; CODE XREF: ROM:Obj01_Deadp
 		subq.b	#1,($FFFFFE12).w
 		bne.s	loc_10888
 		move.w	#0,$3A(a0)
-		move.b	#$39,(Object_RAM+$80).w ; '9'
-		move.b	#$39,(Object_RAM+$C0).w ; '9'
+		move.b	#$39,(Object_RAM+$80).w
+		move.b	#$39,(Object_RAM+$C0).w
 		move.b	#1,(Object_RAM+$C0+mapping_frame).w
 		clr.b	($FFFFFE1A).w
 
-loc_10876:				; CODE XREF: Sonic_GameOver+80j
-		move.w	#$8F,d0	; ''
+loc_10876:
+		move.w	#$8F,d0
 		jsr	(PlaySound).l
 		moveq	#3,d0
 		jmp	(LoadPLC).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_10888:				; CODE XREF: Sonic_GameOver+26j
-		move.w	#$3C,$3A(a0) ; '<'
+loc_10888:
+		move.w	#$3C,$3A(a0)
 		tst.b	($FFFFFE1A).w
 		beq.s	locret_108B4
 		move.w	#0,$3A(a0)
-		move.b	#$39,(Object_RAM+$80).w ; '9'
-		move.b	#$39,(Object_RAM+$C0).w ; '9'
+		move.b	#$39,(Object_RAM+$80).w
+		move.b	#$39,(Object_RAM+$C0).w
 		move.b	#2,(Object_RAM+$80+mapping_frame).w
 		move.b	#3,(Object_RAM+$C0+mapping_frame).w
 		bra.s	loc_10876
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-locret_108B4:				; CODE XREF: Sonic_GameOver+Cj
-					; Sonic_GameOver+60j
+locret_108B4:
 		rts
 ; End of function Sonic_GameOver
 
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-Obj01_ResetLevel:			; DATA XREF: ROM:0000FA1Eo
+Obj01_ResetLevel:
 		tst.w	$3A(a0)
 		beq.s	locret_108C8
 		subq.w	#1,$3A(a0)
 		bne.s	locret_108C8
 		move.w	#1,($FFFFFE02).w
 
-locret_108C8:				; CODE XREF: ROM:000108BAj
-					; ROM:000108C0j
+locret_108C8:
 		rts
 
 ; ===========================================================================
@@ -23811,7 +23819,7 @@ Obj02_ControlsLock:
 		bsr.w	Tails_Animate
 		tst.b	($FFFFF7C8).w
 		bmi.s	loc_10CFC
-		jsr	TouchResponse
+		jsr	(TouchResponse).l
 
 loc_10CFC:
 		bsr.w	LoadTailsDynPLC
@@ -24004,7 +24012,7 @@ Obj02_MdNormal:				; DATA XREF: ROM:Obj02_Modeso
 		bsr.w	Tails_Move
 		bsr.w	Tails_Roll
 		bsr.w	Tails_LevelBoundaries
-		jsr	ObjectMove
+		jsr	(ObjectMove).l
 		bsr.w	AnglePos
 		bsr.w	Tails_SlopeRepel
 		rts
@@ -24014,7 +24022,7 @@ Obj02_MdJump:				; DATA XREF: ROM:00010D04o
 		bsr.w	Tails_JumpHeight
 		bsr.w	Tails_ChgJumpDir
 		bsr.w	Tails_LevelBoundaries
-		jsr	ObjectMoveAndFall
+		jsr	(ObjectMoveAndFall).l
 		btst	#6,status(a0)
 		beq.s	loc_10EC0
 		subi.w	#$28,y_vel(a0) ; '('
@@ -24030,7 +24038,7 @@ Obj02_MdRoll:				; DATA XREF: ROM:00010D06o
 		bsr.w	Tails_RollRepel
 		bsr.w	Tails_RollSpeed
 		bsr.w	Tails_LevelBoundaries
-		jsr	ObjectMove
+		jsr	(ObjectMove).l
 		bsr.w	AnglePos
 		bsr.w	Tails_SlopeRepel
 		rts
@@ -24040,7 +24048,7 @@ Obj02_MdJump2:				; DATA XREF: ROM:00010D08o
 		bsr.w	Tails_JumpHeight
 		bsr.w	Tails_ChgJumpDir
 		bsr.w	Tails_LevelBoundaries
-		jsr	ObjectMoveAndFall
+		jsr	(ObjectMoveAndFall).l
 		btst	#6,status(a0)
 		beq.s	loc_10F0A
 		subi.w	#$28,y_vel(a0) ; '('
@@ -24103,7 +24111,7 @@ loc_10F48:				; CODE XREF: Tails_Move+2Ej
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Tails_Balance:				; CODE XREF: Tails_Move+5Ej
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		cmpi.w	#$C,d1
 		blt.s	Tails_LookUp
 		cmpi.b	#3,next_tilt(a0)
@@ -25189,7 +25197,7 @@ loc_118AA:				; CODE XREF: Tails_ResetTailsOnFloor+26j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Obj02_Hurt:				; DATA XREF: ROM:Obj02_Indexo
-		jsr	ObjectMove
+		jsr	(ObjectMove).l
 		addi.w	#$30,y_vel(a0) ; '0'
 		btst	#6,status(a0)
 		beq.s	loc_118D8
@@ -25200,7 +25208,7 @@ loc_118D8:				; CODE XREF: ROM:000118D0j
 		bsr.w	Tails_LevelBoundaries
 		bsr.w	Tails_Animate
 		bsr.w	LoadTailsDynPLC
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -25229,10 +25237,10 @@ locret_1192A:				; CODE XREF: Tails_HurtStop+1Aj
 
 Obj02_Dead:				; DATA XREF: ROM:Obj02_Indexo
 		bsr.w	Tails_GameOver
-		jsr	ObjectMoveAndFall
+		jsr	(ObjectMoveAndFall).l
 		bsr.w	Tails_Animate
 		bsr.w	LoadTailsDynPLC
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -25699,7 +25707,7 @@ loc_11DE6:
 		lea	(Obj05_AniData).l,a1
 		bsr.w	Tails_Animate2
 		bsr.w	LoadTailsTailsDynPLC
-		jsr	DisplaySprite
+		jsr	(DisplaySprite).l
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj05_Animations:dc.b	0,  0		 ; 0
@@ -25741,7 +25749,7 @@ byte_11E54:	dc.b   2,$81,$82,$83,$84,$FF; 0	; DATA XREF: ROM:00011E28o
 
 KillTails:				; CODE XREF: Tails_LevelBoundaries+48j
 					; Tails_LevelBoundaries+52j ...
-		jmp	KillSonic
+		jmp	(KillSonic).l
 ; END OF FUNCTION CHUNK	FOR Tails_LevelBoundaries
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		align 4
@@ -25792,7 +25800,7 @@ loc_11ECC:				; CODE XREF: ROM:00011EACj
 
 Obj0A_Animate:				; DATA XREF: ROM:00011E74o
 		lea	(Ani_Obj0A).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 
 Obj0A_ChkWater:				; DATA XREF: ROM:00011E76o
 		move.w	($FFFFF646).w,d0
@@ -25820,27 +25828,27 @@ loc_11F14:				; CODE XREF: ROM:00011F0Ej
 		add.w	$30(a0),d0
 		move.w	d0,x_pos(a0)
 		bsr.s	Obj0A_ShowNumber
-		jsr	ObjectMove
+		jsr	(ObjectMove).l
 		tst.b	render_flags(a0)
 		bpl.s	loc_11F48
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_11F48:				; CODE XREF: ROM:00011F40j
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Obj0A_Display:				; CODE XREF: ROM:00011F06j
 					; ROM:00011F08j ...
 		bsr.s	Obj0A_ShowNumber
 		lea	(Ani_Obj0A).l,a1
-		jsr	AnimateSprite
-		jmp	DisplaySprite
+		jsr	(AnimateSprite).l
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Obj0A_Delete:				; DATA XREF: ROM:00011E7Ao
 					; ROM:00011E82o
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Obj0A_AirLeft:				; DATA XREF: ROM:00011E7Eo
@@ -25855,15 +25863,15 @@ Obj0A_AirLeft:				; DATA XREF: ROM:00011E7Eo
 
 loc_11F82:				; CODE XREF: ROM:00011F74j
 		lea	(Ani_Obj0A).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 		tst.b	render_flags(a0)
 		bpl.s	loc_11F9A
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_11F9A:				; CODE XREF: ROM:00011F6Ej
 					; ROM:00011F92j
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -25991,7 +25999,7 @@ loc_121D6:				; CODE XREF: ROM:000120F0j
 loc_121E4:				; CODE XREF: ROM:000121DAj
 		move.l	a0,-(sp)
 		lea	(MainCharacter).w,a0
-		jsr	ObjectMove
+		jsr	(ObjectMove).l
 		addi.w	#$10,y_vel(a0)
 		movea.l	(sp)+,a0
 		bra.s	loc_121FC
@@ -26012,7 +26020,7 @@ loc_1220C:				; CODE XREF: ROM:loc_121FAj
 		jsr	(RandomNumber).l
 		andi.w	#$F,d0
 		move.w	d0,$3A(a0)
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.w	locret_122DC
 		move.b	#$A,id(a1)
 		move.w	(MainCharacter+x_pos).w,x_pos(a1)
@@ -27602,7 +27610,7 @@ Obj79:					; DATA XREF: ROM:Obj_Indexo
 		move.b	routine(a0),d0
 		move.w	Obj79_Index(pc,d0.w),d1
 		jsr	Obj79_Index(pc,d1.w)
-		jmp	MarkObjGone
+		jmp	(MarkObjGone).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj79_Index:	dc.w Obj79_Init-Obj79_Index ; DATA XREF: ROM:Obj79_Indexo
 					; ROM:000134DEo ...
@@ -27831,7 +27839,7 @@ Obj7D_Main:				; DATA XREF: ROM:Obj7D_Indexo
 		move.b	$28(a0),d0
 		add.w	d0,d0
 		move.w	Obj7D_Points(pc,d0.w),d0
-		jsr	AddPoints
+		jsr	(AddPoints).l
 
 loc_13804:				; CODE XREF: ROM:00013798j
 					; ROM:000137A6j ...
@@ -27844,7 +27852,7 @@ loc_13804:				; CODE XREF: ROM:00013798j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_13818:				; CODE XREF: ROM:00013814j
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj7D_Points:	dc.w	 0, 1000,  100,	   1; 0
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
@@ -27857,12 +27865,12 @@ Obj7D_DelayDelete:			; DATA XREF: ROM:00013780o
 		sub.w	($FFFFF7DA).w,d0
 		cmpi.w	#$280,d0
 		bhi.s	loc_13844
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_13844:				; CODE XREF: ROM:0001382Aj
 					; ROM:0001383Cj
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Map_Obj7D:	dc.w word_13852-Map_Obj7D ; DATA XREF: ROM:000137B8o
 					; ROM:Map_Obj7Do ...
@@ -27952,7 +27960,7 @@ S1Obj47_Bump:				; CODE XREF: ROM:000138C8p
 
 loc_1394E:				; CODE XREF: S1Obj47_Bump+60j
 		moveq	#1,d0
-		jsr	AddPoints
+		jsr	(AddPoints).l
 		bsr.w	SingleObjLoad
 		bne.s	locret_13974
 		move.b	#$29,id(a1) ; ')'
@@ -28036,7 +28044,7 @@ loc_13A32:				; CODE XREF: ROM:00013A16j
 
 S1Obj64_Animate:			; DATA XREF: ROM:000139E0o
 		lea	(Ani_S1Obj64).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 		cmpi.b	#6,mapping_frame(a0)
 		bne.s	S1Obj64_ChkWater
 		move.b	#1,$2E(a0)
@@ -28093,24 +28101,24 @@ loc_13B0A:				; CODE XREF: ROM:00013AA2j
 		bsr.w	ObjectMove
 		tst.b	render_flags(a0)
 		bpl.s	loc_13B1A
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_13B1A:				; CODE XREF: ROM:00013B12j
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 S1Obj64_Display:			; CODE XREF: ROM:00013A7Aj
 					; DATA XREF: ROM:000139E4o
 		lea	(Ani_S1Obj64).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 		tst.b	render_flags(a0)
 		bpl.s	loc_13B38
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_13B38:				; CODE XREF: ROM:00013B30j
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 S1Obj64_Delete:				; DATA XREF: ROM:000139E6o
@@ -28200,7 +28208,7 @@ loc_13C28:				; CODE XREF: ROM:00013BBEj
 loc_13C44:				; CODE XREF: ROM:00013B60j
 					; ROM:00013BA8j ...
 		lea	(Ani_S1Obj64).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 
 loc_13C50:				; CODE XREF: ROM:00013B50j
 					; ROM:00013B58j
@@ -28353,7 +28361,7 @@ Obj03:					; DATA XREF: ROM:Obj_Indexo
 		jsr	Obj03_Index(pc,d1.w)
 		tst.w	(Debug_mode_flag).w
 		beq.w	MarkObjGone2
-		jmp	MarkObjGone
+		jmp	(MarkObjGone).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj03_Index:	dc.w Obj03_Init-Obj03_Index ; DATA XREF: ROM:Obj03_Indexo
 					; ROM:00013E4Ao ...
@@ -28660,7 +28668,7 @@ loc_14242:				; CODE XREF: ROM:0001423Aj
 
 loc_14248:				; CODE XREF: ROM:0001422Ej
 		lea	(off_1428A).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 
 loc_14254:				; CODE XREF: ROM:00014224j
 		tst.b	mapping_frame(a0)
@@ -28894,7 +28902,7 @@ loc_1446C:				; DATA XREF: ROM:Obj13_Indexo
 
 sub_144D4:				; CODE XREF: ROM:0001449Ap
 					; ROM:000144C0p
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	locret_14516
 		move.b	#$13,id(a1)
 		addq.b	#4,routine(a1)
@@ -29169,7 +29177,7 @@ loc_14986:				; CODE XREF: ROM:00014982j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1499A:				; CODE XREF: ROM:00014996j
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj06_Index:	dc.w Obj06_Init-Obj06_Index ; DATA XREF: ROM:Obj06_Indexo
 					; ROM:000149A2o
@@ -29705,7 +29713,7 @@ Map_obj14b:	incbin	"mappings/sprite/obj14_b.bin"
 
 j_ObjectMoveAndFall:				; CODE XREF: ROM:00014F36p
 					; ROM:00014F48p ...
-		jmp	ObjectMoveAndFall
+		jmp	(ObjectMoveAndFall).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		align 4
 ;----------------------------------------------------
@@ -29836,15 +29844,15 @@ word_15260:	dc.w 8			; DATA XREF: ROM:000151D8o
 		nop
 
 loc_152A4:				; CODE XREF: ROM:00015180j
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_152AA:				; CODE XREF: ROM:0001517Cj
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_ObjectMove_0:				; CODE XREF: ROM:Obj16_Movep
-		jmp	ObjectMove
+		jmp	(ObjectMove).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		align 4
 ;----------------------------------------------------
@@ -30085,16 +30093,16 @@ word_154AE:	dc.w 2			; DATA XREF: ROM:Map_Obj19o
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_154C0:				; CODE XREF: ROM:0001534Cj
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_154C6:				; CODE XREF: ROM:00015348j
 					; ROM:0001542Aj
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_ObjectMove_1:				; CODE XREF: ROM:loc_153ECp
-		jmp	ObjectMove
+		jmp	(ObjectMove).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		align 4
 ;----------------------------------------------------
@@ -30313,16 +30321,16 @@ word_15816:	dc.w $A			; DATA XREF: ROM:0001574Co
 
 loc_15868:				; CODE XREF: ROM:0001555Cj
 					; ROM:00015724j ...
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1586E:				; CODE XREF: ROM:000156F2j
-		jmp	DeleteObject
+		jmp	(DeleteObject).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_Adjust2PArtPointer_0:		; CODE XREF: ROM:000154F8p
 					; ROM:000156B4p
-		jmp	Adjust2PArtPointer
+		jmp	(Adjust2PArtPointer).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		align 4
 ;----------------------------------------------------
@@ -30350,7 +30358,7 @@ Obj4D_Init:				; DATA XREF: ROM:Obj4D_Indexo
 		move.b	#$10,y_radius(a0)
 		move.b	#$18,x_radius(a0)
 		bsr.w	j_ObjectMoveAndFall_0
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_158DC
 		add.w	d1,y_pos(a0)
@@ -30393,7 +30401,7 @@ locret_15920:				; CODE XREF: ROM:00015902j
 loc_15922:				; DATA XREF: ROM:000158FCo
 		bsr.w	sub_1596C
 		bsr.w	j_ObjectMoveAndFall_0
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		cmpi.w	#$FFF8,d1
 		blt.s	loc_15948
 		cmpi.w	#$C,d1
@@ -30524,16 +30532,16 @@ word_15B14:	dc.w 4			; DATA XREF: ROM:000159F4o
 		align 4
 
 loc_15B38:				; CODE XREF: ROM:000158F6j
-		jmp	MarkObjGone
+		jmp	(MarkObjGone).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_AnimateSprite_0:			; CODE XREF: ROM:000158F2p
-		jmp	AnimateSprite
+		jmp	(AnimateSprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_ObjectMoveAndFall_0:				; CODE XREF: ROM:000158C0p
 					; ROM:00015926p
-		jmp	ObjectMoveAndFall
+		jmp	(ObjectMoveAndFall).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		align 4
 ;----------------------------------------------------
@@ -30721,16 +30729,16 @@ word_15D84:	dc.w 1			; DATA XREF: ROM:00015D64o
 
 loc_15D90:				; CODE XREF: ROM:00015C18j
 					; ROM:00015C22j ...
-		jmp	MarkObjGone
+		jmp	(MarkObjGone).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_AnimateSprite_1:			; CODE XREF: ROM:00015C0Cp
 					; ROM:00015C54p
-		jmp	AnimateSprite
+		jmp	(AnimateSprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_ObjectMove_2:				; CODE XREF: ROM:00015C10p
-		jmp	ObjectMove
+		jmp	(ObjectMove).l
 		align 4
 
 ; ===========================================================================
@@ -30850,7 +30858,7 @@ Map_obj4F:	incbin	"mappings/sprite/obj4F.bin"
 		align 4
 
 loc_15EE8:				; CODE XREF: ROM:00015E3Aj
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 JmpTo_DeleteObject:
@@ -30858,15 +30866,15 @@ JmpTo_DeleteObject:
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_AnimateSprite_2:			; CODE XREF: ROM:00015E22p
-		jmp	AnimateSprite
+		jmp	(AnimateSprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_ObjectMoveAndFall_1:				; CODE XREF: ROM:00015DEAp
-		jmp	ObjectMoveAndFall
+		jmp	(ObjectMoveAndFall).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 j_ObjectMove_3:				; CODE XREF: ROM:loc_15E7Cp
-		jmp	ObjectMove
+		jmp	(ObjectMove).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		align 4
 ;----------------------------------------------------
@@ -31182,7 +31190,7 @@ Obj50_Routine08:			; DATA XREF: ROM:00015F1Eo
 
 
 sub_16228:				; CODE XREF: ROM:00016216p
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_16242
 		add.w	d1,y_pos(a0)
@@ -31632,7 +31640,7 @@ locret_16766:				; CODE XREF: ROM:0001670Cj
 
 loc_16768:				; CODE XREF: ROM:0001602Cj
 					; ROM:0001629Aj
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1676E:				; CODE XREF: ROM:0001600Cj
@@ -31958,7 +31966,7 @@ loc_16ADE:				; DATA XREF: ROM:Obj4A_Indexo
 		move.b	#$10,y_radius(a0)
 		move.b	#8,x_radius(a0)
 		bsr.w	j_ObjectMoveAndFall_3
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_16B3C
 		add.w	d1,y_pos(a0)
@@ -32024,7 +32032,7 @@ loc_16BAA:				; DATA XREF: ROM:00016B64o
 		beq.w	loc_16C76
 		bpl.w	locret_16C74
 		move.w	#$1E,$2C(a0)
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.s	loc_16C10
 		move.b	#$4A,id(a1) ; 'J'
 		move.b	#4,routine(a1)
@@ -32040,7 +32048,7 @@ loc_16BAA:				; DATA XREF: ROM:00016B64o
 		move.b	status(a0),status(a1)
 
 loc_16C10:				; CODE XREF: ROM:00016BC4j
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.s	locret_16C74
 		move.b	#$4A,id(a1) ; 'J'
 		move.b	#6,routine(a1)
@@ -32118,7 +32126,7 @@ word_16D26:	dc.w 1			; DATA XREF: ROM:00016CB0o
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_16D30:				; CODE XREF: ROM:00016ADAj
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_16D36:				; CODE XREF: ROM:00016AD6j
@@ -32534,7 +32542,7 @@ Obj4E_Init:				; DATA XREF: ROM:Obj4E_Indexo
 		move.b	#$10,y_radius(a0)
 		move.b	#8,x_radius(a0)
 		bsr.w	j_ObjectMoveAndFall_4
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_17238
 		add.w	d1,y_pos(a0)
@@ -32577,7 +32585,7 @@ locret_1727C:				; CODE XREF: ROM:0001725Ej
 loc_1727E:				; DATA XREF: ROM:00017258o
 		bsr.w	sub_172B6
 		bsr.w	j_ObjectMove_6
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		cmpi.w	#$FFF8,d1
 		blt.s	loc_1729E
 		cmpi.w	#$C,d1
@@ -33410,7 +33418,7 @@ loc_17C36:				; DATA XREF: ROM:00017C12o
 loc_17C58:				; CODE XREF: ROM:00017C52j
 		bsr.w	sub_17A6A
 		bsr.w	j_ObjectMoveAndFall_6
-		jsr	ObjHitFloor
+		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	loc_17C6E
 		add.w	d1,y_pos(a0)
@@ -33529,7 +33537,7 @@ loc_17D92:				; CODE XREF: sub_17D6A+1Aj
 
 
 sub_17D9A:				; CODE XREF: ROM:loc_17F98p
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	loc_17E0E
 		move.b	#$58,id(a1) ; 'X'
 		move.l	a0,$34(a1)
@@ -33551,7 +33559,7 @@ sub_17D9A:				; CODE XREF: ROM:loc_17F98p
 		move.w	#$16,$2A(a1)
 
 loc_17E0E:				; CODE XREF: sub_17D9A+6j
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	loc_17E82
 		move.b	#$58,id(a1) ; 'X'
 		move.l	a0,$34(a1)
@@ -33573,7 +33581,7 @@ loc_17E0E:				; CODE XREF: sub_17D9A+6j
 		move.w	#$4B,$2A(a1) ; 'K'
 
 loc_17E82:				; CODE XREF: sub_17D9A+7Aj
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	loc_17EF6
 		move.b	#$58,id(a1) ; 'X'
 		move.l	a0,$34(a1)
@@ -33595,7 +33603,7 @@ loc_17E82:				; CODE XREF: sub_17D9A+7Aj
 		move.w	#$30,$2A(a1) ; '0'
 
 loc_17EF6:				; CODE XREF: sub_17D9A+EEj
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	locret_17F52
 		move.b	#$58,id(a1) ; 'X'
 		move.l	a0,$34(a1)
@@ -33619,7 +33627,7 @@ locret_17F52:				; CODE XREF: sub_17D9A+162j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_17F54:				; DATA XREF: ROM:000182FEo
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	loc_17F98
 		move.b	#$58,id(a1) ; 'X'
 		move.l	a0,$34(a1)
@@ -33637,7 +33645,7 @@ loc_17F98:				; CODE XREF: ROM:00017F5Aj
 		subi.w	#8,$38(a0)
 		move.w	#$2A00,x_pos(a0)
 		move.w	#$2C0,y_pos(a0)
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	locret_17FF8
 		move.b	#$58,id(a1) ; 'X'
 		move.l	a0,$34(a1)
@@ -33746,7 +33754,7 @@ word_1818E:	dc.w 3			; DATA XREF: ROM:0001812Co
 
 loc_181A8:				; CODE XREF: ROM:000178B2j
 					; ROM:000178C0j ...
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_181AE:				; CODE XREF: ROM:00017A64j
@@ -34065,7 +34073,7 @@ word_185B0:	dc.w 4			; DATA XREF: ROM:0001856Ao
 
 loc_185D4:				; CODE XREF: ROM:000183C0j
 					; ROM:loc_18452j ...
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_185DA:				; CODE XREF: ROM:00018436j
@@ -34162,7 +34170,7 @@ Obj3D_Main:				; DATA XREF: ROM:Obj3D_Indexo
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_18D22:				; CODE XREF: ROM:00018D6Cj
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	loc_18D70
 
 loc_18D2A:				; CODE XREF: ROM:00018D20j
@@ -34192,12 +34200,12 @@ Obj3D_ShipMain:				; DATA XREF: ROM:00018D0Co
 		move.w	Obj3D_ShipIndex(pc,d0.w),d1
 		jsr	Obj3D_ShipIndex(pc,d1.w)
 		lea	(Ani_Eggman).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 		move.b	status(a0),d0
 		andi.b	#3,d0
 		andi.b	#$FC,render_flags(a0)
 		or.b	d0,render_flags(a0)
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj3D_ShipIndex:dc.w loc_18DC8-Obj3D_ShipIndex ; DATA XREF: ROM:Obj3D_ShipIndexo
 					; ROM:00018DBCo ...
@@ -34271,7 +34279,7 @@ BossDefeated:				; CODE XREF: ROM:00017956j
 		move.b	($FFFFFE0F).w,d0
 		andi.b	#7,d0
 		bne.s	locret_18EA0
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.s	locret_18EA0
 		move.b	#$3F,id(a1) ; '?'
 		move.w	x_pos(a0),x_pos(a1)
@@ -34324,7 +34332,7 @@ loc_18EC8:				; DATA XREF: ROM:00018DBCo
 		move.w	#0,x_vel(a0)
 		move.w	#0,y_vel(a0)
 		addq.b	#2,routine_secondary(a0)
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	loc_18F0E
 		move.b	#$48,id(a1) ; 'H'
 		move.w	$30(a0),x_pos(a1)
@@ -34538,12 +34546,12 @@ Obj3D_Display:				; CODE XREF: ROM:loc_19070j
 		move.w	y_pos(a1),y_pos(a0)
 		move.b	status(a1),status(a0)
 		lea	(Ani_Eggman).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 		move.b	status(a0),d0
 		andi.b	#3,d0
 		andi.b	#$FC,render_flags(a0)
 		or.b	d0,render_flags(a0)
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ;----------------------------------------------------
 ; Object 48 - the ball that swings on the GHZ boss
@@ -34578,7 +34586,7 @@ Obj48_Init:				; DATA XREF: ROM:Obj48_Indexo
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1912E:				; CODE XREF: ROM:00019190j
-		jsr	SingleObjLoad2
+		jsr	(SingleObjLoad2).l
 		bne.s	loc_19194
 		move.w	x_pos(a0),x_pos(a1)
 		move.w	y_pos(a0),y_pos(a1)
@@ -34650,14 +34658,14 @@ loc_19206:				; CODE XREF: ROM:000191F4j
 loc_19212:				; CODE XREF: ROM:0001920Cj
 		bsr.w	sub_19236
 		move.b	angle(a0),d0
-		jsr	loc_842E
-		jmp	DisplaySprite
+		jsr	(loc_842E).l
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_19226:				; DATA XREF: ROM:000190F8o
 		bsr.w	sub_19236
-		jsr	loc_83EA
-		jmp	DisplaySprite
+		jsr	(loc_83EA).l
+		jmp	(DisplaySprite).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -34694,7 +34702,7 @@ loc_19274:				; DATA XREF: ROM:000190FAo
 		move.b	#0,routine(a0)
 
 loc_1928A:				; CODE XREF: ROM:0001927Cj
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_19290:				; DATA XREF: ROM:000190FCo
@@ -34717,7 +34725,7 @@ loc_1929A:				; CODE XREF: ROM:00019296j
 
 loc_192C2:				; CODE XREF: ROM:000192A6j
 					; ROM:000192B6j
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Ani_Eggman:	dc.w byte_192E0-Ani_Eggman ; DATA XREF:	ROM:00018D96o
 					; ROM:000190C2o ...
@@ -34859,7 +34867,7 @@ Obj3E:					; DATA XREF: ROM:Obj_Indexo
 		sub.w	($FFFFF7DA).w,d0
 		cmpi.w	#$280,d0
 		bhi.s	loc_1950A
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1950A:				; CODE XREF: ROM:00019502j
@@ -34930,9 +34938,9 @@ Obj3E_Switched:				; DATA XREF: ROM:00019514o
 		move.w	#8,d2
 		move.w	#8,d3
 		move.w	x_pos(a0),d4
-		jsr	SolidObject
+		jsr	(SolidObject).l
 		lea	(Ani_Obj3E).l,a1
-		jsr	AnimateSprite
+		jsr	(AnimateSprite).l
 		move.w	$30(a0),y_pos(a0)
 		move.b	status(a0),d0
 		andi.b	#$18,d0
@@ -34957,7 +34965,7 @@ Obj3E_Explosion:			; DATA XREF: ROM:00019516o
 		moveq	#7,d0
 		and.b	($FFFFFE0F).w,d0
 		bne.s	loc_19660
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.s	loc_19660
 		move.b	#$3F,id(a1) ; '?'
 		move.w	x_pos(a0),x_pos(a1)
@@ -34990,7 +34998,7 @@ loc_19668:				; CODE XREF: ROM:00019664j
 		moveq	#$FFFFFFE4,d4
 
 loc_1968E:				; CODE XREF: ROM:000196B4j
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.s	locret_196B8
 		move.b	#$28,id(a1) ; '('
 		move.w	x_pos(a0),x_pos(a1)
@@ -35009,7 +35017,7 @@ Obj3E_Animals:				; DATA XREF: ROM:0001951Co
 		moveq	#7,d0
 		and.b	($FFFFFE0F).w,d0
 		bne.s	loc_196F8
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.s	loc_196F8
 		move.b	#$28,id(a1) ; '('
 		move.w	x_pos(a0),x_pos(a1)
@@ -35366,7 +35374,7 @@ HurtSonic:				; CODE XREF: ROM:0000C75Ep
 
 loc_19A10:
 		beq.w	Hurt_NoRings
-		jsr	SingleObjLoad
+		jsr	(SingleObjLoad).l
 		bne.s	HurtShield
 		move.b	#$37,id(a1) ; '7'
 		move.w	x_pos(a0),x_pos(a1)
@@ -35629,7 +35637,7 @@ loc_19C42:				; CODE XREF: S1SS_ShowLayout+11Cj
 		move.b	(a1)+,d1
 		subq.b	#1,d1
 		bmi.s	loc_19C9A
-		jsr	loc_D1CE
+		jsr	(loc_D1CE).l
 
 loc_19C9A:				; CODE XREF: S1SS_ShowLayout+C6j
 					; S1SS_ShowLayout+CCj ...
@@ -36324,8 +36332,8 @@ loc_1A430:				; CODE XREF: ROM:0001A420j
 		andi.w	#2,d0
 		move.w	Obj09_Modes(pc,d0.w),d1
 		jsr	Obj09_Modes(pc,d1.w)
-		jsr	LoadSonicDynPLC
-		jmp	DisplaySprite
+		jsr	(LoadSonicDynPLC).l
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj09_Modes:	dc.w Obj09_OnWall-Obj09_Modes ;	DATA XREF: ROM:Obj09_Modeso
 					; ROM:0001A456o
@@ -36347,12 +36355,12 @@ Obj09_InAir:				; DATA XREF: ROM:0001A456o
 Obj09_Display:				; CODE XREF: ROM:0001A464j
 		bsr.w	Obj09_ChkItems
 		bsr.w	Obj09_ChkItems2
-		jsr	ObjectMove
+		jsr	(ObjectMove).l
 		bsr.w	S1SS_FixCamera
 		move.w	($FFFFF780).w,d0
 		add.w	($FFFFF782).w,d0
 		move.w	d0,($FFFFF780).w
-		jsr	Sonic_Animate
+		jsr	(Sonic_Animate).l
 		rts
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
@@ -36574,10 +36582,10 @@ loc_1A64A:				; CODE XREF: ROM:0001A632j
 		move.w	($FFFFF780).w,d0
 		add.w	($FFFFF782).w,d0
 		move.w	d0,($FFFFF780).w
-		jsr	Sonic_Animate
-		jsr	LoadSonicDynPLC
+		jsr	(Sonic_Animate).l
+		jsr	(LoadSonicDynPLC).l
 		bsr.w	S1SS_FixCamera
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1A66C:				; DATA XREF: ROM:0001A3DAo
@@ -36586,10 +36594,10 @@ loc_1A66C:				; DATA XREF: ROM:0001A3DAo
 		move.b	#GameModeID_Level,(Game_Mode).w
 
 loc_1A678:				; CODE XREF: ROM:0001A670j
-		jsr	Sonic_Animate
-		jsr	LoadSonicDynPLC
+		jsr	(Sonic_Animate).l
+		jsr	(LoadSonicDynPLC).l
 		bsr.w	S1SS_FixCamera
-		jmp	DisplaySprite
+		jmp	(DisplaySprite).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -36749,7 +36757,7 @@ loc_1A7C4:				; CODE XREF: Obj09_ChkItems+2Cj
 		move.l	a1,4(a2)
 
 loc_1A7D8:				; CODE XREF: Obj09_ChkItems+44j
-		jsr	sub_A8DE
+		jsr	(sub_A8DE).l
 		cmpi.w	#$32,($FFFFFE20).w ; '2'
 		bcs.s	loc_1A7FC
 		bset	#0,($FFFFFE1B).w
@@ -37274,15 +37282,13 @@ AnimCue_CPZ:	dc.w 7
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; This seems to be a subroutine that would've shifted the background blocks
-; of Chemical Plant Zone once the player reached a certain X position,
-; lasting exactly two screens. This can also be found in the final at
-; $40200 in the ROM, with the only difference being its level ID, which
-; was updated to match Chemical Plant's final ID ($0D instead of 02)
+; An unused routine for Chemical Plant that shifts the select chunk blocks to
+; the left between camera X position $1940 and $1F80; this was meant to be
+; loaded from AniArt_Load, but is already dummied out in this build. It was
+; presumably some abandoned background effect
 ;
-; To see the effect for yourself, add a branch to it at the
-; start of LoadTilesAsYouMove and change $FFFF7500/$FFFF7D00 to
-; $FFFF0000/$FFFF0800 (to make it more visible)
+; Referred to internally as "efectmove", efect was seemingly the internal
+; name for animated stage artwork
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
@@ -37291,31 +37297,35 @@ AnimCue_CPZ:	dc.w 7
 ; sub_1AC1E:
 ShiftCPZBackground:
 		cmpi.b	#2,(Current_Zone).w	; is this Chemical Plant Zone?
-		beq.s	loc_1AC28		; if yes, branch
-
-locret_1AC26:
+		beq.s	.isCPZ			; if yes, branch
+; locret_1AC26:
+.endEffect:
 		rts
 ; ===========================================================================
-; this shifts all blocks of the chunks $EA-$ED and $FA-$FD one block to the
+; This shifts all blocks of the chunks $EA-$ED and $FA-$FD one block to the
 ; left and the last block in each row (chunk $ED/$FD) to the beginning
 ; i.e. rotates the blocks to the left by one
-
-loc_1AC28:
+;
+; Thing is, said chunks are completely blank, meaning this effectively goes
+; unseen even if it WAS used. Apparently Chemical Plant's chunks had a very
+; different arrangement earlier in development
+; loc_1AC28:
+.isCPZ:
 		move.w	(Camera_X_pos).w,d0
 		cmpi.w	#$1940,d0
-		bcs.s	locret_1AC26
+		bcs.s	.endEffect
 		cmpi.w	#$1F80,d0
-		bcc.s	locret_1AC26
+		bcc.s	.endEffect
 		subq.b	#1,($FFFFF721).w
-		bpl.s	locret_1AC26
+		bpl.s	.endEffect
 		move.b	#7,($FFFFF721).w
 		move.b	#1,($FFFFF720).w
-		lea	($FFFF7500).l,a1
+		lea	($FFFF0000+($EA*$80)).l,a1
 		bsr.s	sub_1AC58
-		lea	($FFFF7D00).l,a1
+		lea	($FFFF0000+($FA*$80)).l,a1
 
 sub_1AC58:
-		move.w	#7,d1
+		move.w	#8-1,d1
 
 loc_1AC5C:
 		move.w	(a1),d0
