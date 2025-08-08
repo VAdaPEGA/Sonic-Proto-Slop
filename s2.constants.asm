@@ -100,14 +100,50 @@ MusID_Ending:			equ ((MusPtr_Ending-MusicIndex)/4)+MusID__First		; $8B
 MusID_Boss:			equ ((MusPtr_Boss-MusicIndex)/4)+MusID__First		; $8C
 
 ; ---------------------------------------------------------------------------
+; Miscellaneous constants without dedicated pointers
+
+; LEVEL LAYOUTS
+levelrowsize:		equ 128		; maximum width of a level layout in chunks
+levelrowcount:		equ 32		; maximum height of a level layout in chunks
+
+; REDRAWING ROUTINES:
+; This ia used by stages that employ a more advanced redraw routine, basing it
+; off the various background positions other than just BG1; this is to stop tiles
+; from being accidentally overwritten
+
+; Note that internally, they were called Plane B, C, and D (A is the foreground
+; layer, Z was the unused effect seen in the TTS'90 demo)
+static1:		equ 0
+dynamic1:		equ 2
+dynamic2:		equ 4
+dynamic3:		equ 6
+
+; ---------------------------------------------------------------------------
 ; Main RAM
-Level_Layout:			equ $FFFF8000
+		pusho						; save options
+		opt	ae+					; enable auto evens
 
-Decomp_Buffer:			equ $FFFFAA00
+		rsset $FF0000|$FF000000
+				rs.b $8000
 
-Object_RAM:			equ $FFFFB000
+Level_Layout:			rs.b levelrowsize*levelrowcount	; level layout; each row is $80 bytes
+Level_Layout_End:		equ __rs
+
+Block_Table:			rs.w $C00
+Block_Table_End:		equ __rs
+
+TempArray_LayerDef:		rs.b $200		; used by some layer deformation routines
+Decomp_Buffer:			rs.b $200		; used by Nemesis as a temporary buffer before it is uploaded to VRAM
+
+Sprite_Input_Table:		rs.b $400
+Sprite_Input_Table_End:		equ __rs
+
+Object_RAM:			rs.b $2000
+Object_RAM_End:			equ __rs
+
 MainCharacter:			equ Object_RAM
 Sidekick:			equ Object_RAM+$40
+		popo						; restore options
 
 VDP_Command_Buffer:		equ $FFFFDC00
 VDP_Command_Buffer_Slot:	equ $FFFFDCFC
@@ -284,17 +320,3 @@ SFXToPlay3:			equ $C	; third (broken) sound queue
 ; Extended RAM constants (for routines that would convert data for STI's use)
 
 ConvertedChunksLoc:		equ $00FE0000
-
-; ---------------------------------------------------------------------------
-; Redrawing routine constants and macros
-
-; This and the macro are used by stages that employ a more advanced redraw
-; routine, basing it off the various background positions other than just
-; BG1; this is to stop tiles from being accidentally overwritten
-
-; Note that internally, they were called Plane B, C, and D (A is the foreground
-; layer, Z was the unused effect seen in the TTS'90 demo)
-static1:		equ 0
-dynamic1:		equ 2
-dynamic2:		equ 4
-dynamic3:		equ 6

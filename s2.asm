@@ -4015,16 +4015,16 @@ TitleScreen:				; CODE XREF: ROM:000003A0j
 		clr.b	(Water_fullscreen_flag).w
 		move.w	#$8C81,(a6)
 		bsr.w	ClearScreen
-		lea	($FFFFAC00).w,a1
+		lea	(Sprite_Input_Table).w,a1
 		moveq	#0,d0
-		move.w	#$FF,d1
+		move.w	#(Sprite_Input_Table_End-Sprite_Input_Table)/4-1,d1
 
 loc_3230:				; CODE XREF: ROM:00003232j
 		move.l	d0,(a1)+
 		dbf	d1,loc_3230
 		lea	(Object_RAM).w,a1
 		moveq	#0,d0
-		move.w	#$7FF,d1
+		move.w	#(Object_RAM_End-Object_RAM)/4-1,d1
 
 loc_3240:				; CODE XREF: ROM:00003242j
 		move.l	d0,(a1)+
@@ -4749,16 +4749,16 @@ loc_3BB0:
 		bsr.w	LoadPLC
 
 loc_3BB6:
-		lea	($FFFFAC00).w,a1
+		lea	(Sprite_Input_Table).w,a1
 		moveq	#0,d0
-		move.w	#$FF,d1
+		move.w	#(Sprite_Input_Table_End-Sprite_Input_Table)/4-1,d1
 
 loc_3BC0:
 		move.l	d0,(a1)+
 		dbf	d1,loc_3BC0
 		lea	(Object_RAM).w,a1
 		moveq	#0,d0
-		move.w	#$7FF,d1
+		move.w	#(Object_RAM_End-Object_RAM)/4-1,d1
 
 loc_3BD0:
 		move.l	d0,(a1)+
@@ -6130,7 +6130,7 @@ loc_507C:
 		bsr.w	RunPLC_ROM
 		lea	(Object_RAM+$2000).w,a1		; leftover RAM location from Sonic 1
 		moveq	#0,d0
-		move.w	#$7FF,d1
+		move.w	#((Object_RAM_End+$2000)-(Object_RAM+$2000))/4-1,d1
 
 loc_509C:
 		move.l	d0,(a1)+
@@ -6265,7 +6265,7 @@ loc_5214:
 		jsr	(PlaySound_Special).l
 		lea	(Object_RAM).w,a1
 		moveq	#0,d0
-		move.w	#$7FF,d1
+		move.w	#(Object_RAM_End-Object_RAM)/4-1,d1
 
 loc_5290:
 		move.l	d0,(a1)+
@@ -6527,7 +6527,7 @@ loc_568C:				; CODE XREF: S1SS_BgAnimate+16j
 		cmpi.w	#$C,d0
 		bne.s	loc_56B2
 		subq.w	#1,(Camera_BG3_X_pos).w
-		lea	($FFFFAB00).w,a3
+		lea	(Decomp_Buffer+$100).w,a3
 		move.l	#$18000,d2
 		moveq	#6,d1
 
@@ -6539,7 +6539,7 @@ loc_56A2:				; CODE XREF: S1SS_BgAnimate+8Cj
 		dbf	d1,loc_56A2
 
 loc_56B2:				; CODE XREF: S1SS_BgAnimate+6Ej
-		lea	($FFFFAB00).w,a3
+		lea	(Decomp_Buffer+$100).w,a3
 		lea	(byte_5701).l,a2
 
 loc_56BC:				; CODE XREF: S1SS_BgAnimate+68j
@@ -6782,7 +6782,7 @@ BgScroll_GHZ:				; DATA XREF: ROM:BgScroll_Indexo
 		clr.l	(Camera_BG_Y_pos).w
 		clr.l	(Camera_BG2_Y_pos).w
 		clr.l	(Camera_BG3_Y_pos).w
-		lea	($FFFFA800).w,a2
+		lea	(TempArray_LayerDef).w,a2
 		clr.l	(a2)+
 		clr.l	(a2)+
 		clr.l	(a2)+
@@ -6813,7 +6813,7 @@ BgScroll_EHZ:				; DATA XREF: ROM:BgScroll_Indexo
 		clr.l	(Camera_BG_Y_pos).w
 		clr.l	(Camera_BG2_Y_pos).w
 		clr.l	(Camera_BG3_Y_pos).w
-		lea	($FFFFA800).w,a2
+		lea	(TempArray_LayerDef).w,a2
 		clr.l	(a2)+
 		clr.l	(a2)+
 		clr.l	(a2)+
@@ -6856,7 +6856,7 @@ BgScroll_S1Ending:			; DATA XREF: ROM:BgScroll_Indexo
 		clr.l	(Camera_BG_Y_pos).w
 		clr.l	(Camera_BG2_Y_pos).w
 		clr.l	(Camera_BG3_Y_pos).w
-		lea	($FFFFA800).w,a2
+		lea	(TempArray_LayerDef).w,a2
 		clr.l	(a2)+
 		clr.l	(a2)+
 		clr.l	(a2)+
@@ -6966,11 +6966,11 @@ loc_5B9A:				; CODE XREF: ROM:00005B96j
 loc_5BAE:				; CODE XREF: ROM:00005BAAj
 		neg.w	d0
 		swap	d0
-		lea	($FFFFA800).w,a2
+		lea	(TempArray_LayerDef).w,a2
 		addi.l	#$10000,(a2)+
 		addi.l	#$C000,(a2)+
 		addi.l	#$8000,(a2)+
-		move.w	($FFFFA800).w,d0
+		move.w	(TempArray_LayerDef).w,d0
 		add.w	(Camera_BG3_X_pos).w,d0
 		neg.w	d0
 		move.w	#$1F,d1
@@ -6982,7 +6982,7 @@ loc_5BDA:				; CODE XREF: ROM:00005BDCj
 		dbf	d1,loc_5BDA
 
 loc_5BE0:				; CODE XREF: ROM:00005BD8j
-		move.w	($FFFFA804).w,d0
+		move.w	(TempArray_LayerDef+4).w,d0
 		add.w	(Camera_BG3_X_pos).w,d0
 		neg.w	d0
 		move.w	#$F,d1
@@ -6990,7 +6990,7 @@ loc_5BE0:				; CODE XREF: ROM:00005BD8j
 loc_5BEE:				; CODE XREF: ROM:00005BF0j
 		move.l	d0,(a1)+
 		dbf	d1,loc_5BEE
-		move.w	($FFFFA808).w,d0
+		move.w	(TempArray_LayerDef+8).w,d0
 		add.w	(Camera_BG3_X_pos).w,d0
 		neg.w	d0
 		move.w	#$F,d1
@@ -7073,11 +7073,11 @@ loc_5C94:				; CODE XREF: ROM:00005C90j
 loc_5CB6:				; CODE XREF: ROM:00005CB2j
 		neg.w	d0
 		swap	d0
-		lea	($FFFFA800).w,a2
+		lea	(TempArray_LayerDef).w,a2
 		addi.l	#$10000,(a2)+
 		addi.l	#$C000,(a2)+
 		addi.l	#$8000,(a2)+
-		move.w	($FFFFA800).w,d0
+		move.w	(TempArray_LayerDef).w,d0
 		add.w	(Camera_BG3_X_pos).w,d0
 		neg.w	d0
 		move.w	#$F,d1
@@ -7089,7 +7089,7 @@ loc_5CE2:				; CODE XREF: ROM:00005CE4j
 		dbf	d1,loc_5CE2
 
 loc_5CE8:				; CODE XREF: ROM:00005CE0j
-		move.w	($FFFFA804).w,d0
+		move.w	(TempArray_LayerDef+4).w,d0
 		add.w	(Camera_BG3_X_pos).w,d0
 		neg.w	d0
 		move.w	#7,d1
@@ -7097,7 +7097,7 @@ loc_5CE8:				; CODE XREF: ROM:00005CE0j
 loc_5CF6:				; CODE XREF: ROM:00005CF8j
 		move.l	d0,(a1)+
 		dbf	d1,loc_5CF6
-		move.w	($FFFFA808).w,d0
+		move.w	(TempArray_LayerDef+8).w,d0
 		add.w	(Camera_BG3_X_pos).w,d0
 		neg.w	d0
 		move.w	#7,d1
@@ -7178,7 +7178,7 @@ loc_5D98:				; CODE XREF: ROM:00005D94j
 loc_5DCC:				; CODE XREF: ROM:00005DC8j
 		neg.w	d0
 		swap	d0
-		move.w	($FFFFA800).w,d0
+		move.w	(TempArray_LayerDef).w,d0
 		add.w	($FFFFEE38).w,d0
 		neg.w	d0
 		move.w	#$F,d1
@@ -7190,7 +7190,7 @@ loc_5DE2:				; CODE XREF: ROM:00005DE4j
 		dbf	d1,loc_5DE2
 
 loc_5DE8:				; CODE XREF: ROM:00005DE0j
-		move.w	($FFFFA804).w,d0
+		move.w	(TempArray_LayerDef+4).w,d0
 		add.w	($FFFFEE38).w,d0
 		neg.w	d0
 		move.w	#7,d1
@@ -7198,7 +7198,7 @@ loc_5DE8:				; CODE XREF: ROM:00005DE0j
 loc_5DF6:				; CODE XREF: ROM:00005DF8j
 		move.l	d0,(a1)+
 		dbf	d1,loc_5DF6
-		move.w	($FFFFA808).w,d0
+		move.w	(TempArray_LayerDef+8).w,d0
 		add.w	($FFFFEE38).w,d0
 		neg.w	d0
 		move.w	#7,d1
@@ -7361,7 +7361,7 @@ Deform_Unk:				; unknown BG deform
 		move.b	d0,($FFFFEE56).w
 		clr.b	($FFFFEE52).w
 		clr.b	($FFFFEE54).w
-		lea	($FFFFA800).w,a1
+		lea	(TempArray_LayerDef).w,a1
 		move.w	(Camera_BG_X_pos).w,d0
 		neg.w	d0
 		move.w	#$12,d1
@@ -7376,7 +7376,7 @@ loc_6078:				; CODE XREF: ROM:0000607Aj
 loc_6088:				; CODE XREF: ROM:0000608Aj
 		move.w	d0,(a1)+
 		dbf	d1,loc_6088
-		lea	($FFFFA800).w,a2
+		lea	(TempArray_LayerDef).w,a2
 		move.w	(Camera_BG_Y_pos).w,d0
 		andi.w	#$3F0,d0
 		lsr.w	#3,d0
@@ -7433,10 +7433,10 @@ loc_60FA:				; CODE XREF: Deform_TitleScreen+58j
 		move.b	($FFFFFE0F).w,d1
 		andi.w	#7,d1
 		bne.s	loc_6110
-		subq.w	#1,($FFFFA800).w
+		subq.w	#1,(TempArray_LayerDef).w
 
 loc_6110:				; CODE XREF: Deform_TitleScreen+66j
-		move.w	($FFFFA800).w,d1
+		move.w	(TempArray_LayerDef).w,d1
 		andi.w	#$1F,d1
 		lea	(Deform_EHZ_Data).l,a2
 		lea	(a2,d1.w),a2
@@ -7540,7 +7540,7 @@ loc_620E:				; CODE XREF: Deform_TitleScreen+28j
 		move.b	($FFFFFE0F).w,d1
 		andi.w	#7,d1
 		bne.s	loc_621C
-		subq.w	#1,($FFFFA800).w
+		subq.w	#1,(TempArray_LayerDef).w
 
 loc_621C:				; CODE XREF: Deform_TitleScreen+172j
 		move.w	(Camera_BG_Y_pos).w,($FFFFF618).w
@@ -7582,7 +7582,7 @@ loc_627C:				; CODE XREF: sub_6264+1Aj
 		move.l	d0,(a1)+
 		dbf	d1,loc_627C
 		move.w	d0,d3
-		move.w	($FFFFA800).w,d1
+		move.w	(TempArray_LayerDef).w,d1
 		andi.w	#$1F,d1
 		lea	Deform_EHZ_Data(pc),a2
 		lea	(a2,d1.w),a2
@@ -7694,7 +7694,7 @@ Deform_HPZ:				; DATA XREF: ROM:Deform_Indexo
 		moveq	#6,d6
 		bsr.w	ScrollBlock2
 		move.w	(Camera_BG_Y_pos).w,($FFFFF618).w
-		lea	($FFFFA800).w,a1
+		lea	(TempArray_LayerDef).w,a1
 		move.w	(Camera_X_pos).w,d2
 		neg.w	d2
 		move.w	d2,d0
@@ -7716,7 +7716,7 @@ loc_637E:				; CODE XREF: ROM:00006380j
 		moveq	#0,d3
 		move.w	d2,d3
 		asr.w	#1,d3
-		lea	($FFFFA860).w,a2
+		lea	(TempArray_LayerDef+$60).w,a2
 		swap	d3
 		add.l	d0,d3
 		swap	d3
@@ -7758,7 +7758,7 @@ loc_63E0:				; CODE XREF: ROM:000063E2j
 loc_63F2:				; CODE XREF: ROM:000063F4j
 		move.w	d0,(a1)+
 		dbf	d1,loc_63F2
-		lea	($FFFFA800).w,a2
+		lea	(TempArray_LayerDef).w,a2
 		move.w	(Camera_BG_Y_pos).w,d0
 		move.w	d0,d2
 		andi.w	#$3F0,d0
@@ -8336,7 +8336,7 @@ locret_681E:				; CODE XREF: ScrollBlock6+1Aj
 		lea	(VDP_data_port).l,a6
 		lea	($FFFFEE52).w,a2
 		lea	(Camera_BG_X_pos).w,a3
-		lea	(Level_Layout+$80).w,a4
+		lea	(Level_Layout+levelrowsize).w,a4
 		move.w	#$6000,d2
 		bsr.w	sub_69B2
 		lea	($FFFFEE54).w,a2
@@ -8352,7 +8352,7 @@ LoadTilesAsYouMove:
 		; update the background
 		lea	($FFFFEEA2).w,a2
 		lea	($FFFFEE68).w,a3
-		lea	(Level_Layout+$80).w,a4
+		lea	(Level_Layout+levelrowsize).w,a4
 		move.w	#$6000,d2
 		bsr.w	sub_69B2
 		lea	($FFFFEEA4).w,a2
@@ -8861,7 +8861,7 @@ loc_6D18:				; CODE XREF: sub_6D00:loc_6D48j
 		move.w	(a0),d3
 		andi.w	#$3FF,d3
 		lsl.w	#3,d3
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		adda.w	d3,a1
 		move.l	d1,d0
 		bsr.w	sub_6F70
@@ -8884,7 +8884,7 @@ loc_6D4E:				; CODE XREF: sub_6D00+16j
 		move.w	(a0),d3
 		andi.w	#$3FF,d3
 		lsl.w	#3,d3
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		adda.w	d3,a1
 		move.l	d1,d0
 		bsr.w	sub_6FF6
@@ -8947,7 +8947,7 @@ loc_6DB2:				; CODE XREF: sub_6D90:loc_6DE4j
 		move.w	(a0),d3
 		andi.w	#$3FF,d3
 		lsl.w	#3,d3
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		adda.w	d3,a1
 		bsr.w	sub_6ED0
 		addq.w	#2,a0
@@ -9003,7 +9003,7 @@ loc_6E24:				; CODE XREF: sub_6D90:loc_6E56j
 		move.w	(a0),d3
 		andi.w	#$3FF,d3
 		lsl.w	#3,d3
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		adda.w	d3,a1
 		bsr.w	sub_6F32
 		addq.w	#2,a0
@@ -9033,7 +9033,7 @@ loc_6E60:				; CODE XREF: sub_6D90:loc_6E92j
 		move.w	(a0),d3
 		andi.w	#$3FF,d3
 		lsl.w	#3,d3
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		adda.w	d3,a1
 		bsr.w	sub_6F32
 		addq.w	#2,a0
@@ -9293,7 +9293,7 @@ sub_7040:				; CODE XREF: sub_6B7C+126p
 					; sub_6B7C+162p
 		add.w	(a3),d5
 		add.w	4(a3),d4
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		move.w	d4,d3
 		add.w	d3,d3
 		andi.w	#$F00,d3
@@ -9417,7 +9417,7 @@ loc_711E:
 		move.w	#$4000,d2
 		bsr.s	LoadTilesFromStart2
 		lea	(Camera_BG_X_pos).w,a3
-		lea	(Level_Layout+$80).w,a4
+		lea	(Level_Layout+levelrowsize).w,a4
 		move.w	#$6000,d2
 		tst.b	(Current_Zone).w
 		beq.w	DrawBackground_GHZ
@@ -9610,15 +9610,15 @@ MainLevelLoadBlock:
 ; its blocks compressed in Enigma up to a certain point
 ; MainLevelLoadBlock_Skip16Convert:
 .enigmaBlocks:
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		move.w	#0,d0
 		bsr.w	EniDec
 		bra.s	loc_72C2
 ; ---------------------------------------------------------------------------
 ; MainLevelLoadBlock_Convert16:
 .uncompressedBlocks:
-		lea	($FFFF9000).w,a1
-		move.w	#$BFF,d2
+		lea	(Block_Table).w,a1
+		move.w	#(Block_Table_End-Block_Table)/2-1,d2
 ; MainLevelLoadBlock_ConvertLoop:
 .uncompressedLoop:
 		move.w	(a0)+,d0
@@ -9637,7 +9637,7 @@ MainLevelLoadBlock:
 loc_72C2:
 		cmpi.b	#5,(Current_Zone).w
 		bne.s	.loadChunks
-		lea	($FFFF9980).w,a1
+		lea	(Block_Table+$980).w,a1
 		lea	(Map16_HTZ).l,a0
 		move.w	#$3FF,d2
 ; loc_72D8:
@@ -9736,7 +9736,7 @@ locret_7382:
 
 LevelLayoutLoad:
 		lea	(Level_Layout).w,a3
-		move.w	#$3FF,d1
+		move.w	#(Level_Layout_End-Level_Layout)/4-1,d1
 		moveq	#0,d0
 
 loc_738E:
@@ -9744,10 +9744,10 @@ loc_738E:
 		dbf	d1,loc_738E		; fill $8000-$8FFF with 0
 
 		; interlace the foreground and background data for every row
-		lea	(Level_Layout).w,a3	; load foreground into RAM
+		lea	(Level_Layout).w,a3
 		moveq	#0,d1
 		bsr.w	LevelLayoutLoad2
-		lea	(Level_Layout+$80).w,a3	; load background into RAM
+		lea	(Level_Layout+levelrowsize).w,a3
 		moveq	#2,d1
 
 LevelLayoutLoad2:
@@ -9773,7 +9773,7 @@ LevelLayoutLoad2:
 		move.l	d1,d5
 		addq.l	#1,d5
 		moveq	#0,d3
-		move.w	#$80,d3		; size of each row in memory (128 chunks)
+		move.w	#levelrowsize,d3	; size of each row in memory (128 chunks)
 		divu.w	d5,d3		; repeat each 'source row' until the 'destination row' is filled
 		subq.w	#1,d3
 
@@ -9791,7 +9791,7 @@ loc_73E6:
 		movea.l	(sp)+,a1
 		dbf	d4,loc_73E2
 		lea	(a1,d5.w),a1
-		lea	$100(a3),a3
+		lea	levelrowsize*2(a3),a3
 		dbf	d2,loc_73DE
 		rts
 ; End of function LevelLayoutLoad
@@ -9844,7 +9844,7 @@ loc_7440:
 
 loc_7456:
 		dbf	d0,loc_742A	; load 1 row
-		lea	$200(a3),a3	; do next row
+		lea	levelrowsize*4(a3),a3	; do next row
 		dbf	d2,loc_7426	; repeat for number of rows
 		rts
 ; End of function LevelLayoutLoad_GHZ
@@ -17166,7 +17166,7 @@ ObjectMove:
 
 
 DisplaySprite:
-		lea	($FFFFAC00).w,a1
+		lea	(Sprite_Input_Table).w,a1
 		move.w	priority(a0),d0
 		lsr.w	#1,d0
 		andi.w	#$380,d0
@@ -17189,7 +17189,7 @@ locret_CE20:
 
 ; DisplayA1Sprite:
 DisplaySprite2:
-		lea	($FFFFAC00).w,a2
+		lea	(Sprite_Input_Table).w,a2
 		move.w	priority(a1),d0
 		lsr.w	#1,d0
 		andi.w	#$380,d0
@@ -17213,7 +17213,7 @@ locret_CE3E:
 
 ; DisplaySprite_Param:
 DisplaySprite3:
-		lea	($FFFFAC00).w,a1
+		lea	(Sprite_Input_Table).w,a1
 		lsr.w	#1,d0
 		andi.w	#$380,d0
 		adda.w	d0,a1
@@ -17473,7 +17473,7 @@ BuildSprites:
 		bsr.w	BuildRings
 
 loc_D026:				; CODE XREF: BuildSprites+14j
-		lea	($FFFFAC00).w,a4
+		lea	(Sprite_Input_Table).w,a4
 		moveq	#7,d7
 
 loc_D02C:				; CODE XREF: BuildSprites+FAj
@@ -17845,7 +17845,7 @@ BuildSprites_2p:			; CODE XREF: BuildSprites+4j
 		bsr.w	BuildSprites2_2p
 
 loc_D332:				; CODE XREF: BuildSprites+320j
-		lea	($FFFFAC00).w,a4
+		lea	(Sprite_Input_Table).w,a4
 		moveq	#7,d7
 
 loc_D338:				; CODE XREF: BuildSprites+408j
@@ -17970,7 +17970,7 @@ loc_D442:				; CODE XREF: BuildSprites+41Cj
 		bsr.w	sub_DACA
 
 loc_D454:				; CODE XREF: BuildSprites+442j
-		lea	($FFFFAC00).w,a4
+		lea	(Sprite_Input_Table).w,a4
 		moveq	#7,d7
 
 loc_D45A:				; CODE XREF: BuildSprites+520j
@@ -37385,7 +37385,7 @@ LoadAnimatedBlocks:
 		lea	AnimPatMaps(pc,d0.w),a0
 		tst.w	(a0)
 		beq.s	locret_1AD1A
-		lea	($FFFF9000).w,a1
+		lea	(Block_Table).w,a1
 		adda.w	(a0)+,a1
 		move.w	(a0)+,d1
 		tst.w	(Two_player_mode).w
