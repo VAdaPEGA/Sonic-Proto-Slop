@@ -3,9 +3,9 @@
 
 *.lst
 
-s2built.bin
+SPS_Build.bin
 
-s2built.prev.bin
+SPS_Build.prev.bin
 
 _compile/
 
