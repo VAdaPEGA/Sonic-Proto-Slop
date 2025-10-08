@@ -29060,17 +29060,17 @@ Obj06_Main:
 		move.w	x_pos(a1),d0	
 		sub.w	x_pos(a0),d0	; get X position difference
 		tst.w	x_vel(a1)	; check speed
-		bmi.s	@EnterFromLeft
-		cmpi.w	#-192,d0
+		bmi.s	@EnterFromRight
+		cmpi.w	#-(192-32),d0
 		bgt.s	@DoNothing
 		cmpi.w	#-(192+16),d0
-		blt.s	@DoNothing
-		bra.s	@CheckYPosition
+		bge.s	@CheckYPosition
+		rts
 ; ----------------------------------------------------
-	@EnterFromLeft:				
-		cmpi.w	#192,d0
+	@EnterFromRight:				
+		cmpi.w	#(192-32),d0
 		blt.s	@DoNothing
-		cmpi.w	#192+16,d0
+		cmpi.w	#(192+16),d0
 		bgt.s	@DoNothing
 	@CheckYPosition:
 		move.w	y_pos(a1),d1
@@ -29085,14 +29085,14 @@ Obj06_Main:
 		move.w	x_pos(a1),d0
 		sub.w	x_pos(a0),d0
 		tst.w	x_vel(a1)
-		bmi.s	@MovingLeft
+		bmi.s	@EnterFromRightCorkscrew
 		cmpi.w	#-(192-16),d0
 		bgt.s	@DoNothing
 		cmpi.w	#-192,d0
 		blt.s	@DoNothing
 		bra.s	@CheckYPosition
 ; ----------------------------------------------------
-	@MovingLeft:	
+	@EnterFromRightCorkscrew:	
 		cmpi.w	#(192-16),d0
 		blt.s	@DoNothing
 		cmpi.w	#192,d0
@@ -29105,7 +29105,7 @@ loc_14A56:
 		bpl.s	loc_14A5E
 		neg.w	d0
 loc_14A5E:
-		cmpi.w	#$600,d0
+		cmpi.w	#$480,d0
 		bcs.s	loc_14A80
 		btst	#PlayerStatusBitAir,status(a1)
 		bne.s	loc_14A80
