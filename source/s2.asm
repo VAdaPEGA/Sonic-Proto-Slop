@@ -22221,7 +22221,12 @@ loc_FF44:
 		bset	#0,status(a0)
 		bne.s	loc_FF58
 		bclr	#5,status(a0)
-		move.b	#1,prev_anim(a0)
+		cmpi.b	#$D,anim(a0)
+		bne.s	@NotSkid
+		move.b	#$13,anim(a0)
+		bra.s	loc_FF58
+		@NotSkid:
+		move.b	#$12,anim(a0)
 
 loc_FF58:
 		sub.w	d5,d0
@@ -22233,6 +22238,16 @@ loc_FF58:
 
 loc_FF64:
 		move.w	d0,ground_speed(a0)
+		cmpi.b	#$D,anim(a0)
+		bne.s	@NotSkid
+		move.b	#$14,anim(a0)
+		@NotSkid:
+		cmpi.b	#$12,anim(a0)
+		blo.s	@ResetWalk
+		cmpi.b	#$14,anim(a0)
+		bgt.s	@ResetWalk
+		rts
+		@ResetWalk:
 		move.b	#0,anim(a0)
 		rts
 ; ---------------------------------------------------------------------------
@@ -22269,7 +22284,12 @@ Sonic_MoveRight:
 		bclr	#0,status(a0)
 		beq.s	loc_FFC2
 		bclr	#5,status(a0)
-		move.b	#1,prev_anim(a0)
+		cmpi.b	#$D,anim(a0)
+		bne.s	@NotSkid
+		move.b	#$13,anim(a0)
+		bra.s	loc_FFC2
+		@NotSkid:
+		move.b	#$12,anim(a0)
 
 loc_FFC2:
 		add.w	d5,d0
@@ -22279,6 +22299,16 @@ loc_FFC2:
 
 loc_FFCA:
 		move.w	d0,ground_speed(a0)
+		cmpi.b	#$D,anim(a0)
+		bne.s	@NotSkid
+		move.b	#$14,anim(a0)
+		@NotSkid:
+		cmpi.b	#$12,anim(a0)
+		blo.s	@ResetWalk
+		cmpi.b	#$14,anim(a0)
+		bgt.s	@ResetWalk
+		rts
+		@ResetWalk:
 		move.b	#0,anim(a0)
 		rts
 ; ---------------------------------------------------------------------------
@@ -23381,18 +23411,25 @@ loc_1098C:
 		neg.w	d2
 
 loc_109B0:
-		lea	(SonicAni_Run).l,a1
-		cmpi.w	#$600,d2
-		bcc.s	loc_109C2
 		lea	(SonicAni_Walk).l,a1
-
-loc_109C2:
+		cmpi.w	#$580,d2
+		blo.s	@walk
+		lea	(SonicAni_Run).l,a1
+	@walk:
 		move.b	d0,d1
 		lsr.b	#1,d1
 		add.b	d1,d0
 		add.b	d0,d0
 		add.b	d0,d0
 		move.b	d0,d3
+
+		cmpi.w	#$600,d2	; check for speed (full running speed)
+		blo.s	@NoOffset
+		addq.b	#4,d3		; next set of running sprites
+		cmpi.w	#$700,d2	; check for speed (speedshoes)
+		blo.s	@NoOffset
+		addq.b	#4,d3		; next set of running sprites
+	@NoOffset:
 		neg.w	d2
 		addi.w	#$800,d2
 		bpl.s	loc_109D8
@@ -23403,6 +23440,7 @@ loc_109D8:
 		lsr.w	#1,d2
 		move.b	d2,anim_frame_duration(a0)
 		bsr.w	SonicAnimate_Do2
+
 		add.b	d3,mapping_frame(a0)
 		rts
 ; ===========================================================================
@@ -23493,7 +23531,7 @@ loc_10A98:
 ; Animation script - Sonic
 ; ---------------------------------------------------------------------------
 SonicAniData:	dc.w SonicAni_Walk-SonicAniData
-		dc.w SonicAni_Run-SonicAniData
+		dc.w SonicAni_SkidToWalk-SonicAniData
 		dc.w SonicAni_Roll-SonicAniData
 		dc.w SonicAni_Roll2-SonicAniData
 		dc.w SonicAni_Push-SonicAniData
@@ -23510,9 +23548,9 @@ SonicAniData:	dc.w SonicAni_Walk-SonicAniData
 		dc.w SonicAni_Float2-SonicAniData
 		dc.w SonicAni_10-SonicAniData
 		dc.w SonicAni_S1LZHang-SonicAniData
-		dc.w SonicAni_Unused12-SonicAniData
-		dc.w SonicAni_Unused13-SonicAniData
-		dc.w SonicAni_Unused14-SonicAniData
+		dc.w SonicAni_TurnAround-SonicAniData
+		dc.w SonicAni_SkidToWalk-SonicAniData
+		dc.w SonicAni_SkidToWalk2-SonicAniData
 		dc.w SonicAni_Bubble-SonicAniData
 		dc.w SonicAni_Death1-SonicAniData
 		dc.w SonicAni_Drown-SonicAniData
@@ -23523,39 +23561,69 @@ SonicAniData:	dc.w SonicAni_Walk-SonicAniData
 		dc.w SonicAni_1C-SonicAniData
 		dc.w SonicAni_Float3-SonicAniData
 		dc.w SonicAni_1E-SonicAniData
-SonicAni_Walk:		dc.b $FF,$10,$11,$12,$13,$14,$15,$16,$17, $C, $D, $E, $F,$FF
-SonicAni_Run:		dc.b $FF,$3C,$3D,$3E,$3F,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-SonicAni_Roll:		dc.b $FE,$6C,$70,$6D,$70,$6E,$70,$6F,$70,$FF
-SonicAni_Roll2:		dc.b $FE,$6C,$70,$6D,$70,$6E,$70,$6F,$70,$FF
-SonicAni_Push:		dc.b $FD,$77,$78,$79,$7A,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-SonicAni_Wait:		dc.b   7,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
-			dc.b   1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2
-			dc.b   3,  3,  3,  4,  4,  5,  5,$FE,  4
-SonicAni_Balance:	dc.b	7,$89,$8A,$FF
-SonicAni_LookUp:	dc.b   5,  6,  7,$FE,  1
-SonicAni_Duck:		dc.b   5,$7F,$80,$FE,  1
-SonicAni_Spindash:	dc.b	 0,$71,$72,$71,$73,$71,$74,$71,$75,$71,$76,$71,$FF
-SonicAni_WallRecoil1:	dc.b $3F,$82,$FF
-SonicAni_WallRecoil2:	dc.b   7, 8, 8, 9,$FD,	5
-SonicAni_0C:		dc.b   7,  9,$FD,  5
-SonicAni_Stop:		dc.b   3,$81,$82,$83,$84,$85,$86,$87,$88,$FE,  2
-SonicAni_Float1:	dc.b   7,$94,$96,$FF
-SonicAni_Float2:	dc.b   7,$91,$92,$93,$94,$95,$FF
-SonicAni_10:		dc.b $2F,$7E,$FD,  0
-SonicAni_S1LZHang:	dc.b	 5,$8F,$90,$FF
-SonicAni_Unused12:	dc.b	$F,$43,$43,$43,$FE,  1
-SonicAni_Unused13:	dc.b	$F,$43,$44,$FE,	 1
-SonicAni_Unused14:	dc.b $3F,$49,$FF
-SonicAni_Bubble:	dc.b  $B,$97,$97,$12,$13,$FD,  0
-SonicAni_Death1:	dc.b $20,$9A,$FF
-SonicAni_Drown:		dc.b $20,$99,$FF
-SonicAni_Death2:	dc.b $20,$98,$FF
-SonicAni_Unused19:	dc.b	 3,$4E,$4F,$50,$51,$52,	 0,$FE,	 1
-SonicAni_Hurt:		dc.b $40,$8D,$FF
-SonicAni_S1LZSlide:	dc.b	  9,$8D,$8E,$FF
-SonicAni_1C:		dc.b $77,  0,$FD,  0
-SonicAni_Float3:	dc.b   3,$91,$92,$93,$94,$95,$FF
-SonicAni_1E:		dc.b   3,$3C,$FD,  0
+SonicAni_Walk:		dc.b 	$FF
+			dc.b 	$10,$11,$12,$13,$14,$15,$16,$17, $C, $D, $E, $F, afEnd
+SonicAni_Run:		dc.b 	$FF
+			dc.b 	$3C,$3D,$3E,$3F,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd, afEnd
+SonicAni_SkidToWalk:	dc.b	1
+			dc.b	$85,$85,$86,$87, afChange,  0
+SonicAni_Roll:		dc.b 	$FE
+			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70,afEnd
+SonicAni_Roll2:		dc.b 	$FE
+			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70,afEnd
+SonicAni_Push:		dc.b 	$FD,$77,$78,$79,$7A,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd
+SonicAni_Wait:		dc.b	7
+			dc.b	1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
+			dc.b	1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2
+			dc.b	3,  3,  3,  4,  4,  5,  5, afBack,  4
+SonicAni_Balance:	dc.b	7 
+			dc.b	$89, $8A,afEnd
+SonicAni_LookUp:	dc.b	5
+			dc.b	6, 7, afBack,  1
+SonicAni_Duck:		dc.b	5,$7F,$80,$FE,  1
+SonicAni_Spindash:	dc.b	0,$71,$72,$71,$73,$71,$74,$71,$75,$71,$76,$71,$FF
+SonicAni_WallRecoil1:	dc.b	$3F
+			dc.b	$82, afEnd
+SonicAni_WallRecoil2:	dc.b	7
+			dc.b	8, 8, 9, afChange, 5 ; get up from Bonk
+SonicAni_0C:		dc.b	7
+			dc.b	9, afChange,  5	; get up
+SonicAni_Stop:		dc.b	4
+			dc.b	$81,$82,$83,$84, afBack,  2
+SonicAni_Float1:	dc.b	7
+			dc.b	$94,$96,afEnd
+SonicAni_Float2:	dc.b	7
+			dc.b	$91,$92,$93,$94,$95,afEnd
+SonicAni_10:		dc.b	$2F
+			dc.b	$7E, afChange,  0	; Spring up
+SonicAni_S1LZHang:	dc.b	5
+			dc.b	$8F,$90,afEnd
+SonicAni_TurnAround:	dc.b	1
+			dc.b	$B, $A, afChange, 0	; Turning around
+SonicAni_SkidToWalk2:	dc.b	1
+			dc.b	$87, $88, afChange, 0
+SonicAni_Unused14:	dc.b	$3F
+			dc.b	$49,afEnd
+SonicAni_Bubble:	dc.b	$B
+			dc.b	$97,$97,$12,$13,$FD,  0
+SonicAni_Death1:	dc.b	$20
+			dc.b	$9A,$FF
+SonicAni_Drown:		dc.b	$20
+			dc.b	$99,$FF
+SonicAni_Death2:	dc.b	$20
+			dc.b	$98,$FF
+SonicAni_Unused19:	dc.b	3
+			dc.b	$4E,$4F,$50,$51,$52,	 0,$FE,	 1
+SonicAni_Hurt:		dc.b	$40
+			dc.b	$8D,$FF
+SonicAni_S1LZSlide:	dc.b	9
+			dc.b	$8D,$8E,$FF
+SonicAni_1C:		dc.b	$77
+			dc.b	0,$FD,  0
+SonicAni_Float3:	dc.b	3
+			dc.b	$91,$92,$93,$94,$95,$FF
+SonicAni_1E:		dc.b	3
+			dc.b	$3C,$FD,  0
 	even
 
 ; ---------------------------------------------------------------------------

@@ -126,6 +126,14 @@ SFXToPlay3:			equ $C	; third (broken) sound queue
 ConvertedChunksLoc:		equ $00FE0000
 ; ---------------------------------------------------------------------------
 ASCII_Linebreak:		equ $0D0A
+; ---------------------------------------------------------------------------
+; Animation flags
+afEnd:		equ $FF	; return to beginning of animation
+afBack:		equ $FE	; go back (specified number) bytes
+afChange:	equ $FD	; run specified animation
+afRoutine:	equ $FC	; increment routine counter
+afReset:	equ $FB	; reset animation and 2nd object routine counter
+af2ndRoutine:	equ $FA	; increment 2nd routine counter
 ; ===========================================================================
 ; These constants will be replaced by an automated system for ease of modification
 ; see macros
