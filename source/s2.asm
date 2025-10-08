@@ -22241,10 +22241,13 @@ loc_FF64:
 		cmpi.b	#$D,anim(a0)
 		bne.s	@NotSkid
 		move.b	#$14,anim(a0)
+		cmpi.w	#-$580,d0
+		bhi.s	@NotSkid
+		move.b	#$15,anim(a0)
 		@NotSkid:
 		cmpi.b	#$12,anim(a0)
 		blo.s	@ResetWalk
-		cmpi.b	#$14,anim(a0)
+		cmpi.b	#$15,anim(a0)
 		bgt.s	@ResetWalk
 		rts
 		@ResetWalk:
@@ -22302,10 +22305,13 @@ loc_FFCA:
 		cmpi.b	#$D,anim(a0)
 		bne.s	@NotSkid
 		move.b	#$14,anim(a0)
+		cmpi.w	#$580,d0
+		blo.s	@NotSkid
+		move.b	#$15,anim(a0)
 		@NotSkid:
 		cmpi.b	#$12,anim(a0)
 		blo.s	@ResetWalk
-		cmpi.b	#$14,anim(a0)
+		cmpi.b	#$15,anim(a0)
 		bgt.s	@ResetWalk
 		rts
 		@ResetWalk:
@@ -23529,6 +23535,7 @@ loc_10A98:
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Animation script - Sonic
+; TO DO : AUTOMATE PROCESS (This is BAD)
 ; ---------------------------------------------------------------------------
 SonicAniData:	dc.w SonicAni_Walk-SonicAniData
 		dc.w SonicAni_SkidToWalk-SonicAniData
@@ -23548,14 +23555,14 @@ SonicAniData:	dc.w SonicAni_Walk-SonicAniData
 		dc.w SonicAni_Float2-SonicAniData
 		dc.w SonicAni_10-SonicAniData
 		dc.w SonicAni_S1LZHang-SonicAniData
-		dc.w SonicAni_TurnAround-SonicAniData
-		dc.w SonicAni_SkidToWalk-SonicAniData
-		dc.w SonicAni_SkidToWalk2-SonicAniData
-		dc.w SonicAni_Bubble-SonicAniData
+		dc.w SonicAni_TurnAround-SonicAniData	; 12
+		dc.w SonicAni_SkidToWalk-SonicAniData	; 13
+		dc.w SonicAni_SkidToWalk2-SonicAniData	; 14
+		dc.w SonicAni_SkidToWalk3-SonicAniData	; 15
 		dc.w SonicAni_Death1-SonicAniData
 		dc.w SonicAni_Drown-SonicAniData
 		dc.w SonicAni_Death2-SonicAniData
-		dc.w SonicAni_Unused19-SonicAniData
+		dc.w SonicAni_Bubble-SonicAniData	; 19
 		dc.w SonicAni_Hurt-SonicAniData
 		dc.w SonicAni_S1LZSlide-SonicAniData
 		dc.w SonicAni_1C-SonicAniData
@@ -23564,14 +23571,17 @@ SonicAniData:	dc.w SonicAni_Walk-SonicAniData
 SonicAni_Walk:		dc.b 	$FF
 			dc.b 	$10,$11,$12,$13,$14,$15,$16,$17, $C, $D, $E, $F, afEnd
 SonicAni_Run:		dc.b 	$FF
-			dc.b 	$3C,$3D,$3E,$3F,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd, afEnd
+			dc.b 	$3C,$3D,$3E,$3F,$3C,$3D,$3E,$3F
+			dc.b	afEnd, afEnd, afEnd, afEnd, afEnd
 SonicAni_SkidToWalk:	dc.b	1
-			dc.b	$85,$85,$86,$87, afChange,  0
+			dc.b	$85,$86,$87, afChange, 0
 SonicAni_Roll:		dc.b 	$FE
-			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70,afEnd
+			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70, afEnd
 SonicAni_Roll2:		dc.b 	$FE
-			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70,afEnd
-SonicAni_Push:		dc.b 	$FD,$77,$78,$79,$7A,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd,afEnd
+			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70, afEnd
+SonicAni_Push:		dc.b 	$FD
+			dc.b	$77,$78,$79,$7A,$77,$78,$79,$7A
+			dc.b	afEnd, afEnd, afEnd, afEnd, afEnd
 SonicAni_Wait:		dc.b	7
 			dc.b	1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
 			dc.b	1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2
@@ -23579,51 +23589,51 @@ SonicAni_Wait:		dc.b	7
 SonicAni_Balance:	dc.b	7 
 			dc.b	$89, $8A,afEnd
 SonicAni_LookUp:	dc.b	5
-			dc.b	6, 7, afBack,  1
-SonicAni_Duck:		dc.b	5,$7F,$80,$FE,  1
+			dc.b	6, 7, afBack, 1
+SonicAni_Duck:		dc.b	5,$7F,$80,afBack, 1
 SonicAni_Spindash:	dc.b	0,$71,$72,$71,$73,$71,$74,$71,$75,$71,$76,$71,$FF
 SonicAni_WallRecoil1:	dc.b	$3F
 			dc.b	$82, afEnd
 SonicAni_WallRecoil2:	dc.b	7
 			dc.b	8, 8, 9, afChange, 5 ; get up from Bonk
 SonicAni_0C:		dc.b	7
-			dc.b	9, afChange,  5	; get up
+			dc.b	9, afChange, 5	; get up
 SonicAni_Stop:		dc.b	4
-			dc.b	$81,$82,$83,$84, afBack,  2
+			dc.b	$81,$82,$83,$84, afBack, 2
 SonicAni_Float1:	dc.b	7
-			dc.b	$94,$96,afEnd
+			dc.b	$94,$96, afEnd
 SonicAni_Float2:	dc.b	7
-			dc.b	$91,$92,$93,$94,$95,afEnd
+			dc.b	$91,$92,$93,$94,$95, afEnd
 SonicAni_10:		dc.b	$2F
 			dc.b	$7E, afChange,  0	; Spring up
 SonicAni_S1LZHang:	dc.b	5
 			dc.b	$8F,$90,afEnd
 SonicAni_TurnAround:	dc.b	1
 			dc.b	$B, $A, afChange, 0	; Turning around
-SonicAni_SkidToWalk2:	dc.b	1
+SonicAni_SkidToWalk2:	dc.b	2
+			dc.b	$87, afChange, 0
+SonicAni_SkidToWalk3:	dc.b	1
 			dc.b	$87, $88, afChange, 0
-SonicAni_Unused14:	dc.b	$3F
-			dc.b	$49,afEnd
 SonicAni_Bubble:	dc.b	$B
-			dc.b	$97,$97,$12,$13,$FD,  0
+			dc.b	$97,$97,$12,$13, afChange, 0
 SonicAni_Death1:	dc.b	$20
-			dc.b	$9A,$FF
+			dc.b	$9A, afEnd
 SonicAni_Drown:		dc.b	$20
-			dc.b	$99,$FF
+			dc.b	$99, afEnd
 SonicAni_Death2:	dc.b	$20
-			dc.b	$98,$FF
+			dc.b	$98, afEnd
 SonicAni_Unused19:	dc.b	3
-			dc.b	$4E,$4F,$50,$51,$52,	 0,$FE,	 1
+			dc.b	$4E,$4F,$50,$51,$52, 0, afBack, 1
 SonicAni_Hurt:		dc.b	$40
-			dc.b	$8D,$FF
+			dc.b	$8D, afEnd
 SonicAni_S1LZSlide:	dc.b	9
-			dc.b	$8D,$8E,$FF
+			dc.b	$8D,$8E, afEnd
 SonicAni_1C:		dc.b	$77
 			dc.b	0,$FD,  0
 SonicAni_Float3:	dc.b	3
-			dc.b	$91,$92,$93,$94,$95,$FF
+			dc.b	$91,$92,$93,$94,$95, afEnd
 SonicAni_1E:		dc.b	3
-			dc.b	$3C,$FD,  0
+			dc.b	$3C, afChange, 0
 	even
 
 ; ---------------------------------------------------------------------------
