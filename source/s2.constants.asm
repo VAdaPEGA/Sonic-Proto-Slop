@@ -1,59 +1,135 @@
-; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Object Status Table offsets
+; Miscellaneous constants without dedicated pointers
+
+; REDRAWING ROUTINES:
+; This is used by stages that employ a more advanced redraw routine, basing it
+; off the various background positions other than just BG1; this is to stop tiles
+; from being accidentally overwritten
+
+; Note that internally, they were called Plane B, C, and D (A is the foreground
+; layer, Z was the unused effect seen in the TTS'90 demo)
+static1:		equ 0
+dynamic1:		equ 2
+dynamic2:		equ 4
+dynamic3:		equ 6
 ; ---------------------------------------------------------------------------
-; universally followed object conventions:
-			; DO NOT CHANGE "ID"! Some objects infer its usage by simply writing to (aX)
-			; rather than 0(aX), which does indeed effect compilation, so until I find a
-			; way to automate this (similar to the AS GitHub disassembly), best to keep
-			; this as-is.
-id:			equ 0			; object ID
-render_flags:		equ 1			; bitfield ; bit 7 = onscreen flag, bit 0 = x mirror, bit 1 = y mirror, bit 2 = coordinate system, bit 6 = render subobjects
-art_tile:		equ 2			; and 3 ; start of sprite's art
-mappings:		equ 4			; and 5 and 6 and 7
-x_pos:			equ 8			; and 9 ... some objects use $A and $B as well when extra precision is required (see ObjectMove) ... for screen-space objects this is called x_pixel instead
-x_sub:			equ $A			; and $B
-y_pos:			equ $C			; and $D ... some objects use $E and $F as well when extra precision is required ... screen-space objects use y_pixel instead
-y_sub:			equ $E			; and $F
-x_vel:			equ $10			; and $11 ; horizontal velocity
-y_vel:			equ $12			; and $13 ; vertical velocity
-y_radius:		equ $16			; collision height / 2
-x_radius:		equ $17			; collision width / 2
-priority:		equ $18			; 0 = front
-width_pixels:		equ $19
-mapping_frame:		equ $1A
-anim_frame:		equ $1B
-anim:			equ $1C
-prev_anim:		equ $1D
-anim_frame_duration:	equ $1E
-status:			equ $22			; note: exact meaning depends on the object... for Sonic/Tails: bit 0: left-facing. bit 1: in-air. bit 2: spinning. bit 3: on-object. bit 4: roll-jumping. bit 5: pushing. bit 6: underwater.
-routine:		equ $24
-routine_secondary:	equ $25
-angle:			equ $26			; angle about the z axis (360 degrees = 256)
+; Common VRAM addresses
+VRAM_Window:	equ $A000	; Window plane namespace
+VRAM_FG:	equ $C000	; Foreground namespace
+VRAM_Dyn:	equ $D000	; Dynamic area for misc. art
+VRAM_BG:	equ $E000	; Background namespace
+VRAM_Sprites:	equ $F000	; Sprite table
 
-x_pixel:		equ x_pos		; and 1+x_pos ; x coordinate for objects using screen-space coordinate system
-y_pixel:		equ 2+x_pos		; and 3+x_pos ; y coordinate for objects using screen-space coordinate system
+VRAM_Player:	equ $F280	; Player graphics
 
-; conventions mostly shared by Sonic and Tails (Obj01, Obj02, and Obj09).
-; Special Stage Sonic uses some different conventions
-inertia:		equ $14			; and $15 ; directionless representation of speed... not updated in the air
-flip_angle:		equ $27			; angle about the x axis (360 degrees = 256) (twist/tumble)
-flips_remaining:	equ $2C			; number of flip revolutions remaining
-flip_speed:		equ $2D			; number of flip revolutions per frame / 256
-move_lock:		equ $2E			; and $2F ; horizontal control lock, counts down to 0
-invulnerable_time:	equ $30			; and $31 ; time remaining until you stop blinking
-invincibility_time:	equ $32			; and $33 ; remaining
-speedshoes_time:	equ $34			; and $35 ; remaining
-next_tilt:		equ $36			; angle on ground in front of sprite
-tilt:			equ $37			; angle on ground
-stick_to_convex:	equ $38			; 0 for normal, 1 to make Sonic stick to convex surfaces like the rotating discs in Sonic 1 and 3
-spindash_flag:		equ $39			; 0 for normal, 1 for charging a spindash
-jumping:		equ $3C
-interact:		equ $3D			; RAM address of the last object Sonic stood on, minus $FFFFB000 and divided by $40
-top_solid_bit:		equ $3E			; the bit to check for top solidity (either $C or $E)
-lrb_solid_bit:		equ $3F			; the bit to check for left/right/bottom solidity (either $D or $F)
+VRAM_HScroll:	equ $FC00	; Horizontal scroll table
+; ---------------------------------------------------------------------------
+; Colours for testing purposes
+cBlack:		equ $000		; colour black
+cWhite:		equ $EEE		; colour white
+cBlue:		equ $E00		; colour blue
+cGreen:		equ $0E0		; colour green
+cRed:		equ $00E		; colour red
+cYellow:	equ cGreen+cRed		; colour yellow
+cAqua:		equ cGreen+cBlue	; colour aqua
+cMagenta:	equ cBlue+cRed		; colour magenta
 
+; ---------------------------------------------------------------------------
+; VDP addresses
+VDP_data_port:			equ $C00000 ; (8=r/w, 16=r/w)
+VDP_control_port:		equ $C00004 ; (8=r/w, 16=r/w)
+PSG_input:			equ $C00011
+
+; ---------------------------------------------------------------------------
+; Z80 addresses
+Z80_RAM:			equ $A00000 ; start of Z80 RAM
+Z80_RAM_End:			equ $A02000 ; end of non-reserved Z80 RAM
+YM2612_A0:			equ $A04000
+YM2612_D0:			equ $A04001
+YM2612_A1:			equ $A04002
+YM2612_D1:			equ $A04003
+Z80_Bus_Request:		equ $A11100
+Z80_Reset:			equ $A11200
+
+; ---------------------------------------------------------------------------
+; I/O Area 
+HW_Version:		equ $A10001	; Mega Drive version Register
+ByteIoVersion:		equ %00001111	; 0-3 System version number
+BitIoVUnk		equ 4		; Unknown
+BitIoVExp		equ 5		; Expansion unit
+BitIoVPal		equ 6		; Clock (set if PAL)
+BitIoVRegion		equ 7		; Region (set if not Japan)
+HW_Port_1_Data:		equ $A10003	; Data Port 1
+HW_Port_2_Data:		equ $A10005	; Data Port 2
+HW_Expansion_Data:	equ $A10007	; Data Port Modem
+HW_Port_1_Control:	equ $A10009	; Control Port 1
+HW_Port_2_Control:	equ $A1000B	; Control Port 2
+HW_Expansion_Control:	equ $A1000D	; Control Port Modem
+HW_Port_1_TxData:	equ $A1000F
+HW_Port_1_RxData:	equ $A10011
+HW_Port_1_SCtrl:	equ $A10013
+HW_Port_2_TxData:	equ $A10015
+HW_Port_2_RxData:	equ $A10017
+HW_Port_2_SCtrl:	equ $A10019
+HW_Expansion_TxData:	equ $A1001B
+HW_Expansion_RxData:	equ $A1001D
+HW_Expansion_SCtrl:	equ $A1001F
+HW_MARS:		equ $A130EC	; that accursed mushroom
+HW_SEGA:		equ $A14000	; TMSS
+HW_TMSS:		equ $A14101	; TMSS
+
+; ---------------------------------------------------------------------------
+; Joypad input
+btnStart:	equ %10000000 ; Start button	($80)
+btnA:		equ %01000000 ; A		($40)
+btnC:		equ %00100000 ; C		($20)
+btnB:		equ %00010000 ; B		($10)
+btnR:		equ %00001000 ; Right		($08)
+btnL:		equ %00000100 ; Left		($04)
+btnDn:		equ %00000010 ; Down		($02)
+btnUp:		equ %00000001 ; Up		($01)
+btnDir:		equ %00001111 ; Any direction	($0F)
+btnABC:		equ %01110000 ; A, B or C	($70)
+btnBC:		equ %00110000 ; B or C		($30)
+bitStart:	equ 7
+bitA:		equ 6
+bitC:		equ 5
+bitB:		equ 4
+bitR:		equ 3
+bitL:		equ 2
+bitDn:		equ 1
+bitUp:		equ 0
+
+; ---------------------------------------------------------------------------
+; Sound driver constants
+
+SFXPriorityVal:			equ 0
+TempoTimeout:			equ 1
+CurrentTempo:			equ 2	; stores current tempo value
+StopMusic:			equ 3	; set to 1 to pause music, and $80 to unpause music
+FadeOutCounter:			equ 4
+
+; unused byte
+
+FadeOutDelay:			equ 6
+Communication:			equ 7	; unused byte used to synchronise gameplay events with music, used in Ristar to sync boss attacks
+DACUpdating:			equ 8	; set to $80 while DAC is updating, then back to 0
+QueueToPlay:			equ 9	; if NOT set to $80, means new index was requested
+SFXToPlay:			equ $A	; first sound queue
+SFXToPlay2:			equ $B	; second sound queue
+SFXToPlay3:			equ $C	; third (broken) sound queue
+
+; unused byte
+
+; ---------------------------------------------------------------------------
+; Extended RAM constants (for routines that would convert data for STI's use)
+ConvertedChunksLoc:		equ $00FE0000
+; ---------------------------------------------------------------------------
+ASCII_Linebreak:		equ $0D0A
 ; ===========================================================================
+; These constants will be replaced by an automated system for ease of modification
+; see macros
+
 ; ---------------------------------------------------------------------------
 ; some variables and functions to help define those constants (redefined before a new set of IDs)
 ; V-Int routines
@@ -99,226 +175,194 @@ MusID_Title:			equ ((MusPtr_Title-MusicIndex)/4)+MusID__First		; $8A
 MusID_Ending:			equ ((MusPtr_Ending-MusicIndex)/4)+MusID__First		; $8B
 MusID_Boss:			equ ((MusPtr_Boss-MusicIndex)/4)+MusID__First		; $8C
 
+
+; Game modes
+;	IncludeGameMode	Logo,		GM_Logo,	"LOGO INTRO"
+;	IncludeGameMode	Title,		GM_Title,	"TITLE"
+;	IncludeGameMode	Overworld,	GM_Overworld,	"OVERWORLD"
+;	IncludeGameMode	SSTV,		GM_SSTV,	"SSTV"
+;	IncludeGameMode	Tomypogo,	GM_Tomypogo,	"TOMYPOGO"
+;	IncludeGameMode	RESERVED2,	GM_Logo,	"RESERVED SLOT 02"
+;	IncludeGameMode	RESERVED3,	GM_Logo,	"RESERVED SLOT 03"
+;	IncludeGameMode	RESERVED4,	GM_Logo,	"RESERVED SLOT 04"
+;	IncludeGameMode	RESERVED5,	GM_Logo,	"RESERVED SLOT 05"
+;	IncludeGameMode	RESERVED6,	GM_Logo,	"RESERVED SLOT 06"
+;	IncludeGameMode	RESERVED7,	GM_Logo,	"RESERVED SLOT 07"
+;	IncludeGameMode	RESERVED8,	GM_Logo,	"RESERVED SLOT 08"
+;	IncludeGameMode	Credits,	GM_Logo,	"CREDITS"
+;
+;	inform	0, " Game Modes : \#GamemodeCount\"
+
+; Dialog
+;	IncludeDialog	Global
+;	IncludeDialog	PipesOfDream
+;	IncludeDialog	CatstleOutside
+;	IncludeDialog	CatstleInterior
+;
+;	inform	0, " Dialog Tables : \#DialogCount\"
+; Levels
+	;	Starts, folder, 	dialog, 	debug
+;	IncludePlace 1,	PipesOfGreen,	PipesOfDream,	"PIPES OF DREAM"
+;	IncludePlace 3,	CatstleOutside,	CatstleOutside,	"CATSTLE COURTYARD"
+;	IncludePlace 2,	CatstleInterior,CatstleInterior,"CATSTLE INTERIOR"
+;	IncludePlace 1,	BattleArea,	Global,		"BATTLE AREA"
+;	IncludePlace 1,	Dummy,		PipesOfDream,	"DUMMY"
+;	inform	0, " Places : \#PlaceCount\"
+
+; Background music
+
+;		speed up,  name		file				
+;	IncludeMusic	0, Title,	gotosleep.bin,		"GO TO SLEEP [TITLE]",			ComposerVA
+;	IncludeMusic	0, Menu,	menu.bin,		"HAPPY BREAK TIME [MENU]",		ComposerVA
+;	IncludeMusic	0, PreBattle,	Battle/Battlepre.bin,	"WHERE'S THE TOOF? [PRE-BATTLE]",	ComposerVA
+;	IncludeMusic	0, Battle,	Battle/Battle.bin,	"OH HECK HERE'S TOOF [BATTLE]",		ComposerVA
+; 	IncludeMusic	0, Adrift,	Battle/Adrift.bin,	"OOF TO THE TOOF [NIGHTMARE]",		ComposerVA
+;	IncludeMusic	0, AutumnCut,	RoyalPain.bin,		"ROYAL PAIN",				ComposerDAN_VA
+
+;	IncludeMusic	0, CatstleIntro,	RoyaltyAtTheBeach.asm,	"ROYALTY AT THE BEACH",		ComposerVA
+;	IncludeMusic	0, Catstle,	WalkingOnTheRoyalBeach.bin,	"WALKIN' ON THE ROYAL BEACH",	ComposerDAN_VA
+
+;	IncludeMusic	0, BossSnow,	Battle/BossGrandma.bin,	"GOODBYE SPOILED [ADALT]",		ComposerVA
+;	IncludeMusic	0, Defeat,	Fffffk.bin,		"BUT THE CAT CAME BACK [DEFEAT]",	ComposerVA
+;	IncludeMusic	0, Tomypogo,	Tomypogo.asm,		"TOMYPOGO [ONLY SETS PATCHES]",	ComposerVA
+;	IncludeMusic	0, SSTV,	sstvtest.asm,		"SSTV TEST",	ComposerVA
+
+;		inform	0, " Music : \#MusicCount\"
+
+;	IncludeSound	$81, Jump,		Player/Jump.asm,	"TOOFSCARADE", "JUMP"
+;	IncludeSound	$81, JumpSon,		Player/Jump_Son.asm,	"TOMYLOBO", "JUMP"
+;	IncludeSound	$81, JumpS,		Player/Jump_S.asm,	"FORGOR", "JUMP"
+;	IncludeSound	$81, JumpG,		Player/Jump_G.asm,	"G", "JUMP"
+;	IncludeSound	$81, JumpSpin,		Player/Jumpspin.asm,	"TOOFSCARADE", "JUMP SPIN"
+;	IncludeSound	$70, Hurt,		Player/Hurt.asm,	"HURT", ""
+;	IncludeSound	$71, Roll,		Player/Roll.bin,	"TOMYLOBO", "ROLL"
+;	IncludeSound	$81, Sono,		Player/CatYawn.asm,	"TOOFSCARADE", "SONO (MYAWN)"
+;
+;	IncludeSound	$72, Meow1,		Player/Meow1.asm,	"MIAU", ""
+;	IncludeSound	$72, Meow2,		Player/Meow2.asm,	"MIAU THE SECOND", ""
+;	IncludeSound	$72, MeowFussy,		Player/MeowFussy.asm,	"FUSSY MIAU", ""
+;	IncludeSound	$72, MeowHurt,		Player/MeowHurt.asm,	"HURT MIAU", ""
+;	IncludeSound	$72, MeowHurt2,		Player/MeowHurt2.asm,	"HURT MIAU THE SEQUEL", ""
+;	IncludeSound	$72, Meow6,		Player/Meow6.asm,	"AGREEING MIAU", ""
+;	IncludeSound	$72, Meow7,		Player/Meow7.asm,	"CONVERSIVE MIAU", ""
+;	IncludeSound	$72, Meow8,		Player/Meow8.asm,	"LOSS MIAU", ""
+;	IncludeSound	$72, Meow9,		Player/Meow9.asm,	"WIN MIAU", ""
+;	IncludeSound	$72, MeowFussy2,	Player/MeowFussy2.asm,	"FUSSY MIAU : THE RETURN", ""
+;	IncludeSound	$81, Purry,		Player/CatPurr.asm,	"GATO PURRY", "" ; there ya go, your only Brasil reference
+;
+;	IncludeSound	$71, VAdaLogo,		VAdaLogo.asm,		"VADAPEGA LOGO", ""
+
+
+;	IncludeSound	$70, HDUp,		Global/HDUp.bin,		"HD UP", ""
+;	IncludeSound	$70, HPUp,		Global/HPUp.bin,		"HP UP", ""
+;	IncludeSound	$70, BeanIncrease,	Global/BeanIncrease.asm,	"BEAN INCREASE", ""
+;	IncludeSound	$70, BeanDecrease,	Global/BeanDecrease.asm,	"BEAN DECREASE", ""
+;	IncludeSound	$71, AdieHit,		Global/Adiehit.asm,		"HIT ADIE", ""
+;	IncludeSound	$71, PlayerSpotted,	Global/PlayerSpotted.asm,	"PLAYER SPOTTED", ""
+;	IncludeSound	$71, HLUseKey,		Global/HLUseKey.asm,		"NOT INTERACTABLE", ""
+;	IncludeSound	$81, Correct,		Global/Correct.bin,		"CORRECT", ""
+;	IncludeSound	$71, Yesir,		Global/Yesir.asm,		"YESIR", ""
+;
+;	IncludeSound	$73, confirm,		Textbox/_confirm.asm,	"CONFIRM",""
+;	IncludeSound	$72, select,		Textbox/_select.asm,	"SELECT",""
+;	IncludeSound	$72, menuselected,	Textbox/_Menuselected.asm,	"MENU SELECTED",""
+;	IncludeSound	$73, deny,		Textbox/_deny.asm,	"DENY",""
+;	IncludeSound	$70, unfortune,		Textbox/_unfortune.asm,	"UNFORTUNE",""
+;
+;	IncludeSound	$70, TextboxDefault,	Textbox/_Default.asm,	"TEXTBOX","DEFAULT"
+;	IncludeSound	$70, TextboxHonker,	Textbox/Honker.asm,	"TEXTBOX","HONKER", snd_TextboxHonker
+;	IncludeSound	$70, TextboxTomylobo,	Textbox/Tomylobo.asm,	"TEXTBOX","TOMYLOBO"
+;	IncludeSound	$70, TextboxParkerat,	Textbox/Parkerat.asm,	"TEXTBOX","PARKERAT"
+;	IncludeSound	$70, TextboxAutumn,	Textbox/Autumn.asm,	"TEXTBOX","AUTUMN"
+;
+;	IncludeSound	$81, sAttracts,		SRB2/ShieldAttract.asm,		"SRB2 ATTRACTION SHIELD", ""
+;	IncludeSound	$81, sArmageds,		SRB2/ShieldArmageddon.bin,	"SRB2 ARMAGEDDON SHIELD", ""
+;	IncludeSound	$81, sElements,		SRB2/ShieldElemental.bin,	"SRB2 ELEMENTAL SHIELD", ""
+;	IncludeSound	$81, sWhirlwinds,	SRB2/ShieldWhirlwind.bin,	"SRB2 WHIRLWIND SHIELD", ""
+;	IncludeSound	$71, AmyHammer,		SRB2/AmyHammer.asm,		"SRB2 AMY HAMMER SPRING", ""
+;	IncludeSound	$71, FangSpring,	SRB2/FangSpring.bin,		"SRB2 FANG SPRING", "TINARA JUMP"
+;SndID_TinaraJump	= SndID_FangSpring
+;	IncludeSound	$71, FangPanic,		SRB2/FangPanic.asm,		"SRB2 FANG PANIC", "UNLEASH THE BATTLE"
+;SndID_BattleStart	= SndID_FangPanic
+;	IncludeSound	$71, Thok,		SRB2/THOK.bin,			"SRB2 THOK", "TINARA THROW"
+;SndID_TinaraThrow	= SndID_Thok
+;	IncludeSound	$81, SilverRing,	SRB2/SilverRing.asm,		"SRB2 SILVER RING", ""
+;	IncludeSound	$81, SPB,		SRB2/SPB.asm,			"SRB2", "ANXIETY"
+;	
+;	IncludeSound	$71, Bubbles,		SRB2/Swim1.asm,			"SRB2 TAILS SWIM", "BUBBLES"
+;
+;	IncludeSound	$71, Bend, 		SRB2/TreeBend.asm,		"BEND", ""
+;	IncludeSound	$71, WhipCrack, 	SRB2/TreeJohnnyTest.asm,	"WHIP CRACK", ""
+;
+;	IncludeSound	$71, dingfuuu,		DingFuuu.bin,	"DING...", "     FAA-"
+;
+;	IncludeSound	$71, barfk1,		barfk.asm,	"BARFK", ""
+;	IncludeSound	$71, barfk2,		barfk2.asm,	"BARFK 2", ""
+;	IncludeSound	$71, blockbonk,		blockbonk.asm,	"BLOCK", "BONK"
+;	IncludeSound	$71, blockbreak,	blockbreak.asm,	"BLOCK", "BREAK"
+;
+;	IncludeSound	$71, honk,		HONK.asm,	"FUNNY HONKER NOISES", "YEAH MEEEE!"
+;	IncludeSound	$71, chainrise,		chainrise.bin,	"SONIC 1 CHAIN RISE", "LIGHT SWITCH"
+;	IncludeSound	$81, spring,		Spring.asm,	"BOUNCY THING", "OR SOMETHING LIKE THAT"
+;
+;	IncludeSound	$71, EraserBell,  	EraserBell.asm,	"ERASER COWBELL", ""
+;	IncludeSound	$71, yoku,  	 	yoku.asm,	"YOKU", ""
+;	IncludeSound	$75, plusfive,  	plusfive.asm,	"PLUS FIVE", ""
+;
+;	IncludeSound	$71, ClawSlash,  	ClawSlash.asm,	"CLAW SLASH", ""
+;	IncludeSound	$81, AutumnJump,	AutumnJump.asm,	"AUTUMN", "JUMP"
+;
+;	IncludeSound	$81, PixyDash,		PixyDash.asm,	"PIXETTY", "DASH"
+;
+;	IncludeSound	$71, Collapse,  	Collapse.bin,	"VANILLA", "COLLAPSE"
+
+
+
+;SndId_wallSmash		=	SndID_Collapse
+;SndId_ConsumeBean	=	SndID_Collapse
+;SndId_Unselected	=	SndID_menuselected
+;SndId_BreakItem		=	SndID_Collapse 
+;SndId_TSono		=	SndID_Collapse ; Tomylobo needs his own Yawn
+;
+;SoundCountNormal	equ	SoundCount
 ; ---------------------------------------------------------------------------
-; Miscellaneous constants without dedicated pointers
-
-; LEVEL LAYOUTS
-levelrowsize:		equ 128		; maximum width of a level layout in chunks
-levelrowcount:		equ 32		; maximum height of a level layout in chunks
-
-; REDRAWING ROUTINES:
-; This ia used by stages that employ a more advanced redraw routine, basing it
-; off the various background positions other than just BG1; this is to stop tiles
-; from being accidentally overwritten
-
-; Note that internally, they were called Plane B, C, and D (A is the foreground
-; layer, Z was the unused effect seen in the TTS'90 demo)
-static1:		equ 0
-dynamic1:		equ 2
-dynamic2:		equ 4
-dynamic3:		equ 6
-
-; ---------------------------------------------------------------------------
-; Main RAM
-		pusho						; save options
-		opt	ae+					; enable auto evens
-
-		rsset $FF0000|$FF000000
-				rs.b $8000
-
-Level_Layout:			rs.b levelrowsize*levelrowcount	; level layout; each row is $80 bytes
-Level_Layout_End:		equ __rs
-
-Block_Table:			rs.w $C00
-Block_Table_End:		equ __rs
-
-TempArray_LayerDef:		rs.b $200		; used by some layer deformation routines
-Decomp_Buffer:			rs.b $200		; used by Nemesis as a temporary buffer before it is uploaded to VRAM
-
-Sprite_Input_Table:		rs.b $400
-Sprite_Input_Table_End:		equ __rs
-
-Object_RAM:			rs.b $2000
-Object_RAM_End:			equ __rs
-
-MainCharacter:			equ Object_RAM
-Sidekick:			equ Object_RAM+$40
-		popo						; restore options
-
-VDP_Command_Buffer:		equ $FFFFDC00
-VDP_Command_Buffer_Slot:	equ $FFFFDCFC
-
-Sonic_Stat_Record_Buf:		equ $FFFFE400
-Sonic_Pos_Record_Buf:		equ $FFFFE500
-Tails_Pos_Record_Buf:		equ $FFFFE600
-
-Ring_Positions:			equ $FFFFE800
-
-Camera_RAM:			equ $FFFFEE00
-Camera_X_pos:			equ Camera_RAM
-Camera_Y_pos:			equ Camera_RAM+4
-Camera_BG_X_pos:		equ Camera_RAM+8
-Camera_BG_Y_pos:		equ Camera_RAM+$C
-Camera_BG2_X_pos:		equ Camera_RAM+$10
-Camera_BG2_Y_pos:		equ Camera_RAM+$14
-Camera_BG3_X_pos:		equ Camera_RAM+$18
-Camera_BG3_Y_pos:		equ Camera_RAM+$1C
-
-Horiz_block_crossed_flag:	equ Camera_RAM+$40
-Verti_block_crossed_flag:	equ Camera_RAM+$41
-Horiz_block_crossed_flag_BG:	equ Camera_RAM+$42
-Verti_block_crossed_flag_BG:	equ Camera_RAM+$43
-Horiz_block_crossed_flag_BG2:	equ Camera_RAM+$44
-Horiz_block_crossed_flag_BG3:	equ Camera_RAM+$46
-Horiz_block_crossed_flag_P2:	equ Camera_RAM+$48
-Verti_block_crossed_flag_P2:	equ Camera_RAM+$49
-
-Camera_Min_X_pos:		equ Camera_RAM+$C8
-Camera_Max_X_pos:		equ Camera_RAM+$CA
-Camera_Min_Y_pos:		equ Camera_RAM+$CC
-Camera_Max_Y_pos:		equ Camera_RAM+$CE
-
-Horiz_scroll_delay_val:		equ $FFFFEED0
-Sonic_Pos_Record_Index:		equ $FFFFEED2
-
-Game_Mode:			equ $FFFFF600
-
-VDP_Reg1_val:			equ $FFFFF60C
-
-Demo_Time_left:			equ $FFFFF614
-
-Vscroll_Factor:			equ $FFFFF616
-
-Hint_counter_reserve:		equ $FFFFF624
-Vint_routine:			equ $FFFFF62A
-DMA_data_thunk:			equ $FFFFF640
-Hint_flag:			equ $FFFFF644
-Water_fullscreen_flag:		equ $FFFFF64E
-Do_Updates_in_H_int:		equ $FFFFF64F
-
-Plc_Buffer:			equ $FFFFF680
-
-Plc_Buffer_Reg0:		equ $FFFFF6E0
-Plc_Buffer_Reg4:		equ $FFFFF6E4
-Plc_Buffer_Reg8:		equ $FFFFF6E8
-Plc_Buffer_RegC:		equ $FFFFF6EC
-Plc_Buffer_Reg10:		equ $FFFFF6F0
-Plc_Buffer_Reg14:		equ $FFFFF6F4
-Plc_Buffer_Reg18:		equ $FFFFF6F8
-Plc_Buffer_Reg1A:		equ $FFFFF6FA
-
-unk_F700:			equ $FFFFF700
-Tails_control_counter:		equ $FFFFF702
-unk_F706:			equ $FFFFF706
-Tails_CPU_routine:		equ $FFFFF708
-
-Rings_manager_routine:		equ $FFFFF710
-Level_started_flag:		equ $FFFFF711
-Ring_start_addr:		equ $FFFFF712
-Ring_end_addr:			equ $FFFFF714
-Ring_start_addr_P2:		equ $FFFFF716
-Ring_end_addr_P2:		equ $FFFFF718
-
-Water_flag:			equ $FFFFF730
-
-Sonic_top_speed:		equ $FFFFF760
-Sonic_acceleration:		equ $FFFFF762
-Sonic_deceleration:		equ $FFFFF764
-Sonic_LastLoadedDPLC:		equ $FFFFF766
-
-Obj_placement_routine:		equ $FFFFF76C
-Camera_X_pos_last:		equ $FFFFF76E
-Obj_load_addr_right:		equ $FFFFF770
-Obj_load_addr_left:		equ $FFFFF774
-Obj_load_addr_2:		equ $FFFFF778
-Obj_load_addr_3:		equ $FFFFF77C
-
-Camera_X_pos_last_P2:		equ $FFFFF78C
-
-Tails_LastLoadedDPLC:		equ $FFFFF7DE
-TailsTails_LastLoadedDPLC:	equ $FFFFF7DF
-
-Anim_Counters:			equ $FFFFF7F0
-
-Sprite_Table:			equ $FFFFF800
-
-Debug_object:			equ $FFFFFE06
-Debug_placement_mode:		equ $FFFFFE08
-Debug_Accel_Timer:		equ $FFFFFE0A
-Debug_Speed:			equ $FFFFFE0B
-
-Vint_runcount:			equ $FFFFFE0C
-
-Current_ZoneAndAct:		equ $FFFFFE10
-Current_Zone:			equ $FFFFFE10
-Current_Act:			equ $FFFFFE11
-
-Two_player_mode:		equ $FFFFFFE8
-
-Debug_mode_flag:		equ $FFFFFFFA
-
-; ---------------------------------------------------------------------------
-; VDP addresses
-VDP_data_port:			equ $C00000 ; (8=r/w, 16=r/w)
-VDP_control_port:		equ $C00004 ; (8=r/w, 16=r/w)
-PSG_input:			equ $C00011
+; Special Sound Effects
+;	IncludeSound	$71, waterfall,	  	Special/waterfall.bin,	"VANILLA", "WATERFALL"
+;	IncludeSound	$71, coing,	  	Special/coingleft.asm,	"COING", "LEFT"
+;	IncludeSound	$71, coingright,	Special/coingright.asm,	"COING", "RIGHT"
+;	IncludeSound	$71, Push,		Player/Push.asm,	"PUSH", ""
+;	IncludeSound	$71, Skid,		Player/Skid.asm,	"SKID", ""
+;	IncludeSound	$71, Charge,		Player/Charge.asm,	"TOMYLOBO", "CHARGE"
+;
+;SoundCountSpecial	equ	SoundCount-SoundCountNormal
 
 ; ---------------------------------------------------------------------------
-; Z80 addresses
-Z80_RAM:			equ $A00000 ; start of Z80 RAM
-Z80_RAM_End:			equ $A02000 ; end of non-reserved Z80 RAM
-YM2612_A0:			equ $A04000
-YM2612_D0:			equ $A04001
-YM2612_A1:			equ $A04002
-YM2612_D1:			equ $A04003
-Z80_Bus_Request:		equ $A11100
-Z80_Reset:			equ $A11200
+; Music / Sound Control Flags
+;		rsset	MusicCount+SoundCount+1
 
-Security_Addr:			equ $A14000
+;bgm_Fade:	rs.b 1
+;bgm_Slowest:	rs.b 1
+;bgm_SSpeed:	rs.b 1
+;bgm_SpdNormal:	rs.b 1
+;bgm_Stop:	rs.b 1
+;bgm_SpeedUp:	rs.b 1
+;bgm_SpeedDown:	rs.b 1
+;bgm_PitchUp:	rs.b 1
+;bgm_PitchDown:	rs.b 1
+;bgm_Nightcore:	rs.b 1
+;bgm_Vaporwave:	rs.b 1
+;bgm_SpdToPitch:	rs.b 1
+;Bgm_Save:	rs.b 1
+;Bgm_FadeSave:	rs.b 1
+;Bgm_Load:	rs.b 1
+;Bgm_FadeBack:	rs.b 1
+;
+;SndTestLastEntry:	equ	Bgm_FadeBack
+;
+;bgm_Nightmare:	rs.b bgm_Vaporwave
 
+
+
+
+;		inform	0, " Sounds : \#SoundCount\ (\#SoundCountSpecial\ special)"
 ; ---------------------------------------------------------------------------
-; I/O Area 
-HW_Version:			equ $A10001
-HW_Port_1_Data:			equ $A10003
-HW_Port_2_Data:			equ $A10005
-HW_Expansion_Data:		equ $A10007
-HW_Port_1_Control:		equ $A10009
-HW_Port_2_Control:		equ $A1000B
-HW_Expansion_Control:		equ $A1000D
-HW_Port_1_TxData:		equ $A1000F
-HW_Port_1_RxData:		equ $A10011
-HW_Port_1_SCtrl:		equ $A10013
-HW_Port_2_TxData:		equ $A10015
-HW_Port_2_RxData:		equ $A10017
-HW_Port_2_SCtrl:		equ $A10019
-HW_Expansion_TxData:		equ $A1001B
-HW_Expansion_RxData:		equ $A1001D
-HW_Expansion_SCtrl:		equ $A1001F
-
-; ---------------------------------------------------------------------------
-; Sound driver constants
-
-SFXPriorityVal:			equ 0
-TempoTimeout:			equ 1
-CurrentTempo:			equ 2	; stores current tempo value
-StopMusic:			equ 3	; set to 1 to pause music, and $80 to unpause music
-FadeOutCounter:			equ 4
-
-; unused byte
-
-FadeOutDelay:			equ 6
-Communication:			equ 7	; unused byte used to synchronise gameplay events with music, used in Ristar to sync boss attacks
-DACUpdating:			equ 8	; set to $80 while DAC is updating, then back to 0
-QueueToPlay:			equ 9	; if NOT set to $80, means new index was requested
-SFXToPlay:			equ $A	; first sound queue
-SFXToPlay2:			equ $B	; second sound queue
-SFXToPlay3:			equ $C	; third (broken) sound queue
-
-; unused byte
-
-; ---------------------------------------------------------------------------
-; Extended RAM constants (for routines that would convert data for STI's use)
-
-ConvertedChunksLoc:		equ $00FE0000
-
-ASCII_Linebreak	equ $0D0A

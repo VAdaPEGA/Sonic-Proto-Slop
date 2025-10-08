@@ -1,0 +1,240 @@
+; ---------------------------------------------------------------------------
+; Main RAM
+; ---------------------------------------------------------------------------
+		rsset $FF0000|$FF000000
+				rs.b $8000
+; ---------------------------------------------------------------------------
+; LEVEL LAYOUTS
+levelrowsize:		equ 128		; maximum width of a level layout in chunks
+levelrowcount:		equ 32		; maximum height of a level layout in chunks			
+
+Level_Layout:			rs.b levelrowsize*levelrowcount	; level layout; each row is $80 bytes
+Level_Layout_End:		equ __rs
+
+Block_Table:			rs.w $C00
+Block_Table_End:		equ __rs
+; ---------------------------------------------------------------------------
+TempArray_LayerDef:		rs.b $200		; used by some layer deformation routines
+Decomp_Buffer:			rs.b $200		; used by Nemesis as a temporary buffer before it is uploaded to VRAM
+
+Sprite_Input_Table:		rs.b $400
+Sprite_Input_Table_End:		equ __rs
+
+; ---------------------------------------------------------------------------
+; Object Status Table offsets
+; ---------------------------------------------------------------------------
+Object_RAM:		equ $40		; RAM per object
+; universally followed object conventions:
+id:			equ 0		; object ID
+render_flags:		equ 1		; bitfield ; bit 7 = onscreen flag, bit 0 = x mirror, bit 1 = y mirror, bit 2 = coordinate system, bit 6 = render subobjects
+art_tile:		equ 2		; 2 bytes - ; start of sprite's art
+mappings:		equ 4		; 4 bytes -
+x_pos:			equ 8		; 2 bytes - ... some objects use $A and $B as well when extra precision is required (see ObjectMove) ... for screen-space objects this is called x_pixel instead
+x_sub:			equ $A		; 2 bytes -
+y_pos:			equ $C		; 2 bytes - ... some objects use $E and $F as well when extra precision is required ... screen-space objects use y_pixel instead
+y_sub:			equ $E		; 2 bytes -
+x_vel:			equ $10		; 2 bytes - horizontal velocity
+y_vel:			equ $12		; 2 bytes - vertical velocity
+y_radius:		equ $16		; collision height / 2
+x_radius:		equ $17		; collision width / 2
+priority:		equ $18		; 0 = front
+width_pixels:		equ $19
+mapping_frame:		equ $1A
+anim_frame:		equ $1B
+anim:			equ $1C
+prev_anim:		equ $1D
+anim_frame_duration:	equ $1E
+status:			equ $22		; note: exact meaning depends on the object... for Sonic/Tails: bit 0: left-facing. bit 1: in-air. bit 2: spinning. bit 3: on-object. bit 4: roll-jumping. bit 5: pushing. bit 6: underwater.
+routine:		equ $24
+routine_secondary:	equ $25
+angle:			equ $26		; angle about the z axis (360 degrees = 256)
+
+x_pixel:		equ x_pos	; 2 bytes ; x coordinate for objects using screen-space coordinate system
+y_pixel:		equ 2+x_pos	; 2 bytes ; y coordinate for objects using screen-space coordinate system
+
+; conventions mostly shared by Player Objects (Obj01, Obj02, and Obj09).
+; Special Stage Sonic uses some different conventions
+ground_speed:		equ $14		; 2 bytes ; directionless representation of speed... not updated in the air
+flip_angle:		equ $27		; angle about the x axis (360 degrees = 256) (twist/tumble)
+flips_remaining:	equ $2C		; number of flip revolutions remaining
+flip_speed:		equ $2D		; number of flip revolutions per frame / 256
+move_lock:		equ $2E		; 2 bytes ; horizontal control lock, counts down to 0
+invulnerable_time:	equ $30		; 2 bytes ; time remaining until you stop blinking
+invincibility_time:	equ $32		; 2 bytes ; remaining
+speedshoes_time:	equ $34		; 2 bytes ; remaining
+next_tilt:		equ $36		; angle on ground in front of sprite
+tilt:			equ $37		; angle on ground
+stick_to_convex:	equ $38		; 0 for normal, 1 to make Sonic stick to convex surfaces like the rotating discs in Sonic 1 and 3
+spindash_flag:		equ $39		; 0 for normal, 1 for charging a spindash
+jumping:		equ $3C
+interact:		equ $3D		; RAM address of the last object Sonic stood on, minus $FFFFB000 and divided by $40
+top_solid_bit:		equ $3E		; the bit to check for top solidity (either $C or $E)
+lrb_solid_bit:		equ $3F		; the bit to check for left/right/bottom solidity (either $D or $F)
+; ---------------------------------------------------------------------------
+Object_Space:			equ __rs	; Start of Object RAM
+
+MainCharacter:			rs.b Object_RAM	; Player 1
+Sidekick:			rs.b Object_RAM	; Player 2
+Reserved_Object_02:		rs.b Object_RAM
+Reserved_Object_03:		rs.b Object_RAM
+Reserved_Object_04:		rs.b Object_RAM
+Reserved_Object_05:		rs.b Object_RAM
+Reserved_Object_06:		rs.b Object_RAM
+Reserved_Object_07:		rs.b Object_RAM
+Reserved_Object_08:		rs.b Object_RAM
+Reserved_Object_09:		rs.b Object_RAM
+Reserved_Object_10:		rs.b Object_RAM
+Reserved_Object_11:		rs.b Object_RAM
+Reserved_Object_12:		rs.b Object_RAM
+Reserved_Object_13:		rs.b Object_RAM
+Reserved_Object_14:		rs.b Object_RAM
+Reserved_Object_15:		rs.b Object_RAM
+Reserved_Object_16:		rs.b Object_RAM
+Reserved_Object_17:		rs.b Object_RAM
+Reserved_Object_18:		rs.b Object_RAM
+Reserved_Object_19:		rs.b Object_RAM
+Reserved_Object_20:		rs.b Object_RAM
+Reserved_Object_21:		rs.b Object_RAM
+Reserved_Object_22:		rs.b Object_RAM
+Reserved_Object_23:		rs.b Object_RAM
+Reserved_Object_24:		rs.b Object_RAM
+Reserved_Object_25:		rs.b Object_RAM
+Reserved_Object_26:		rs.b Object_RAM
+Reserved_Object_27:		rs.b Object_RAM
+Reserved_Object_28:		rs.b Object_RAM
+Reserved_Object_29:		rs.b Object_RAM
+Reserved_Object_30:		rs.b Object_RAM
+Reserved_Object_31:		rs.b Object_RAM
+
+Level_Object_Space:		rs.b Object_RAM*(128-32)	; Objects spawned in level
+
+Object_Space_End:	equ __rs
+
+; ---------------------------------------------------------------------------
+
+VDP_Command_Buffer:		equ $FFFFDC00
+VDP_Command_Buffer_Slot:	equ $FFFFDCFC
+
+Sonic_Stat_Record_Buf:		equ $FFFFE400
+Sonic_Pos_Record_Buf:		equ $FFFFE500
+Tails_Pos_Record_Buf:		equ $FFFFE600
+
+Ring_Positions:			equ $FFFFE800
+
+Camera_RAM:			equ $FFFFEE00
+Camera_X_pos:			equ Camera_RAM
+Camera_Y_pos:			equ Camera_RAM+4
+Camera_BG_X_pos:		equ Camera_RAM+8
+Camera_BG_Y_pos:		equ Camera_RAM+$C
+Camera_BG2_X_pos:		equ Camera_RAM+$10
+Camera_BG2_Y_pos:		equ Camera_RAM+$14
+Camera_BG3_X_pos:		equ Camera_RAM+$18
+Camera_BG3_Y_pos:		equ Camera_RAM+$1C
+
+Horiz_block_crossed_flag:	equ Camera_RAM+$40
+Verti_block_crossed_flag:	equ Camera_RAM+$41
+Horiz_block_crossed_flag_BG:	equ Camera_RAM+$42
+Verti_block_crossed_flag_BG:	equ Camera_RAM+$43
+Horiz_block_crossed_flag_BG2:	equ Camera_RAM+$44
+Horiz_block_crossed_flag_BG3:	equ Camera_RAM+$46
+Horiz_block_crossed_flag_P2:	equ Camera_RAM+$48
+Verti_block_crossed_flag_P2:	equ Camera_RAM+$49
+
+Camera_Min_X_pos:		equ Camera_RAM+$C8
+Camera_Max_X_pos:		equ Camera_RAM+$CA
+Camera_Min_Y_pos:		equ Camera_RAM+$CC
+Camera_Max_Y_pos:		equ Camera_RAM+$CE
+
+Horiz_scroll_delay_val:		equ $FFFFEED0
+Sonic_Pos_Record_Index:		equ $FFFFEED2
+
+Game_Mode:			equ $FFFFF600
+
+Ctrl_1_Logical:		
+Ctrl_1_Held_Logical:		equ $FFFFF602
+Ctrl_1_Press_Logical:		equ $FFFFF603
+Ctrl_1:			
+Ctrl_1_Held:			equ $FFFFF604
+Ctrl_1_Press:			equ $FFFFF605
+Ctrl_2:			
+Ctrl_2_Held:			equ $FFFFF606
+Ctrl_2_Press:			equ $FFFFF607
+
+
+VDP_Reg1_val:			equ $FFFFF60C
+
+Demo_Time_left:			equ $FFFFF614
+
+Vscroll_Factor:			equ $FFFFF616
+
+Hint_counter_reserve:		equ $FFFFF624
+Vint_routine:			equ $FFFFF62A
+DMA_data_thunk:			equ $FFFFF640
+Hint_flag:			equ $FFFFF644
+Water_fullscreen_flag:		equ $FFFFF64E
+Do_Updates_in_H_int:		equ $FFFFF64F
+
+Plc_Buffer:			equ $FFFFF680
+
+Plc_Buffer_Reg0:		equ $FFFFF6E0
+Plc_Buffer_Reg4:		equ $FFFFF6E4
+Plc_Buffer_Reg8:		equ $FFFFF6E8
+Plc_Buffer_RegC:		equ $FFFFF6EC
+Plc_Buffer_Reg10:		equ $FFFFF6F0
+Plc_Buffer_Reg14:		equ $FFFFF6F4
+Plc_Buffer_Reg18:		equ $FFFFF6F8
+Plc_Buffer_Reg1A:		equ $FFFFF6FA
+
+unk_F700:			equ $FFFFF700
+Tails_control_counter:		equ $FFFFF702
+unk_F706:			equ $FFFFF706
+Tails_CPU_routine:		equ $FFFFF708
+
+Rings_manager_routine:		equ $FFFFF710
+Level_started_flag:		equ $FFFFF711
+Ring_start_addr:		equ $FFFFF712
+Ring_end_addr:			equ $FFFFF714
+Ring_start_addr_P2:		equ $FFFFF716
+Ring_end_addr_P2:		equ $FFFFF718
+
+Water_flag:			equ $FFFFF730
+
+Sonic_top_speed:		equ $FFFFF760
+Sonic_acceleration:		equ $FFFFF762
+Sonic_deceleration:		equ $FFFFF764
+Sonic_LastLoadedDPLC:		equ $FFFFF766
+
+Obj_placement_routine:		equ $FFFFF76C
+Camera_X_pos_last:		equ $FFFFF76E
+Obj_load_addr_right:		equ $FFFFF770
+Obj_load_addr_left:		equ $FFFFF774
+Obj_load_addr_2:		equ $FFFFF778
+Obj_load_addr_3:		equ $FFFFF77C
+
+Camera_X_pos_last_P2:		equ $FFFFF78C
+
+Tails_LastLoadedDPLC:		equ $FFFFF7DE
+TailsTails_LastLoadedDPLC:	equ $FFFFF7DF
+
+Anim_Counters:			equ $FFFFF7F0
+
+Sprite_Table:			equ $FFFFF800
+
+Error_Registers:		equ $FFFFFC00	; stores registers d0-a7 during an error event ($40 bytes)
+Error_Stack_Pointer:		equ $FFFFFC40	; stores most recent sp address (4 bytes)
+Error_Type:			equ $FFFFFC44	; error type
+
+Debug_object:			equ $FFFFFE06
+Debug_placement_mode:		equ $FFFFFE08
+Debug_Accel_Timer:		equ $FFFFFE0A
+Debug_Speed:			equ $FFFFFE0B
+
+Vint_runcount:			equ $FFFFFE0C
+
+Current_ZoneAndAct:		equ $FFFFFE10
+Current_Zone:			equ $FFFFFE10
+Current_Act:			equ $FFFFFE11
+
+Two_player_mode:		equ $FFFFFFE8
+
+Debug_mode_flag:		equ $FFFFFFFA
