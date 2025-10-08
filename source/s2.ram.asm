@@ -44,7 +44,26 @@ anim_frame:		equ $1B
 anim:			equ $1C
 prev_anim:		equ $1D
 anim_frame_duration:	equ $1E
-status:			equ $22		; note: exact meaning depends on the object... for Sonic/Tails: bit 0: left-facing. bit 1: in-air. bit 2: spinning. bit 3: on-object. bit 4: roll-jumping. bit 5: pushing. bit 6: underwater.
+status:			equ $22		; note: exact meaning depends on the object... 
+;for Player: 
+PlayerStatusBitHFlip	equ	0	; left-facing. 
+PlayerStatusBitAir	equ	1	; in-air. 
+PlayerStatusBitSpin	equ	2	; spinning. 
+PlayerStatusBitOnObject	equ	3	; on-object. 
+PlayerStatusBitRollLock	equ	4	; roll-jumping. 
+PlayerStatusBitPush	equ	5	; pushing. 
+PlayerStatusBitWater	equ	6	; underwater.
+PlayerStatusBitUnused	equ	7	; unused.
+;for anything else (generally): 
+StatusBitHFlip		equ	0	; left-facing. 
+StatusBitVFlip		equ	1	; upside-down facing. 
+StatusBit2		equ	2	; ?. 
+StatusBitP1Stand	equ	3	; Player 1 stands on this object. 
+StatusBitP2Stand	equ	4	; Player 2 stands on this object. 
+StatusBitP1Push		equ	5	; Player 1 is pushing on this object. 
+StatusBitP2Push		equ	6	; Player 2 is pushing on this object. 
+StatusBit7		equ	7	; Object specific
+
 routine:		equ $24
 routine_secondary:	equ $25
 angle:			equ $26		; angle about the z axis (360 degrees = 256)
@@ -212,6 +231,11 @@ Obj_load_addr_2:		equ $FFFFF778
 Obj_load_addr_3:		equ $FFFFF77C
 
 Camera_X_pos_last_P2:		equ $FFFFF78C
+
+Camera_X_pos_coarse:		equ $FFFFF7DA
+Camera_X_pos_coarse_P2:		equ $FFFFF7DC
+
+
 
 Tails_LastLoadedDPLC:		equ $FFFFF7DE
 TailsTails_LastLoadedDPLC:	equ $FFFFF7DF
