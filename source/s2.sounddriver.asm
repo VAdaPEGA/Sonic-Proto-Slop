@@ -2260,8 +2260,19 @@ cfOpF9:
 		move.b	#$F,d1
 		bra.w	WriteFMI
 ; ===========================================================================
-Kos_Z80:	incbin	"sound/Z80.bin"
+Kos_Z80:	incbin	"sound\z80.bin", 0, $15
+		dc.b ((SegaPCM&$FF8000)/$8000)&1						; Least bit of bank ID (bit 15 of address)
+		incbin	"sound\z80.bin", $16, 6
+		dc.b ((SegaPCM&$FF8000)/$8000)>>1						; ... the remaining bits of bank ID (bits 16-23)
+		incbin	"sound\z80.bin", $1D, $93
+		dc.w ((SegaPCM&$FF)<<8)+((SegaPCM&$7F00)>>8)|$80				; Pointer to Sega PCM, relative to start of ROM bank (i.e., little_endian($8000 + SegaPCM&$7FFF)
+		incbin	"sound\z80.bin", $B2, 1
+		dc.w (((SegaPCM_End-SegaPCM)&$FF)<<8)+(((SegaPCM_End-SegaPCM)&$FF00)>>8)	; ... the size of the Sega PCM (little endian)
+		incbin	"sound\z80.bin", $B5, $16AB
 		even
+
+SegaPCM		equ	$3FFFF	; Classic SEGA sound~ 
+SegaPCM_End	equ	SegaPCM
 
 Music81:	incbin	"sound/music/GHZ.bin"
 		even
@@ -2467,5 +2478,6 @@ SoundCF:	dc.b   0,$1E,  1,  2,$80,  4,  0,$10,$27,  3,$80,  5,  0,$12,$27,  0,$8
 SoundD0:	dc.b   0,$21,  1,  1,$80,  4,  0, $A,  0,$10,$EF,  0,$D0,  2,$E7,  1,$F7,  0,$40,$FF,$FA,$E7,  1,$E6,  1,$F7,  0,$22,$FF,$F8,$80,  1,$EE,$38, $F, $F, $F, $F,$1F,$1F,$1F, $E,  0,  0,  0,  0,  0,  0,  0,  0, $F, $F, $F,$1F,  0,  0,  0,$80; 0
 					; DATA XREF: ROM:SoundD0Indexo
 
-SegaPCM:	incbin	"sound/PCM/Sega.bin"
-		even
+;SegaPCM:	incbin	"sound/PCM/Sega.bin"
+;		even
+;SegaPCM_End:
