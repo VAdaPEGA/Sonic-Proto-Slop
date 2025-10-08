@@ -15445,8 +15445,6 @@ loc_B98E:				; CODE XREF: ROM:0000B984j
 		bmi.s	Obj34_NoDisplay
 		cmpi.w	#$200,d0
 		bcc.s	Obj34_NoDisplay
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		bra.w	DisplaySprite
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -15459,8 +15457,6 @@ Obj34_Wait:				; DATA XREF: ROM:Obj34_Indexo
 		tst.w	anim_frame_duration(a0)
 		beq.s	Obj34_CheckPos2
 		subq.w	#1,anim_frame_duration(a0)
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		bra.w	DisplaySprite
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -15480,8 +15476,6 @@ Obj34_Move2:				; CODE XREF: ROM:0000B9C4j
 		bmi.s	Obj34_NoDisplay2
 		cmpi.w	#$200,d0
 		bcc.s	Obj34_NoDisplay2
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		bra.w	DisplaySprite
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -15620,6 +15614,8 @@ Obj3A:
 Obj3A_Index:	dc.w Obj3A_ChkPLC-Obj3A_Index
 		dc.w Obj3A_ChkPos-Obj3A_Index
 		dc.w Obj3A_Wait-Obj3A_Index
+		dc.w Obj3A_TimeBonus-Obj3A_Index
+		dc.w Obj3A_Wait-Obj3A_Index
 		dc.w Obj3A_NextLevel-Obj3A_Index
 ; ===========================================================================
 ; loc_BB5C:
@@ -15671,8 +15667,6 @@ loc_BBCC:
 		bmi.s	locret_BBDE
 		cmpi.w	#$200,d0
 		bcc.s	locret_BBDE
-		rts
-; ---------------------------------------------------------------------------
 		bra.w	DisplaySprite
 ; ===========================================================================
 
@@ -15695,15 +15689,12 @@ loc_BBEA:
 ; loc_BC04:
 Obj3A_Wait:
 		subq.w	#1,anim_frame_duration(a0)
-		bne.s	locret_BC0E
+		bne.s	@display
 		addq.b	#2,routine(a0)
-
-locret_BC0E:
-		rts
-; ---------------------------------------------------------------------------
+	@display:
 		bra.w	DisplaySprite
 ; ===========================================================================
-; Obj3A_TimeBonus:
+Obj3A_TimeBonus:
 		bsr.w	DisplaySprite
 		move.b	#1,($FFFFF7D6).w
 		moveq	#0,d0
@@ -15772,8 +15763,6 @@ loc_BCBC:
 		move.w	#1,($FFFFFE02).w
 
 locret_BCC2:
-		rts
-; ---------------------------------------------------------------------------
 		bra.w	DisplaySprite
 ; ===========================================================================
 LevelOrder:	dc.w	 1,    2, $200,	   0; 0
@@ -29024,17 +29013,12 @@ Obj06:
 		move.w	Obj06_Index(pc,d0.w),d1
 		jsr	Obj06_Index(pc,d1.w)
 		tst.w	(Two_player_mode).w
-		beq.s	@Not2Player
-		rts
-	@Not2Player:
-		move.w	x_pos(a0),d0
-		andi.w	#$FF80,d0
-		sub.w	(Camera_X_pos_coarse).w,d0
-		cmpi.w	#$280,d0
-		bhi.s	loc_1499A
+		bne.s	@2Player
+		out_of_range	@Delete
+	@2Player:
 		rts
 ; ----------------------------------------------------
-loc_1499A:	
+@Delete:	
 		jmp	(DeleteObject).l
 ; ===========================================================================
 Obj06_Index:	dc.w Obj06_Init-Obj06_Index
