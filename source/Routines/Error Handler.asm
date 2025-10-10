@@ -92,7 +92,8 @@ loc_478:
 		locVRAM	(VRAM_sprites)
 		move.l	#$0,(a6)
 		move.l	#$0,(a6)
-
+		
+		move.w	#$8200+(vram_fg>>10),(vdp_control_port).l ; set foreground nametable address
 		move.l	#$8B009100,(vdp_control_port).l	; scroll mode (one long for screen), no Window
 		bsr.w	ErrorWaitForC
 		move.l	#$8B039100,(vdp_control_port).l	; scroll mode (one long for each line) no Window

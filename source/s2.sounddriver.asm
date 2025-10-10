@@ -2272,7 +2272,7 @@ Kos_Z80:	incbin	"sound\z80.bin", 0, $15
 		even
 
 SegaPCM		equ	$3FFFF	; Classic SEGA sound~ 
-SegaPCM_End	equ	SegaPCM
+SegaPCM_End	equ	SegaPCM+$6000
 
 Music81:	incbin	"sound/music/GHZ.bin"
 		even
