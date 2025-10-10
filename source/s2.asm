@@ -30188,7 +30188,7 @@ Map_Obj49:	dc.w word_1574E-Map_Obj49 ; DATA XREF: ROM:000156A6o
 word_1574E:	dc.w 2			; DATA XREF: ROM:Map_Obj49o
 		dc.w $800D,    0,    0,$FFE0; 0
 		dc.w $800D,    0,    0,	   0; 4
-word_15760:	dc.w $12		; DATA XREF: ROM:00015744o
+word_15760:	dc.w $13		; DATA XREF: ROM:00015744o
 		dc.w $800D,    0,    0,$FFE0; 0
 		dc.w $800D,    0,    0,	   0; 4
 		dc.w $800F,    8,    4,$FFE0; 8
@@ -30206,6 +30206,7 @@ word_15760:	dc.w $12		; DATA XREF: ROM:00015744o
 		dc.w $400F,    8,    4,$FFE0; 56
 		dc.w $400F,    8,    4,	   0; 60
 		dc.w $600F,    8,    4,$FFE0; 64
+		dc.w $600F,    8,    4,	   0; 68
 		dc.w $600F,    8,    4,	   0; 68
 word_157F2:	dc.w 0			; DATA XREF: ROM:00015746o
 					; ROM:0001574Ao
