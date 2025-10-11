@@ -89,6 +89,38 @@ jumping:		equ $3C
 interact:		equ $3D		; RAM address of the last object Sonic stood on, minus $FFFFB000 and divided by $40
 top_solid_bit:		equ $3E		; the bit to check for top solidity (either $C or $E)
 lrb_solid_bit:		equ $3F		; the bit to check for left/right/bottom solidity (either $D or $F)
+
+; Subsprite System
+mainspr_mapframe	equ $B
+mainspr_width		equ $E
+mainspr_childsprites 	equ $F	; amount of child sprites
+mainspr_height		equ $14
+sub2_x_pos		equ $10	;x_vel
+sub2_y_pos		equ $12	;y_vel
+sub2_mapframe		equ $15
+sub3_x_pos		equ $16	;y_radius
+sub3_y_pos		equ $18	;priority
+sub3_mapframe		equ $1B	;anim_frame
+sub4_x_pos		equ $1C	;anim
+sub4_y_pos		equ $1E	;anim_frame_duration
+sub4_mapframe		equ $21	;collision_property
+sub5_x_pos		equ $22	;status
+sub5_y_pos		equ $24	;routine
+sub5_mapframe		equ $27
+sub6_x_pos		equ $28	;subtype
+sub6_y_pos		equ $2A
+sub6_mapframe		equ $2D
+sub7_x_pos		equ $2E
+sub7_y_pos		equ $30
+sub7_mapframe		equ $33
+sub8_x_pos		equ $34
+sub8_y_pos		equ $36
+sub8_mapframe		equ $39
+sub9_x_pos		equ $3A
+sub9_y_pos		equ $3C
+sub9_mapframe		equ $3F
+next_subspr		equ $6
+
 ; ---------------------------------------------------------------------------
 Object_Space:			equ __rs	; Start of Object RAM
 
@@ -150,6 +182,18 @@ Camera_BG2_Y_pos:		equ Camera_RAM+$14
 Camera_BG3_X_pos:		equ Camera_RAM+$18
 Camera_BG3_Y_pos:		equ Camera_RAM+$1C
 
+Camera_X_pos_P2:		equ Camera_RAM+$20
+Camera_Y_pos_P2:		equ Camera_RAM+$24
+Camera_BG_X_pos_P2:		equ Camera_RAM+$28	; only used sometimes as the layer deformation makes it sort of redundant
+Camera_BG_Y_pos_P2:		equ Camera_RAM+$2C
+Camera_BG2_X_pos_P2:		equ Camera_RAM+$30	; unused (only initialised at beginning of level)?
+			;	equ Camera_RAM+$32	; $FFFFEE32-$FFFFEE33 ; seems unused
+Camera_BG2_Y_pos_P2:		equ Camera_RAM+$34
+Camera_BG3_X_pos_P2:		equ Camera_RAM+$38	; unused (only initialised at beginning of level)?
+			;	equ Camera_RAM+$3A	; $FFFFEE3A-$FFFFEE3B ; seems unused
+Camera_BG3_Y_pos_P2:		equ Camera_RAM+$3C
+
+
 Horiz_block_crossed_flag:	equ Camera_RAM+$40
 Verti_block_crossed_flag:	equ Camera_RAM+$41
 Horiz_block_crossed_flag_BG:	equ Camera_RAM+$42
@@ -158,11 +202,41 @@ Horiz_block_crossed_flag_BG2:	equ Camera_RAM+$44
 Horiz_block_crossed_flag_BG3:	equ Camera_RAM+$46
 Horiz_block_crossed_flag_P2:	equ Camera_RAM+$48
 Verti_block_crossed_flag_P2:	equ Camera_RAM+$49
+				
+
+Scroll_flags:			equ Camera_RAM+$50
+Scroll_flags_BG:		equ Camera_RAM+$52
+Scroll_flags_BG2:		equ Camera_RAM+$54
+Scroll_flags_BG3:		equ Camera_RAM+$56
+Scroll_flags_P2:		equ Camera_RAM+$58
+Scroll_flags_BG_P2:		equ Camera_RAM+$5A
+Scroll_flags_BG2_P2:		equ Camera_RAM+$5C
+Scroll_flags_BG3_P2:		equ Camera_RAM+$5E
+
+Camera_X_pos_diff      		equ Camera_RAM+$B0   
+Camera_Y_pos_diff:		equ Camera_RAM+$B2           
+Camera_BG_X_pos_diff:		equ Camera_RAM+$B4           
+Camera_BG_Y_pos_diff:		equ Camera_RAM+$B6       
+Camera_X_pos_diff_P2:		equ Camera_RAM+$B8	; (new X pos - old X pos) * 256
+Camera_Y_pos_diff_P2:		equ Camera_RAM+$BA
 
 Camera_Min_X_pos:		equ Camera_RAM+$C8
 Camera_Max_X_pos:		equ Camera_RAM+$CA
 Camera_Min_Y_pos:		equ Camera_RAM+$CC
 Camera_Max_Y_pos:		equ Camera_RAM+$CE
+
+Camera_Y_pos_bias:		equ Camera_RAM+$D8
+Camera_Y_pos_bias_P2:		equ Camera_RAM+$DA
+
+Camera_Max_Y_Pos_Changing:	equ Camera_RAM+$DE
+
+Camera_Min_X_pos_P2:		equ Camera_RAM+$F8
+Camera_Max_X_pos_P2:		equ Camera_RAM+$FA
+Camera_Min_Y_pos_P2:		equ Camera_RAM+$FC
+Camera_Max_Y_pos_P2:		equ Camera_RAM+$FE
+
+
+
 
 Horiz_scroll_delay_val:		equ $FFFFEED0
 Sonic_Pos_Record_Index:		equ $FFFFEED2

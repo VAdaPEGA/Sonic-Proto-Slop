@@ -516,9 +516,9 @@ loc_D48:
 		startZ80
 		movem.l	(Camera_RAM).w,d0-d7
 		movem.l	d0-d7,($FFFFEE60).w
-		movem.l	($FFFFEE20).w,d0-d7
+		movem.l	(Camera_X_pos_P2).w,d0-d7
 		movem.l	d0-d7,($FFFFEE80).w
-		movem.l	($FFFFEE50).w,d0-d3
+		movem.l	(Scroll_flags).w,d0-d3
 		movem.l	d0-d3,($FFFFEEA0).w
 		move.l	($FFFFF61E).w,($FFFFEEF0).w
 		cmpi.b	#92,(Hint_counter_reserve+1).w
@@ -627,7 +627,7 @@ loc_F08:
 		startZ80
 		movem.l	(Camera_RAM).w,d0-d7
 		movem.l	d0-d7,($FFFFEE60).w
-		movem.l	($FFFFEE50).w,d0-d1
+		movem.l	(Scroll_flags).w,d0-d1
 		movem.l	d0-d1,($FFFFEEA0).w
 		bsr.w	LoadTilesAsYouMove
 		jsr	(HudUpdate).l
@@ -4734,7 +4734,7 @@ loc_3D2A:
 		bsr.w	PalLoad1
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformBGLayer
-		bset	#2,($FFFFEE50).w
+		bset	#2,(Scroll_flags).w
 		bsr.w	MainLevelLoadBlock
 		jsr	(LoadAnimatedBlocks).l
 		bsr.w	LoadTilesFromStart
@@ -6439,14 +6439,14 @@ byte_5709:	dc.b   8,  2,  4,$FF,  2,  3,  8,$FF,  4,  2,  2,  3,  8,$FD,  4,  2;
 
 
 LevelSizeLoad:				; CODE XREF: ROM:00003D30p
-		clr.w	($FFFFEE50).w
-		clr.w	($FFFFEE52).w
-		clr.w	($FFFFEE54).w
-		clr.w	($FFFFEE56).w
-		clr.w	($FFFFEE58).w
-		clr.w	($FFFFEE5A).w
-		clr.w	($FFFFEE5C).w
-		clr.w	($FFFFEE5E).w
+		clr.w	(Scroll_flags).w
+		clr.w	(Scroll_flags_BG).w
+		clr.w	(Scroll_flags_BG2).w
+		clr.w	(Scroll_flags_BG3).w
+		clr.w	(Scroll_flags_P2).w
+		clr.w	(Scroll_flags_BG_P2).w
+		clr.w	(Scroll_flags_BG2_P2).w
+		clr.w	(Scroll_flags_BG3_P2).w
 		clr.w	($FFFFEEA0).w
 		clr.w	($FFFFEEA2).w
 		clr.w	($FFFFEEA4).w
@@ -6469,7 +6469,7 @@ LevelSizeLoad:				; CODE XREF: ROM:00003D30p
 		move.l	d0,(Camera_Min_Y_pos).w
 		move.l	d0,($FFFFEEC4).w
 		move.w	#$1010,(Horiz_block_crossed_flag).w
-		move.w	#$60,($FFFFEED8).w
+		move.w	#$60,(Camera_Y_pos_bias).w
 		bra.w	LevelSize_CheckLamp
 ; ===========================================================================
 LevelSizeArray:
@@ -6549,7 +6549,7 @@ loc_58E6:				; CODE XREF: LevelSizeLoad+1C2j
 
 loc_58F0:				; CODE XREF: LevelSizeLoad+1CCj
 		move.w	d1,(Camera_X_pos).w
-		move.w	d1,($FFFFEE20).w
+		move.w	d1,(Camera_X_pos_P2).w
 		subi.w	#$60,d0	; '`'
 		bcc.s	loc_5900
 		moveq	#0,d0
@@ -6561,7 +6561,7 @@ loc_5900:				; CODE XREF: LevelSizeLoad+1DCj
 
 loc_590A:				; CODE XREF: LevelSizeLoad+1E4j
 		move.w	d0,(Camera_Y_pos).w
-		move.w	d0,($FFFFEE24).w
+		move.w	d0,(Camera_Y_pos_P2).w
 		bsr.w	BgScrollSpeed
 		rts
 ; End of function LevelSizeLoad
@@ -6607,11 +6607,11 @@ BgScrollSpeed:				; CODE XREF: LevelSizeLoad+1F2p
 		move.w	d1,(Camera_BG_X_pos).w
 		move.w	d1,(Camera_BG2_X_pos).w
 		move.w	d1,(Camera_BG3_X_pos).w
-		move.w	d0,($FFFFEE2C).w
-		move.w	d0,($FFFFEE34).w
-		move.w	d1,($FFFFEE28).w
-		move.w	d1,($FFFFEE30).w
-		move.w	d1,($FFFFEE38).w
+		move.w	d0,(Camera_BG_Y_pos_P2).w
+		move.w	d0,(Camera_BG2_Y_pos_P2).w
+		move.w	d1,(Camera_BG_X_pos_P2).w
+		move.w	d1,(Camera_BG2_X_pos_P2).w
+		move.w	d1,(Camera_BG3_X_pos_P2).w
 
 loc_59B6:				; CODE XREF: BgScrollSpeed+4j
 		moveq	#0,d2
@@ -6641,10 +6641,10 @@ BgScroll_GHZ:				; DATA XREF: ROM:BgScroll_Indexo
 		clr.l	(a2)+
 		clr.l	(a2)+
 		clr.l	(a2)+
-		clr.l	($FFFFEE28).w
-		clr.l	($FFFFEE2C).w
-		clr.l	($FFFFEE34).w
-		clr.l	($FFFFEE3C).w
+		clr.l	(Camera_BG_X_pos_P2).w
+		clr.l	(Camera_BG_Y_pos_P2).w
+		clr.l	(Camera_BG2_Y_pos_P2).w
+		clr.l	(Camera_BG3_Y_pos_P2).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -6657,7 +6657,7 @@ BgScroll_LZ:				; DATA XREF: ROM:BgScroll_Indexo
 BgScroll_CPZ:				; DATA XREF: ROM:BgScroll_Indexo
 		lsr.w	#2,d0
 		move.w	d0,(Camera_BG_Y_pos).w
-		move.w	d0,($FFFFEE2C).w
+		move.w	d0,(Camera_BG_Y_pos_P2).w
 		clr.l	(Camera_BG_X_pos).w
 		clr.l	(Camera_BG2_X_pos).w
 		rts
@@ -6672,10 +6672,10 @@ BgScroll_EHZ:				; DATA XREF: ROM:BgScroll_Indexo
 		clr.l	(a2)+
 		clr.l	(a2)+
 		clr.l	(a2)+
-		clr.l	($FFFFEE28).w
-		clr.l	($FFFFEE2C).w
-		clr.l	($FFFFEE34).w
-		clr.l	($FFFFEE3C).w
+		clr.l	(Camera_BG_X_pos_P2).w
+		clr.l	(Camera_BG_Y_pos_P2).w
+		clr.l	(Camera_BG2_Y_pos_P2).w
+		clr.l	(Camera_BG3_Y_pos_P2).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -6728,40 +6728,57 @@ DeformBGLayer:				; CODE XREF: ROM:00003D34p
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_5AA4:				; CODE XREF: DeformBGLayer+4j
-		clr.w	($FFFFEE50).w
-		clr.w	($FFFFEE52).w
-		clr.w	($FFFFEE54).w
-		clr.w	($FFFFEE56).w
-		clr.w	($FFFFEE58).w
-		clr.w	($FFFFEE5A).w
-		clr.w	($FFFFEE5C).w
-		clr.w	($FFFFEE5E).w
+		clr.w	(Scroll_flags).w
+		clr.w	(Scroll_flags_BG).w
+		clr.w	(Scroll_flags_BG2).w
+		clr.w	(Scroll_flags_BG3).w
+		clr.w	(Scroll_flags_P2).w
+		clr.w	(Scroll_flags_BG_P2).w
+		clr.w	(Scroll_flags_BG2_P2).w
+		clr.w	(Scroll_flags_BG3_P2).w
+	; Player 1 Camera
 		lea	(MainCharacter).w,a0
 		lea	(Camera_X_pos).w,a1
-		lea	(Horiz_block_crossed_flag).w,a2
-		lea	($FFFFEE50).w,a3
-		lea	($FFFFEEB0).w,a4
+		lea	(Camera_Min_X_pos).w,a2
+		lea	(Scroll_flags).w,a3
+		lea	(Camera_X_pos_diff).w,a4
 		lea	(Horiz_scroll_delay_val).w,a5
 		lea	(Sonic_Pos_Record_Buf).w,a6
 		bsr.w	ScrollHorizontal
+
+		lea	(Horiz_block_crossed_flag).w,a2
+		bsr.w	SetHorizScrollFlags
+
 		lea	(Camera_Y_pos).w,a1
-		lea	(Verti_block_crossed_flag).w,a2
-		lea	($FFFFEEB2).w,a4
+		lea	(Camera_Min_X_pos).w,a2
+		lea	(Camera_Y_pos_diff).w,a4
+		move.w	(Camera_Y_pos_bias).w,d3
 		bsr.w	ScrollVertical
+
+		lea	(Verti_block_crossed_flag).w,a2
+		bsr.w	SetVertiScrollFlags
+
 		tst.w	(Two_player_mode).w
 		beq.s	loc_5B2A
+	; Player 2 Camera
 		lea	(Sidekick).w,a0
-		lea	($FFFFEE20).w,a1
-		lea	(Horiz_block_crossed_flag_P2).w,a2
-		lea	($FFFFEE58).w,a3
+		lea	(Camera_X_pos_P2).w,a1
+		lea	(Camera_Min_X_pos_P2).w,a2
+		lea	(Scroll_flags_P2).w,a3
 		lea	($FFFFEEB6).w,a4
 		lea	($FFFFEED4).w,a5
 		lea	($FFFFE700).w,a6
 		bsr.w	ScrollHorizontal
-		lea	($FFFFEE24).w,a1
-		lea	(Verti_block_crossed_flag_P2).w,a2
+		lea	(Horiz_block_crossed_flag_P2).w,a2
+		bsr.w	SetHorizScrollFlags
+
+		lea	(Camera_Y_pos_P2).w,a1
+		lea	(Camera_Min_X_pos_P2).w,a2
 		lea	($FFFFEEB8).w,a4
+		move.w	(Camera_Y_pos_bias_P2).w,d3	; not implemented yet
 		bsr.w	ScrollVertical
+		lea	(Verti_block_crossed_flag_P2).w,a2
+		bsr.w	SetVertiScrollFlags
 
 loc_5B2A:				; CODE XREF: DeformBGLayer+5Cj
 		bsr.w	DynScreenResizeLoad
@@ -6788,7 +6805,7 @@ Deform_Index:	dc.w Deform_GHZ-Deform_Index; 0	; DATA XREF: ROM:Deform_Indexo
 Deform_GHZ:				; DATA XREF: ROM:Deform_Indexo
 		tst.w	(Two_player_mode).w
 		bne.w	loc_5C5A
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#5,d4
 		move.l	d4,d1
@@ -6796,7 +6813,7 @@ Deform_GHZ:				; DATA XREF: ROM:Deform_Indexo
 		add.l	d1,d4
 		moveq	#0,d6
 		bsr.w	ScrollBlock6
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#7,d4
 		moveq	#0,d6
@@ -6892,7 +6909,7 @@ loc_5C48:				; CODE XREF: ROM:00005C54j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_5C5A:				; CODE XREF: ROM:00005B5Cj
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#5,d4
 		move.l	d4,d1
@@ -6900,7 +6917,7 @@ loc_5C5A:				; CODE XREF: ROM:00005B5Cj
 		add.l	d1,d4
 		moveq	#0,d6
 		bsr.w	ScrollBlock6
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#7,d4
 		moveq	#0,d6
@@ -7002,13 +7019,13 @@ loc_5D52:				; CODE XREF: ROM:00005D5Ej
 		move.l	d4,d1
 		asl.l	#1,d4
 		add.l	d1,d4
-		add.l	d4,($FFFFEE38).w
+		add.l	d4,(Camera_BG3_X_pos_P2).w
 		move.w	($FFFFEEB6).w,d4
 		ext.l	d4
 		asl.l	#7,d4
-		add.l	d4,($FFFFEE30).w
+		add.l	d4,(Camera_BG2_X_pos_P2).w
 		lea	($FFFFE1C0).w,a1
-		move.w	($FFFFEE24).w,d0
+		move.w	(Camera_Y_pos_P2).w,d0
 		andi.w	#$7FF,d0
 		lsr.w	#5,d0
 		neg.w	d0
@@ -7022,10 +7039,10 @@ loc_5D98:				; CODE XREF: ROM:00005D94j
 		lsr.w	#1,d4
 		move.w	d0,($FFFFF620).w
 		subi.w	#$E0,($FFFFF620).w ; 'à'
-		move.w	($FFFFEE24).w,($FFFFF61E).w
+		move.w	(Camera_Y_pos_P2).w,($FFFFF61E).w
 		subi.w	#$E0,($FFFFF61E).w ; 'à'
 		andi.l	#$FFFEFFFE,($FFFFF61E).w
-		move.w	($FFFFEE20).w,d0
+		move.w	(Camera_X_pos_P2).w,d0
 		cmpi.b	#GameModeID_TitleScreen,(Game_Mode).w
 		bne.s	loc_5DCC
 		moveq	#0,d0
@@ -7034,7 +7051,7 @@ loc_5DCC:				; CODE XREF: ROM:00005DC8j
 		neg.w	d0
 		swap	d0
 		move.w	(TempArray_LayerDef).w,d0
-		add.w	($FFFFEE38).w,d0
+		add.w	(Camera_BG3_X_pos_P2).w,d0
 		neg.w	d0
 		move.w	#$F,d1
 		sub.w	d4,d1
@@ -7046,7 +7063,7 @@ loc_5DE2:				; CODE XREF: ROM:00005DE4j
 
 loc_5DE8:				; CODE XREF: ROM:00005DE0j
 		move.w	(TempArray_LayerDef+4).w,d0
-		add.w	($FFFFEE38).w,d0
+		add.w	(Camera_BG3_X_pos_P2).w,d0
 		neg.w	d0
 		move.w	#7,d1
 
@@ -7054,7 +7071,7 @@ loc_5DF6:				; CODE XREF: ROM:00005DF8j
 		move.l	d0,(a1)+
 		dbf	d1,loc_5DF6
 		move.w	(TempArray_LayerDef+8).w,d0
-		add.w	($FFFFEE38).w,d0
+		add.w	(Camera_BG3_X_pos_P2).w,d0
 		neg.w	d0
 		move.w	#7,d1
 
@@ -7062,21 +7079,21 @@ loc_5E0A:				; CODE XREF: ROM:00005E0Cj
 		move.l	d0,(a1)+
 		dbf	d1,loc_5E0A
 		move.w	#$17,d1
-		move.w	($FFFFEE38).w,d0
+		move.w	(Camera_BG3_X_pos_P2).w,d0
 		neg.w	d0
 
 loc_5E1A:				; CODE XREF: ROM:00005E1Cj
 		move.l	d0,(a1)+
 		dbf	d1,loc_5E1A
 		move.w	#$17,d1
-		move.w	($FFFFEE30).w,d0
+		move.w	(Camera_BG2_X_pos_P2).w,d0
 		neg.w	d0
 
 loc_5E2A:				; CODE XREF: ROM:00005E2Cj
 		move.l	d0,(a1)+
 		dbf	d1,loc_5E2A
-		move.w	($FFFFEE30).w,d0
-		move.w	($FFFFEE20).w,d2
+		move.w	(Camera_BG2_X_pos_P2).w,d0
+		move.w	(Camera_X_pos_P2).w,d2
 		sub.w	d0,d2
 		ext.l	d2
 		asl.l	#8,d2
@@ -7101,10 +7118,10 @@ loc_5E52:				; CODE XREF: ROM:00005E5Ej
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Deform_LZ:				; DATA XREF: ROM:Deform_Indexo
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#7,d4
-		move.w	($FFFFEEB2).w,d5
+		move.w	(Camera_Y_pos_diff).w,d5
 		ext.l	d5
 		asl.l	#7,d5
 		bsr.w	ScrollBlock1
@@ -7175,10 +7192,10 @@ Deform_LZ_Data1:dc.b   1,  1,  2,  2,  3,  3,  3,  3,  2,  2,  1,  1,  0,  0,  0
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Deform_CPZ:				; DATA XREF: ROM:Deform_Indexo
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#5,d4
-		move.w	($FFFFEEB2).w,d5
+		move.w	(Camera_Y_pos_diff).w,d5
 		ext.l	d5
 		asl.l	#6,d5
 		bsr.w	ScrollBlock1
@@ -7198,24 +7215,24 @@ loc_6026:				; CODE XREF: ROM:00006028j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Deform_Unk:				; unknown BG deform
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#5,d4
-		move.w	($FFFFEEB2).w,d5
+		move.w	(Camera_Y_pos_diff).w,d5
 		ext.l	d5
 		asl.l	#6,d5
 		bsr.w	ScrollBlock1
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#7,d4
 		moveq	#4,d6
 		bsr.w	ScrollBlock5
 		move.w	(Camera_BG_Y_pos).w,($FFFFF618).w
-		move.b	($FFFFEE52).w,d0
-		or.b	($FFFFEE54).w,d0
-		move.b	d0,($FFFFEE56).w
-		clr.b	($FFFFEE52).w
-		clr.b	($FFFFEE54).w
+		move.b	(Scroll_flags_BG).w,d0
+		or.b	(Scroll_flags_BG2).w,d0
+		move.b	d0,(Scroll_flags_BG3).w
+		clr.b	(Scroll_flags_BG).w
+		clr.b	(Scroll_flags_BG2).w
 		lea	(TempArray_LayerDef).w,a1
 		move.w	(Camera_BG_X_pos).w,d0
 		neg.w	d0
@@ -7407,13 +7424,13 @@ loc_621C:				; CODE XREF: Deform_TitleScreen+172j
 		moveq	#0,d0
 		move.w	d0,($FFFFF620).w
 		subi.w	#$E0,($FFFFF620).w ; 'à'
-		move.w	($FFFFEE24).w,($FFFFF61E).w
+		move.w	(Camera_Y_pos_P2).w,($FFFFF61E).w
 
 loc_624A:
 		subi.w	#$E0,($FFFFF61E).w ; 'à'
 		andi.l	#$FFFEFFFE,($FFFFF61E).w
 		lea	($FFFFE1B0).w,a1
-		move.w	($FFFFEE20).w,d0
+		move.w	(Camera_X_pos_P2).w,d0
 		move.w	#$E,d1
 ; END OF FUNCTION CHUNK	FOR Deform_TitleScreen
 
@@ -7538,12 +7555,12 @@ loc_6324:
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Deform_HPZ:				; DATA XREF: ROM:Deform_Indexo
-		move.w	($FFFFEEB0).w,d4
+		move.w	(Camera_X_pos_diff).w,d4
 		ext.l	d4
 		asl.l	#6,d4
 		moveq	#2,d6
 		bsr.w	ScrollBlock4
-		move.w	($FFFFEEB2).w,d5
+		move.w	(Camera_Y_pos_diff).w,d5
 		ext.l	d5
 		asl.l	#7,d5
 		moveq	#6,d6
@@ -7730,260 +7747,249 @@ loc_64D6:				; CODE XREF: ROM:000064D8j
 		dbf	d2,loc_64D0
 		rts
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ===========================================================================
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
-ScrollHorizontal:			; CODE XREF: DeformBGLayer+44p
-					; DeformBGLayer+7Ap
-		move.w	(a1),d4
-		bsr.s	sub_6514
+SetHorizScrollFlags:	
 		move.w	(a1),d0
 		andi.w	#$10,d0
 		move.b	(a2),d1
 		eor.b	d1,d0
-		bne.s	locret_6512
+		bne.s	@DoNothing
 		eori.b	#$10,(a2)
 		move.w	(a1),d0
 		sub.w	d4,d0
-		bpl.s	loc_650E
+		bpl.s	@Forward
 		bset	#2,(a3)
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_650E:				; CODE XREF: ScrollHorizontal+18j
-		bset	#3,(a3)
-
-locret_6512:				; CODE XREF: ScrollHorizontal+Ej
+	@Forward:
+		bset	#3,(a3)		; set moving forward in level bit
+	@DoNothing:			
 		rts
 ; End of function ScrollHorizontal
 
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-sub_6514:				; CODE XREF: ScrollHorizontal+2p
-		move.w	(a5),d1
-		beq.s	loc_6536
-		subi.w	#$100,d1
+ScrollHorizontal:
+		move.w	(a1),d4
+		; Final game puts a teleport flag here that stops the code
+		move.w	(a5),d1		; should scrolling be delayed?
+		beq.s	@scrollNotDelayed	; if not, branch
+		subi.w	#$100,d1	; reduce delay value
 		move.w	d1,(a5)
 		moveq	#0,d1
-		move.b	(a5),d1
-		lsl.b	#2,d1
+		move.b	(a5),d1		; get delay value
+		lsl.b	#2,d1		; multiply by 4, the size of a position buffer entry
 		addq.b	#4,d1
-		move.w	2(a5),d0
+		move.w	2(a5),d0	; get current position buffer index
 		sub.b	d1,d0
-		move.w	(a6,d0.w),d0
+		move.w	(a6,d0.w),d0	; get Sonic's position a certain number of frames ago
 		andi.w	#$3FFF,d0
-		bra.s	loc_653A
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		bra.s	@checkIfShouldScroll
+; ===========================================================================
 
-loc_6536:				; CODE XREF: sub_6514+2j
+@scrollNotDelayed:	
 		move.w	x_pos(a0),d0
-
-loc_653A:				; CODE XREF: sub_6514+20j
+	@checkIfShouldScroll:		
 		sub.w	(a1),d0
-		subi.w	#$90,d0	; ''
-		blt.s	loc_654C
-		subi.w	#$10,d0
-		bge.s	loc_6564
-		clr.w	(a4)
+		subi.w	#(320/2)-16,d0	; is the player less than 144 pixels from the screen edge?
+		blt.s	@ScrollLeft	; if he is, scroll left
+		subi.w	#16,d0		; is the player more than 159 pixels from the screen edge?
+		bge.s	@ScrollRight	; if he is, scroll right
+		clr.w	(a4)		; otherwise, don't scroll
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_654C:				; CODE XREF: sub_6514+2Cj
-		cmpi.w	#$FFF0,d0
-		bgt.s	loc_6556
-		move.w	#$FFF0,d0
-
-loc_6556:				; CODE XREF: sub_6514+3Cj
+; ===========================================================================
+@ScrollLeft:				; CODE XREF: sub_6514+2Cj
+		cmpi.w	#-16,d0
+		bgt.s	@maxNotReached
+		move.w	#-16,d0		; limit scrolling to 16 pixels per frame
+	@maxNotReached:
+		add.w	(a1),d0		; get new camera position
+		cmp.w	(a2),d0		; is it greater than the minimum position?
+		bgt.s	@doScroll	; if it is, branch
+		move.w	(a2),d0		; prevent camera from going any further back
+		bra.s	@doScroll
+; ===========================================================================
+@ScrollRight:
+		cmpi.w	#16,d0
+		blo.s	@maxNotReached2
+		move.w	#16,d0
+	@maxNotReached2:
 		add.w	(a1),d0
-		cmp.w	(Camera_Min_X_pos).w,d0
-		bgt.s	loc_657A
-		move.w	(Camera_Min_X_pos).w,d0
-		bra.s	loc_657A
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		cmp.w	Camera_Max_X_pos-Camera_Min_X_pos(a2),d0	; is it less than the max position?
+		blt.s	@doScroll	; if it is, branch
+		move.w	Camera_Max_X_pos-Camera_Min_X_pos(a2),d0	; prevent camera from going any further forward
 
-loc_6564:				; CODE XREF: sub_6514+32j
-		cmpi.w	#$10,d0
-		bcs.s	loc_656E
-		move.w	#$10,d0
-
-loc_656E:				; CODE XREF: sub_6514+54j
-		add.w	(a1),d0
-		cmp.w	(Camera_Max_X_pos).w,d0
-		blt.s	loc_657A
-		move.w	(Camera_Max_X_pos).w,d0
-
-loc_657A:				; CODE XREF: sub_6514+48j sub_6514+4Ej ...
+	@doScroll:
 		move.w	d0,d1
-		sub.w	(a1),d1
-		asl.w	#8,d1
-		move.w	d0,(a1)
-		move.w	d1,(a4)
+		sub.w	(a1),d1		; subtract old camera position
+		asl.w	#8,d1		; shift up by a byte
+		move.w	d0,(a1)		; set new camera position
+		move.w	d1,(a4)		; set difference between old and new positions
 		rts
 ; End of function sub_6514
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ---------------------------------------------------------------------------
+; Subroutine to scroll the camera vertically
+; ---------------------------------------------------------------------------
 
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-ScrollVertical:				; CODE XREF: DeformBGLayer+54p
-					; DeformBGLayer+8Ap
+ScrollVertical:	
+
 		moveq	#0,d1
 		move.w	y_pos(a0),d0
 		sub.w	(a1),d0
-		btst	#2,status(a0)
-		beq.s	loc_6598
+
+		cmpi.w	#-$100,(Camera_Min_Y_pos).w	; does the level wrap vertically?
+		bne.s	@NoVerticalWrap			; if not, branch
+		andi.w	#$7FF,d0
+	@NoVerticalWrap:
+		btst	#PlayerStatusBitSpin,status(a0)
+		beq.s	@NotSpinning
 		subq.w	#5,d0
 
-loc_6598:				; CODE XREF: ScrollVertical+Ej
-		btst	#1,status(a0)
-		beq.s	loc_65B8
-		addi.w	#$20,d0	; ' '
-		sub.w	($FFFFEED8).w,d0
-		bcs.s	loc_6602
-		subi.w	#$40,d0	; '@'
-		bcc.s	loc_6602
-		tst.b	($FFFFEEDE).w
-		bne.s	loc_6614
-		bra.s	loc_65C4
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+	@NotSpinning:	
+		btst	#PlayerStatusBitAir,status(a0)
+		beq.s	@NotInTheAir
 
-loc_65B8:				; CODE XREF: ScrollVertical+18j
-		sub.w	($FFFFEED8).w,d0
-		bne.s	loc_65C8
-		tst.b	($FFFFEEDE).w
-		bne.s	loc_6614
+		addi.w	#32,d0		
+		sub.w	d3,d0		; subtract camera bias (Sonic 2 final)
+		bcs.s	@DoScroll_fast
+		subi.w	#64,d0
+		bcc.s	@DoScroll_fast
+		tst.b	(Camera_Max_Y_Pos_Changing).w
+		bne.s	@ScrollUpOrDown_maxYPosChanging
+		bra.s	@DoNotScroll
+; ===========================================================================
 
-loc_65C4:				; CODE XREF: ScrollVertical+30j
+@NotInTheAir:
+		sub.w	d3,d0		; subtract camera bias (Sonic 2 final)
+		bne.s	@DecideScrollType
+		tst.b	(Camera_Max_Y_Pos_Changing).w
+		bne.s	@ScrollUpOrDown_maxYPosChanging
+
+@DoNotScroll:
 		clr.w	(a4)
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_65C8:				; CODE XREF: ScrollVertical+36j
-		cmpi.w	#$60,($FFFFEED8).w ; '`'
-		bne.s	loc_65F0
-		move.w	$14(a0),d1
-		bpl.s	loc_65D8
-		neg.w	d1
+@DecideScrollType:
+		cmpi.w	#(224/2)-16,d3 	; is the camera bias normal?
+		bne.s	@DoScroll_slow	; if not, branch
+		move.w	ground_speed(a0),d1 ; get player ground velocity
+		bpl.s	@doScroll_medium	
+		neg.w	d1		;  force it to be positive
+	@doScroll_medium:
+		cmpi.w	#$800,d1	; is the player travelling very fast?
+		bhs.s	@DoScroll_fast	; if he is, branch
 
-loc_65D8:				; CODE XREF: ScrollVertical+4Ej
-		cmpi.w	#$800,d1
-		bcc.s	loc_6602
-		move.w	#$600,d1
-		cmpi.w	#6,d0
-		bgt.s	loc_665C
-		cmpi.w	#$FFFA,d0
-		blt.s	loc_662A
-		bra.s	loc_661A
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		move.w	#6<<8,d1
+		cmpi.w	#6,d0		; is the positions difference greater than 6 pixels?
+		bgt.s	@ScrollDown_max	; if so, move camera at capped speed
+		cmpi.w	#-6,d0		; is the positions difference less than -6 pixels?
+		blt.s	@ScrollUp_max	; if so, move camera at capped speed
+		bra.s	@ScrollUpOrDown	; otherwise, move camera at player's speed
+; ===========================================================================
 
-loc_65F0:				; CODE XREF: ScrollVertical+48j
-		move.w	#$200,d1
-		cmpi.w	#2,d0
-		bgt.s	loc_665C
-		cmpi.w	#$FFFE,d0
-		blt.s	loc_662A
-		bra.s	loc_661A
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+@DoScroll_slow:
+		move.w	#2<<8,d1	; If player is going too fast, cap camera movement to 2 pixels per frame
+		cmpi.w	#2,d0		; is player going down too fast?
+		bgt.s	@ScrollDown_max	; if so, move camera at capped speed
+		cmpi.w	#-2,d0		; is player going up too fast?
+		blt.s	@ScrollUp_max	; if so, move camera at capped speed
+		bra.s	@ScrollUpOrDown	; otherwise, move camera at player's speed
+; ===========================================================================
 
-loc_6602:				; CODE XREF: ScrollVertical+22j
-					; ScrollVertical+28j ...
-		move.w	#$1000,d1
-		cmpi.w	#$10,d0
-		bgt.s	loc_665C
-		cmpi.w	#$FFF0,d0
-		blt.s	loc_662A
-		bra.s	loc_661A
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+@DoScroll_fast:	
+		move.w	#16<<8,d1	; If player is going too fast, cap camera movement to $10 pixels per frame
+		cmpi.w	#16,d0		; is player going down too fast?
+		bgt.s	@ScrollDown_max	; if so, move camera at capped speed
+		cmpi.w	#-16,d0		; is player going up too fast?
+		blt.s	@ScrollUp_max	; if so, move camera at capped speed
+		bra.s	@ScrollUpOrDown	; otherwise, move camera at player's speed
+; ===========================================================================
 
-loc_6614:				; CODE XREF: ScrollVertical+2Ej
-					; ScrollVertical+3Cj
-		moveq	#0,d0
-		move.b	d0,($FFFFEEDE).w
+@ScrollUpOrDown_MaxYPosChanging:	
+		moveq	#0,d0		; Distance for camera to move = 0
+		move.b	d0,(Camera_Max_Y_Pos_Changing).w	; clear camera max Y pos changing flag
 
-loc_661A:				; CODE XREF: ScrollVertical+68j
-					; ScrollVertical+7Aj ...
+@ScrollUpOrDown:	
 		moveq	#0,d1
-		move.w	d0,d1
-		add.w	(a1),d1
-		tst.w	d0
-		bpl.w	loc_6664
-		bra.w	loc_6634
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		move.w	d0,d1		; get position difference
+		add.w	(a1),d1		; add old camera Y position
+		tst.w	d0		; is the camera to scroll down?
+		bpl.w	@ScrollDown	; if it is, branch
+		bra.w	@ScrollUp
+; ===========================================================================
 
-loc_662A:				; CODE XREF: ScrollVertical+66j
-					; ScrollVertical+78j ...
-		neg.w	d1
+@ScrollUp_max:	
+		neg.w	d1	; make the value negative (since we're going backwards)
 		ext.l	d1
-		asl.l	#8,d1
-		add.l	(a1),d1
-		swap	d1
+		asl.l	#8,d1	; move this into the upper word, so it lines up with the actual y_pos value in Camera_Y_pos
+		add.l	(a1),d1	; add the two, getting the new Camera_Y_pos value
+		swap	d1	; actual Y-coordinate is now the low word
 
-loc_6634:				; CODE XREF: ScrollVertical+A0j
-		cmp.w	(Camera_Min_Y_pos).w,d1
-		bgt.s	loc_6686
-		cmpi.w	#$FF00,d1
-		bgt.s	loc_6656
+@ScrollUp:	
+		cmp.w	(Camera_Min_Y_pos).w,d1	; is the new position less than the minimum Y pos?
+		bgt.s	@DoScroll	; if not, branch
+		cmpi.w	#-$100,d1
+		bgt.s	@MinYPosReached
 		andi.w	#$7FF,d1
-		andi.w	#$7FF,y_pos(a0)
 		andi.w	#$7FF,(a1)
-		andi.w	#$3FF,x_pos(a1)
-		bra.s	loc_6686
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		bra.s	@DoScroll
+; ===========================================================================
 
-loc_6656:				; CODE XREF: ScrollVertical+B8j
-		move.w	(Camera_Min_Y_pos).w,d1
-		bra.s	loc_6686
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+@minYPosReached:	
+		move.w	4(a2),d1	; prevent camera from going any further up
+		bra.s	@DoScroll
+; ===========================================================================
 
-loc_665C:				; CODE XREF: ScrollVertical+60j
-					; ScrollVertical+72j ...
+@ScrollDown_max:	
 		ext.l	d1
 		asl.l	#8,d1
 		add.l	(a1),d1
-		swap	d1
+		swap	d1		; calculate new camera pos
 
-loc_6664:				; CODE XREF: ScrollVertical+9Cj
-		cmp.w	(Camera_Max_Y_pos).w,d1
-		blt.s	loc_6686
+@ScrollDown:				
+		cmp.w	6(a2),d1	; is the new position greater than the maximum Y pos?
+		blt.s	@doScroll	; if not, branch
 		subi.w	#$800,d1
-		bcs.s	loc_6682
-		andi.w	#$7FF,y_pos(a0)
+		bcs.s	@MaxYPosReached
 		subi.w	#$800,(a1)
-		andi.w	#$3FF,x_pos(a1)
-		bra.s	loc_6686
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		bra.s	@doScroll
+; ===========================================================================
 
-loc_6682:				; CODE XREF: ScrollVertical+E8j
-		move.w	(Camera_Max_Y_pos).w,d1
+@MaxYPosReached:				
+		move.w	6(a2),d1	; prevent camera from going any further down
 
-loc_6686:				; CODE XREF: ScrollVertical+B2j
-					; ScrollVertical+CEj ...
-		move.w	(a1),d4
-		swap	d1
+@doScroll:	
+		move.w	(a1),d4		; get old pos (used by SetVertiScrollFlags)
+		swap	d1		; actual Y-coordinate is now the high word, as Camera_Y_pos expects it
 		move.l	d1,d3
 		sub.l	(a1),d3
 		ror.l	#8,d3
-		move.w	d3,(a4)
-		move.l	d1,(a1)
-		move.w	(a1),d0
+		move.w	d3,(a4)		; set difference between old and new positions
+		move.l	d1,(a1)		; set new camera Y pos
+		rts
+; ===========================================================================
+
+SetVertiScrollFlags:
+		move.w	(a1),d0		; get camera Y pos
 		andi.w	#$10,d0
 		move.b	(a2),d1
-		eor.b	d1,d0
-		bne.s	locret_66B4
+		eor.b	d1,d0		; has the camera crossed a 16-pixel boundary?
+		bne.s	@DoNothing	; if not, branch
 		eori.b	#$10,(a2)
-		move.w	(a1),d0
-		sub.w	d4,d0
-		bpl.s	loc_66B0
-		bset	#0,(a3)
+		move.w	(a1),d0		; get camera Y pos
+		sub.w	d4,d0		; subtract old camera Y pos
+		bpl.s	@ScrollDown	; branch if the camera has scrolled down
+		bset	#0,(a3)		; set moving up in level bit
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_66B0:				; CODE XREF: ScrollVertical+122j
-		bset	#1,(a3)
-
-locret_66B4:				; CODE XREF: ScrollVertical+118j
+@ScrollDown:	
+		bset	#1,(a3)	; set moving down in level bit
+@DoNothing:	
 		rts
 ; End of function ScrollVertical
 
@@ -8006,12 +8012,12 @@ ScrollBlock1:				; CODE XREF: ROM:00005E74p
 		eori.b	#$10,(Horiz_block_crossed_flag_BG).w
 		sub.l	d2,d0
 		bpl.s	loc_66E4
-		bset	#2,($FFFFEE52).w
+		bset	#2,(Scroll_flags_BG).w
 		bra.s	loc_66EA
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_66E4:				; CODE XREF: ScrollBlock1+24j
-		bset	#3,($FFFFEE52).w
+		bset	#3,(Scroll_flags_BG).w
 
 loc_66EA:				; CODE XREF: ScrollBlock1+1Aj
 					; ScrollBlock1+2Cj
@@ -8028,12 +8034,12 @@ loc_66EA:				; CODE XREF: ScrollBlock1+1Aj
 		eori.b	#$10,(Verti_block_crossed_flag_BG).w
 		sub.l	d3,d0
 		bpl.s	loc_6718
-		bset	#0,($FFFFEE52).w
+		bset	#0,(Scroll_flags_BG).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_6718:				; CODE XREF: ScrollBlock1+58j
-		bset	#1,($FFFFEE52).w
+		bset	#1,(Scroll_flags_BG).w
 
 locret_671E:				; CODE XREF: ScrollBlock1+4Ej
 		rts
@@ -8057,13 +8063,13 @@ ScrollBlock2:				; CODE XREF: ROM:00006362p
 		eori.b	#$10,(Verti_block_crossed_flag_BG).w
 		sub.l	d3,d0
 		bpl.s	loc_674C
-		bset	d6,($FFFFEE52).w
+		bset	d6,(Scroll_flags_BG).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_674C:				; CODE XREF: ScrollBlock2+24j
 		addq.b	#1,d6
-		bset	d6,($FFFFEE52).w
+		bset	d6,(Scroll_flags_BG).w
 
 locret_6752:				; CODE XREF: ScrollBlock2+1Aj
 		rts
@@ -8082,12 +8088,12 @@ ScrollBlock3:
 		eori.b	#$10,(Verti_block_crossed_flag_BG).w
 		sub.w	d3,d0
 		bpl.s	loc_677C
-		bset	#0,($FFFFEE52).w
+		bset	#0,(Scroll_flags_BG).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_677C:				; CODE XREF: ROM:00006772j
-		bset	#1,($FFFFEE52).w
+		bset	#1,(Scroll_flags_BG).w
 
 locret_6782:				; CODE XREF: ROM:00006768j
 		rts
@@ -8109,13 +8115,13 @@ ScrollBlock4:				; CODE XREF: ROM:00006354p
 		eori.b	#$10,(Horiz_block_crossed_flag_BG).w
 		sub.l	d2,d0
 		bpl.s	loc_67B0
-		bset	d6,($FFFFEE52).w
+		bset	d6,(Scroll_flags_BG).w
 		bra.s	locret_67B6
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_67B0:				; CODE XREF: ScrollBlock4+24j
 		addq.b	#1,d6
-		bset	d6,($FFFFEE52).w
+		bset	d6,(Scroll_flags_BG).w
 
 locret_67B6:				; CODE XREF: ScrollBlock4+1Aj
 					; ScrollBlock4+2Aj
@@ -8141,13 +8147,13 @@ ScrollBlock5:				; CODE XREF: ROM:00005B7Ep
 		eori.b	#$10,(Horiz_block_crossed_flag_BG2).w
 		sub.l	d2,d0
 		bpl.s	loc_67E4
-		bset	d6,($FFFFEE54).w
+		bset	d6,(Scroll_flags_BG2).w
 		bra.s	locret_67EA
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_67E4:				; CODE XREF: ScrollBlock5+24j
 		addq.b	#1,d6
-		bset	d6,($FFFFEE54).w
+		bset	d6,(Scroll_flags_BG2).w
 
 locret_67EA:				; CODE XREF: ScrollBlock5+1Aj
 					; ScrollBlock5+2Aj
@@ -8173,13 +8179,13 @@ ScrollBlock6:				; CODE XREF: ROM:00005B70p
 		eori.b	#$10,(Horiz_block_crossed_flag_BG3).w
 		sub.l	d2,d0
 		bpl.s	loc_6818
-		bset	d6,($FFFFEE56).w
+		bset	d6,(Scroll_flags_BG3).w
 		bra.s	locret_681E
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_6818:				; CODE XREF: ScrollBlock6+24j
 		addq.b	#1,d6
-		bset	d6,($FFFFEE56).w
+		bset	d6,(Scroll_flags_BG3).w
 
 locret_681E:				; CODE XREF: ScrollBlock6+1Aj
 					; ScrollBlock6+2Aj
@@ -8189,12 +8195,12 @@ locret_681E:				; CODE XREF: ScrollBlock6+1Aj
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 		lea	(VDP_control_port).l,a5
 		lea	(VDP_data_port).l,a6
-		lea	($FFFFEE52).w,a2
+		lea	(Scroll_flags_BG).w,a2
 		lea	(Camera_BG_X_pos).w,a3
 		lea	(Level_Layout+levelrowsize).w,a4
 		move.w	#$6000,d2
 		bsr.w	sub_69B2
-		lea	($FFFFEE54).w,a2
+		lea	(Scroll_flags_BG2).w,a2
 		lea	(Camera_BG2_X_pos).w,a3
 		bra.w	sub_6A82
 
@@ -9261,7 +9267,7 @@ LoadTilesFromStart:
 		lea	(VDP_data_port).l,a6
 		tst.w	(Two_player_mode).w	; is this two player mode?
 		beq.s	loc_711E		; if not, branch
-		lea	($FFFFEE20).w,a3
+		lea	(Camera_X_pos_P2).w,a3
 		lea	(Level_Layout).w,a4
 		move.w	#$6000,d2
 		bsr.s	LoadTilesFromStart_2p
@@ -9825,7 +9831,7 @@ DynScreenResizeLoad:			; CODE XREF: DeformBGLayer:loc_5B2Ap
 
 loc_7560:				; CODE XREF: DynScreenResizeLoad+28j
 		add.w	d1,(Camera_Max_Y_pos).w
-		move.b	#1,($FFFFEEDE).w
+		move.b	#1,(Camera_Max_Y_Pos_Changing).w
 
 locret_756A:				; CODE XREF: DynScreenResizeLoad+1Aj
 		rts
@@ -9844,7 +9850,7 @@ loc_756C:				; CODE XREF: DynScreenResizeLoad+1Cj
 loc_7586:				; CODE XREF: DynScreenResizeLoad+4Cj
 					; DynScreenResizeLoad+54j
 		add.w	d1,(Camera_Max_Y_pos).w
-		move.b	#1,($FFFFEEDE).w
+		move.b	#1,(Camera_Max_Y_Pos_Changing).w
 		rts
 ; End of function DynScreenResizeLoad
 
@@ -17296,7 +17302,7 @@ Anim_End:
 		rts
 ; End of function AnimateSprite
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 ; Sonic 1's sprite engine has the unique ability to use other camera coordinates
 ; to figure out where sprites should be; sadly, Sonic 2 Final removed this
 BldSpr_ScrPos:	dc.l 0
@@ -17323,25 +17329,25 @@ loc_D026:				; CODE XREF: BuildSprites+14j
 
 loc_D02C:				; CODE XREF: BuildSprites+FAj
 		tst.w	(a4)
-		beq.w	loc_D102
+		beq.w	BuildSprites_NextLevel
 		moveq	#2,d6
 
-loc_D034:				; CODE XREF: BuildSprites+F2j
+BuildSprites_ObjLoop:				; CODE XREF: BuildSprites+F2j
 		movea.w	(a4,d6.w),a0
 
 		; These are sanity checks that stop objects with invalid IDs or
 		; mappings from loading; September 14th to REV00 used the branch
 		; for debugging purposes.
 		tst.l	mappings(a0)
-		beq.w	loc_D124
+		beq.w	BuildSprites_InvalidMapping
 
 		andi.b	#$7F,render_flags(a0) ; ''
 		move.b	render_flags(a0),d0
 		move.b	d0,d4
 		btst	#6,d0
-		bne.w	loc_D126
+		bne.w	BuildSprites_MultiDraw
 		andi.w	#$C,d0
-		beq.s	loc_D0B2
+		beq.s	BuildSprites_ScreenSpaceObj
 		movea.l	BldSpr_ScrPos(pc,d0.w),a1
 		moveq	#0,d0
 		move.b	width_pixels(a0),d0
@@ -17349,80 +17355,73 @@ loc_D034:				; CODE XREF: BuildSprites+F2j
 		sub.w	(a1),d3
 		move.w	d3,d1
 		add.w	d0,d1
-		bmi.w	loc_D0FA
+		bmi.w	BuildSprites_NextObj
 		move.w	d3,d1
 		sub.w	d0,d1
-		cmpi.w	#$140,d1
-		bge.w	loc_D0FA
-		addi.w	#$80,d3	; '€'
+		cmpi.w	#320,d1
+		bge.w	BuildSprites_NextObj
+		addi.w	#128,d3
 		btst	#4,d4
-		beq.s	loc_D0BC
+		beq.s	BuildSprites_ApproxYCheck
 		moveq	#0,d0
 		move.b	y_radius(a0),d0
 		move.w	y_pos(a0),d2
 		sub.w	4(a1),d2
 		move.w	d2,d1
 		add.w	d0,d1
-		bmi.s	loc_D0FA
+		bmi.s	BuildSprites_NextObj
 		move.w	d2,d1
 		sub.w	d0,d1
-		cmpi.w	#$E0,d1	; 'à'
-		bge.s	loc_D0FA
-		addi.w	#$80,d2	; '€'
-		bra.s	loc_D0D4
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_D0B2:				; CODE XREF: BuildSprites+52j
+		cmpi.w	#224,d1
+		bge.s	BuildSprites_NextObj
+		addi.w	#128,d2
+		bra.s	BuildSprites_DrawSprite
+; ===========================================================================
+BuildSprites_ScreenSpaceObj:
 		move.w	y_pixel(a0),d2
 		move.w	x_pixel(a0),d3
-		bra.s	loc_D0D4
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_D0BC:				; CODE XREF: BuildSprites+80j
+		bra.s	BuildSprites_DrawSprite
+; ===========================================================================
+BuildSprites_ApproxYCheck:
 		move.w	y_pos(a0),d2
 		sub.w	4(a1),d2
-		addi.w	#$80,d2	; '€'
-		cmpi.w	#$60,d2	; '`'
-		bcs.s	loc_D0FA
-		cmpi.w	#$180,d2
-		bcc.s	loc_D0FA
+		addi.w	#128,d2
+		andi.w	#$7FF,d2	; Mask Y position to account for Vertical Wrapping
+		cmpi.w	#-32+128,d2	; assume Y radius to be 32 pixels
+		bcs.s	BuildSprites_NextObj
+		cmpi.w	#32+128+224,d2
+		bcc.s	BuildSprites_NextObj
 
-loc_D0D4:				; CODE XREF: BuildSprites+A4j
-					; BuildSprites+AEj
+BuildSprites_DrawSprite:
 		movea.l	mappings(a0),a1
 		moveq	#0,d1
-		btst	#5,d4
-		bne.s	loc_D0F0
+		btst	#5,d4	; is the static mappings flag set?
+		bne.s	@StaticMappingFrame	; if it is, branch
 		move.b	mapping_frame(a0),d1
 		add.w	d1,d1
 		adda.w	(a1,d1.w),a1
 		move.w	(a1)+,d1
 		subq.w	#1,d1
-		bmi.s	loc_D0F4
-
-loc_D0F0:				; CODE XREF: BuildSprites+D2j
-		bsr.w	sub_D1B6
-
-loc_D0F4:				; CODE XREF: BuildSprites+E2j
+		bmi.s	@NoPieces
+	@StaticMappingFrame:	
+		bsr.w	DrawSprite
+	@NoPieces:	
 		ori.b	#$80,render_flags(a0)
 
-loc_D0FA:				; CODE XREF: BuildSprites+68j
-					; BuildSprites+74j ...
+BuildSprites_NextObj:	
 		addq.w	#2,d6
 		subq.w	#2,(a4)
-		bne.w	loc_D034
+		bne.w	BuildSprites_ObjLoop
 
-loc_D102:				; CODE XREF: BuildSprites+22j
+BuildSprites_NextLevel:				
 		lea	$80(a4),a4
 		dbf	d7,loc_D02C
 		move.b	d5,($FFFFF62C).w
-		cmpi.b	#$50,d5	; 'P'
-		beq.s	loc_D11C
+		cmpi.b	#80,d5	; 'P'
+		beq.s	@LimitReached
 		move.l	#0,(a2)
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_D11C:				; CODE XREF: BuildSprites+106j
+	@LimitReached:	
 		move.b	#0,-5(a2)
 		rts
 ; ===========================================================================
@@ -17440,121 +17439,125 @@ loc_D11C:				; CODE XREF: BuildSprites+106j
 ; in place. Despite their efforts, however, the ascending/descending metal
 ; platforms from Wing Fortress still have this bug, as does the Chemical Plant
 ; boss... well, they tried.
-loc_D124:
-		bra.s	loc_D0FA
+BuildSprites_InvalidMapping:
+		bra.s	BuildSprites_NextObj
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_D126:				; CODE XREF: BuildSprites+4Aj
+BuildSprites_MultiDraw:				; CODE XREF: BuildSprites+4Aj
 		move.l	a4,-(sp)
 		lea	(Camera_X_pos).w,a4
 		movea.w	art_tile(a0),a3
 		movea.l	mappings(a0),a5
 		moveq	#0,d0
-		move.b	$E(a0),d0
+
+		; check if object is within X bounds
+		move.b	mainspr_width(a0),d0
 		move.w	x_pos(a0),d3
 		sub.w	(a4),d3
 		move.w	d3,d1
 		add.w	d0,d1
-		bmi.w	loc_D1B0
+		bmi.w	BuildSprites_MultiDraw_NextObj
 		move.w	d3,d1
 		sub.w	d0,d1
-		cmpi.w	#$140,d1
-		bge.s	loc_D1B0
+		cmpi.w	#320,d1
+		bge.s	BuildSprites_MultiDraw_NextObj
+
+		; check if object is within Y bounds
 		move.w	y_pos(a0),d2
 		sub.w	4(a4),d2
-		addi.w	#$80,d2	; '€'
-		cmpi.w	#$60,d2	; '`'
-		bcs.s	loc_D1B0
-		cmpi.w	#$180,d2
-		bcc.s	loc_D1B0
+		addi.w	#128,d2
+		cmpi.w	#-32+128,d2
+		andi.w	#$7FF,d2	; Account for Vertical Wrap
+		bcs.s	BuildSprites_MultiDraw_NextObj
+		cmpi.w	#32+128+224,d2
+		bcc.s	BuildSprites_MultiDraw_NextObj
+
 		ori.b	#$80,render_flags(a0)
 		lea	$10(a0),a6
 		moveq	#0,d0
 		move.b	$F(a0),d0
 		subq.w	#1,d0
-		bcs.s	loc_D1B0
+		bcs.s	BuildSprites_MultiDraw_NextObj
 
-loc_D17E:				; CODE XREF: BuildSprites+1A0j
+	@Loop:				
 		swap	d0
-		move.w	(a6)+,d3
+		move.w	(a6)+,d3	; get X pos
 		sub.w	(a4),d3
-		addi.w	#$80,d3	; '€'
-		move.w	(a6)+,d2
+		addi.w	#128,d3
+		move.w	(a6)+,d2	; get Y pos
 		sub.w	4(a4),d2
-		addi.w	#$80,d2	; '€'
+		addi.w	#128,d2
+		andi.w	#$7FF,d2	; Account for Vertical Wrap
 		addq.w	#1,a6
 		moveq	#0,d1
-		move.b	(a6)+,d1
+		move.b	(a6)+,d1	; get mapping frame
 		add.w	d1,d1
 		movea.l	a5,a1
 		adda.w	(a1,d1.w),a1
 		move.w	(a1)+,d1
 		subq.w	#1,d1
-		bmi.s	loc_D1AA
-		bsr.w	sub_D1BA
+		bmi.s	@LastPiece
+		bsr.w	ChkDrawSprite
 
-loc_D1AA:				; CODE XREF: BuildSprites+198j
+	@LastPiece:
 		swap	d0
-		dbf	d0,loc_D17E
+		dbf	d0,@Loop
 
-loc_D1B0:				; CODE XREF: BuildSprites+138j
-					; BuildSprites+144j ...
+BuildSprites_MultiDraw_NextObj:	
 		movea.l	(sp)+,a4
-		bra.w	loc_D0FA
+		bra.w	BuildSprites_NextObj
 ; End of function BuildSprites
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_D1B6:				; CODE XREF: BuildSprites:loc_D0F0p
+DrawSprite:				
 		movea.w	art_tile(a0),a3
-; End of function sub_D1B6
+; End of function DrawSprite
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 
-sub_D1BA:				; CODE XREF: BuildSprites+19Ap
-		cmpi.b	#80,d5	; 'P'
-		bhs.s	locret_D1F6
+ChkDrawSprite:			
+		cmpi.b	#80,d5
+		bhs.s	DrawSprite_Done
 		btst	#0,d4
-		bne.s	loc_D1F8
+		bne.s	DrawSprite_FlipX
 		btst	#1,d4
-		bne.w	loc_D258
+		bne.w	DrawSprite_FlipY
 
-loc_D1CE:				; CODE XREF: sub_D1BA+38j
-					; S1SS_ShowLayout+114p
+DrawSprite_Loop:
 		move.b	(a1)+,d0
 		ext.w	d0
 		add.w	d2,d0
-		move.w	d0,(a2)+
-		move.b	(a1)+,(a2)+
+		move.w	d0,(a2)+	; set Y pos
+		move.b	(a1)+,(a2)+	; set sprite size
 		addq.b	#1,d5
-		move.b	d5,(a2)+
+		move.b	d5,(a2)+	; set link field
 		move.w	(a1)+,d0
 		add.w	a3,d0
-		move.w	d0,(a2)+
+		move.w	d0,(a2)+	; set art tile and flags
 		addq.w	#2,a1
 		move.w	(a1)+,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_D1F0
-		addq.w	#1,d0
+		bne.s	@NoNudge
+		addq.w	#1,d0	; avoid activating sprite masking
 
-loc_D1F0:				; CODE XREF: sub_D1BA+32j
+	@NoNudge:		
 		move.w	d0,(a2)+
-		dbf	d1,loc_D1CE
+		dbf	d1,DrawSprite_Loop
 
-locret_D1F6:				; CODE XREF: sub_D1BA+4j
+DrawSprite_Done:			
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_D1F8:				; CODE XREF: sub_D1BA+Aj
+DrawSprite_FlipX:
 		btst	#1,d4
-		bne.w	loc_D2A0
+		bne.w	DrawSprite_FlipXY
 
-loc_D200:				; CODE XREF: sub_D1BA+78j
+@loop:
 		move.b	(a1)+,d0
 		ext.w	d0
 		add.w	d2,d0
@@ -17570,34 +17573,37 @@ loc_D200:				; CODE XREF: sub_D1BA+78j
 		addq.w	#2,a1
 		move.w	(a1)+,d0
 		neg.w	d0
-		move.b	byte_D238(pc,d4.w),d4
+		move.b	CellOffsets_XFlip(pc,d4.w),d4
 		sub.w	d4,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_D230
+		bne.s	@NoNudge
 		addq.w	#1,d0
-
-loc_D230:				; CODE XREF: sub_D1BA+72j
+	@NoNudge:	
 		move.w	d0,(a2)+
-		dbf	d1,loc_D200
+		dbf	d1,@loop
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-byte_D238:	dc.b   8,  8,  8,  8	; 0
-		dc.b $10,$10,$10,$10	; 4
-		dc.b $18,$18,$18,$18	; 8
-		dc.b $20,$20,$20,$20	; 12
-byte_D248:	dc.b   8,$10,$18,$20	; 0
-		dc.b   8,$10,$18,$20	; 4
-		dc.b   8,$10,$18,$20	; 8
-		dc.b   8,$10,$18,$20	; 12
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+; offsets for horizontally mirrored sprite pieces
+CellOffsets_XFlip:
+	dc.b   8,  8,  8,  8	; 4
+	dc.b $10,$10,$10,$10	; 8
+	dc.b $18,$18,$18,$18	; 12
+	dc.b $20,$20,$20,$20	; 16
+; offsets for vertically mirrored sprite pieces
+CellOffsets_YFlip:
+	dc.b   8,$10,$18,$20	; 4
+	dc.b   8,$10,$18,$20	; 8
+	dc.b   8,$10,$18,$20	; 12
+	dc.b   8,$10,$18,$20	; 16
+; ===========================================================================
 
-loc_D258:				; CODE XREF: sub_D1BA+10j sub_D1BA+D0j
+DrawSprite_FlipY:				; CODE XREF: ChkDrawSprite+10j ChkDrawSprite+D0j
 		move.b	(a1)+,d0
 		move.b	(a1),d4
 		ext.w	d0
 		neg.w	d0
-		move.b	byte_D248(pc,d4.w),d4
+		move.b	CellOffsets_YFlip(pc,d4.w),d4
 		sub.w	d4,d0
 		add.w	d2,d0
 		move.w	d0,(a2)+
@@ -17612,27 +17618,27 @@ loc_D258:				; CODE XREF: sub_D1BA+10j sub_D1BA+D0j
 		move.w	(a1)+,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_D288
+		bne.s	@NoNudge
 		addq.w	#1,d0
-
-loc_D288:				; CODE XREF: sub_D1BA+CAj
+	@NoNudge:
 		move.w	d0,(a2)+
-		dbf	d1,loc_D258
+		dbf	d1,DrawSprite_FlipY
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-byte_D290:	dc.b   8,$10,$18,$20	; 0
-		dc.b   8,$10,$18,$20	; 4
-		dc.b   8,$10,$18,$20	; 8
-		dc.b   8,$10,$18,$20	; 12
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+; offsets for vertically mirrored sprite pieces
+CellOffsets_YFlip2:
+	dc.b   8,$10,$18,$20	; 4
+	dc.b   8,$10,$18,$20	; 8
+	dc.b   8,$10,$18,$20	; 12
+	dc.b   8,$10,$18,$20	; 16
+; ===========================================================================
 
-loc_D2A0:				; CODE XREF: sub_D1BA+42j
-					; sub_D1BA+122j
+DrawSprite_FlipXY:
 		move.b	(a1)+,d0
 		move.b	(a1),d4
 		ext.w	d0
 		neg.w	d0
-		move.b	byte_D290(pc,d4.w),d4
+		move.b	CellOffsets_YFlip2(pc,d4.w),d4
 		sub.w	d4,d0
 		add.w	d2,d0
 		move.w	d0,(a2)+
@@ -17647,29 +17653,32 @@ loc_D2A0:				; CODE XREF: sub_D1BA+42j
 		addq.w	#2,a1
 		move.w	(a1)+,d0
 		neg.w	d0
-		move.b	byte_D2E2(pc,d4.w),d4
+		move.b	CellOffsets_XFlip2(pc,d4.w),d4
 		sub.w	d4,d0
 		add.w	d3,d0
 		andi.w	#$1FF,d0
-		bne.s	loc_D2DA
+		bne.s	@NoNudge
 		addq.w	#1,d0
-
-loc_D2DA:				; CODE XREF: sub_D1BA+11Cj
+	@NoNudge:
 		move.w	d0,(a2)+
-		dbf	d1,loc_D2A0
+		dbf	d1,DrawSprite_FlipXY
 		rts
-; End of function sub_D1BA
+; End of function ChkDrawSprite
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-byte_D2E2:	dc.b   8,  8,  8,  8	; 0
-		dc.b $10,$10,$10,$10	; 4
-		dc.b $18,$18,$18,$18	; 8
-		dc.b $20,$20,$20,$20	; 12
-BldSpr_ScrPos_2p:dc.l 0
+; ===========================================================================
+; offsets for horizontally mirrored sprite pieces
+CellOffsets_XFlip2:
+	dc.b   8,  8,  8,  8	; 4
+	dc.b $10,$10,$10,$10	; 8
+	dc.b $18,$18,$18,$18	; 12
+	dc.b $20,$20,$20,$20	; 16
+; ===========================================================================
+BldSpr_ScrPos_2p:
+		dc.l 0
 		dc.l Camera_X_pos
 		dc.l Camera_BG_X_pos
 		dc.l Camera_BG3_X_pos
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 ; START	OF FUNCTION CHUNK FOR BuildSprites
 
 BuildSprites_2p:			; CODE XREF: BuildSprites+4j
@@ -17797,9 +17806,9 @@ loc_D42A:				; CODE XREF: BuildSprites+414j
 ; END OF FUNCTION CHUNK	FOR BuildSprites
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 dword_D432:	dc.l 0
-		dc.l $FFFFEE20
-		dc.l $FFFFEE28
-		dc.l $FFFFEE38
+		dc.l Camera_X_pos_P2
+		dc.l Camera_BG_X_pos_P2
+		dc.l Camera_BG3_X_pos_P2
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; START	OF FUNCTION CHUNK FOR BuildSprites
 
@@ -17979,7 +17988,7 @@ loc_D5D4:				; CODE XREF: BuildSprites+55Cj
 
 loc_D5DA:				; CODE XREF: BuildSprites+46Aj
 		move.l	a4,-(sp)
-		lea	($FFFFEE20).w,a4
+		lea	(Camera_X_pos_P2).w,a4
 		movea.w	art_tile(a0),a3
 		movea.l	mappings(a0),a5
 		moveq	#0,d0
@@ -18432,7 +18441,7 @@ loc_D932:
 loc_D94C:
 		; update ring start and end addresses for P2
 		movea.w	(Ring_start_addr_P2).w,a1
-		move.w	($FFFFEE20).w,d4
+		move.w	(Camera_X_pos_P2).w,d4
 		subq.w	#8,d4
 		bhi.s	loc_D960
 		moveq	#1,d4
@@ -18636,7 +18645,7 @@ BuildSprites2_2p:			; CODE XREF: BuildSprites+322p
 
 
 sub_DACA:				; CODE XREF: BuildSprites+444p
-		lea	($FFFFEE20).w,a3
+		lea	(Camera_X_pos_P2).w,a3
 		move.w	#$158,d6
 		movea.w	(Ring_start_addr_P2).w,a0
 		movea.w	(Ring_end_addr_P2).w,a4
@@ -19040,7 +19049,7 @@ loc_DE5C:
 		move.w	(Camera_X_pos).w,d1
 		andi.w	#$FF00,d1
 		move.w	d1,(Camera_X_pos_coarse).w
-		move.w	($FFFFEE20).w,d1
+		move.w	(Camera_X_pos_P2).w,d1
 		andi.w	#$FF00,d1
 		move.w	d1,($FFFFF7DC).w
 		move.b	(Camera_X_pos).w,d6
@@ -19056,7 +19065,7 @@ loc_DE5C:
 		bsr.s	sub_DED2
 
 loc_DE9C:
-		move.b	($FFFFEE20).w,d6
+		move.b	(Camera_X_pos_P2).w,d6
 		andi.w	#$FF,d6
 		move.w	(Camera_X_pos_last_P2).w,d0
 		cmp.w	(Camera_X_pos_last_P2).w,d6
@@ -22503,13 +22512,13 @@ loc_1014C:
 		move.w	d0,x_vel(a0)
 
 loc_10150:
-		cmpi.w	#$60,($FFFFEED8).w
+		cmpi.w	#$60,(Camera_Y_pos_bias).w
 		beq.s	loc_10162
 		bcc.s	loc_1015E
-		addq.w	#4,($FFFFEED8).w
+		addq.w	#4,(Camera_Y_pos_bias).w
 
 loc_1015E:
-		subq.w	#2,($FFFFEED8).w
+		subq.w	#2,(Camera_Y_pos_bias).w
 
 loc_10162:
 		cmpi.w	#$FC00,y_vel(a0)
@@ -24427,13 +24436,13 @@ loc_112C6:				; CODE XREF: Tails_ChgJumpDir+36j
 		move.w	d0,x_vel(a0)
 
 loc_112CA:				; CODE XREF: Tails_ChgJumpDir+10j
-		cmpi.w	#$60,($FFFFEED8).w ; '`'
+		cmpi.w	#$60,(Camera_Y_pos_bias).w ; '`'
 		beq.s	loc_112DC
 		bcc.s	loc_112D8
-		addq.w	#4,($FFFFEED8).w
+		addq.w	#4,(Camera_Y_pos_bias).w
 
 loc_112D8:				; CODE XREF: Tails_ChgJumpDir+52j
-		subq.w	#2,($FFFFEED8).w
+		subq.w	#2,(Camera_Y_pos_bias).w
 
 loc_112DC:				; CODE XREF: Tails_ChgJumpDir+50j
 		cmpi.w	#$FC00,y_vel(a0)
@@ -35554,7 +35563,7 @@ loc_19C42:				; CODE XREF: S1SS_ShowLayout+11Cj
 		bmi.s	loc_19C9A
 		cmpi.b	#80,d5
 		bhs.s	loc_19C9A
-		jsr	(loc_D1CE).l
+		jsr	(DrawSprite_Loop).l
 
 loc_19C9A:				; CODE XREF: S1SS_ShowLayout+C6j
 					; S1SS_ShowLayout+CCj ...
