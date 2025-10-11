@@ -9804,7 +9804,7 @@ loc_750E:				; CODE XREF: sub_750C+12j
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
-; Dynamic Level Events
+; Dynamic Level Events, DynamicLevelEvents
 DynScreenResizeLoad:			; CODE XREF: DeformBGLayer:loc_5B2Ap
 		moveq	#0,d0
 		move.b	(Current_Zone).w,d0
@@ -21703,6 +21703,11 @@ loc_FABC:
 		move.w	Obj01_Modes(pc,d0.w),d1
 		jsr	Obj01_Modes(pc,d1.w)	; run Sonic's movement control code
 
+		cmpi.w	#-$100,(Camera_Min_Y_pos).w	; is vertical wrapping enabled?
+		bne.s	@NoVerticalWrap			; if not, branch
+		andi.w	#$7FF,y_pos(a0) 		; perform wrapping of Sonic's y position
+	@NoVerticalWrap:
+
 Obj01_ControlsLock:
 		bsr.s	Sonic_Display
 		bsr.w	Sonic_RecordPos
@@ -21717,11 +21722,12 @@ Obj01_ControlsLock:
 
 loc_FAFE:
 		bsr.w	Sonic_Animate
-		tst.b	($FFFFF7C8).w
+		tst.b	($FFFFF7C8).w	; equivalent to the final's obj_control(a0)
 		bmi.s	loc_FB0E
 		jsr	TouchResponse
 
 loc_FB0E:
+		bsr.w	Player_CheckChunk
 		bra.w	LoadSonicDynPLC
 ; ===========================================================================
 ; secondary states under state Obj01_Control
@@ -22568,13 +22574,13 @@ loc_101C4:
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_101D4:
-		cmpi.w	#$501,(Current_ZoneAndAct).w
+		cmpi.w	#$501,(Current_ZoneAndAct).w	; SBZ2
 		bne.w	JmpTo_KillSonic
 		cmpi.w	#$2000,(MainCharacter+x_pos).w
 		bcs.w	JmpTo_KillSonic
 		clr.b	($FFFFFE30).w
 		move.w	#1,($FFFFFE02).w
-		move.w	#$103,(Current_ZoneAndAct).w
+		move.w	#$103,(Current_ZoneAndAct).w	; send to LZ4
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -23675,11 +23681,12 @@ locret_10C34:
 ; End of function LoadSonicDynPLC
 
 ; ===========================================================================
-		nop
 
 JmpTo_KillSonic:	; JmpTo
 		jmp	(KillSonic).l
-
+; ===========================================================================
+Player_CheckChunk:
+		rts	; to be continued
 		align 4
 
 ; ===========================================================================
