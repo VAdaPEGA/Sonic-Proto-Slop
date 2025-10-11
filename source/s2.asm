@@ -7450,7 +7450,7 @@ sub_6264:
 		neg.w	d0
 		move.w	d0,d2
 		swap	d0
-		
+
 	; Top Cloud (unused)
 		move.w	#0,d0
 
@@ -14889,33 +14889,32 @@ Monitor_Shoes:				; DATA XREF: ROM:0000B0D0o
 		move.w	#$4B0,(MainCharacter+speedshoes_time).w
 		move.w	#$C00,(Sonic_top_speed).w
 		move.w	#$18,(Sonic_acceleration).w
-		move.w	#$80,(Sonic_deceleration).w ; '€'
+		move.w	#$80,(Sonic_deceleration).w
 		move.w	#$E2,d0	; 'â'
 		jmp	(PlaySound).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Monitor_Shield:				; DATA XREF: ROM:0000B0D2o
 		move.b	#1,($FFFFFE2C).w
-		move.b	#$38,(MainCharacter+$180).w ; '8'
-		move.w	#$AF,d0	; '¯'
+		move.b	#$38,(MainCharacter+$180).w
+		move.w	#$AF,d0
 		jmp	(PlaySound).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Monitor_Invincibility:			; DATA XREF: ROM:0000B0D4o
 		move.b	#1,($FFFFFE2D).w
 		move.w	#$4B0,(MainCharacter+invincibility_time).w
-		move.b	#$38,(Object_Space+$200).w ; '8'
-		move.b	#1,(Object_Space+$200+anim).w
+		move.b	#$38,(Object_Space+$200).w
+		move.b	#1*4,(Object_Space+$200+anim).w
+		move.b	#$38,(Object_Space+$240).w
+		move.b	#2*4,(Object_Space+$240+anim).w
 		tst.b	($FFFFF7AA).w
-		bne.s	locret_B1A8
+		bne.s	@NoMusic
 		cmpi.w	#$C,($FFFFFE14).w
-		bls.s	locret_B1A8
+		bls.s	@NoMusic
 		move.w	#MusID_Invincible,d0
 		jmp	(PlaySound).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-locret_B1A8:				; CODE XREF: ROM:0000B194j
-					; ROM:0000B19Cj
+	@NoMusic:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -21790,15 +21789,11 @@ Sonic_Display:
 Obj01_Display:
 		jsr	(DisplaySprite).l
 ; loc_FB34:
-Obj01_ChkInvin:		; Checks if invincibility has expired and (should) disables it if it has
+Obj01_ChkInvin:		; Checks if invincibility has expired
 		tst.b	($FFFFFE2D).w
 		beq.s	Obj01_ChkShoes
 		tst.w	invincibility_time(a0)
 		beq.s	Obj01_ChkShoes
-		bra.s	Obj01_ChkShoes
-; ===========================================================================
-; Strange that they disabled the invincibility timer for this build,
-; a leftover debugging feature?
 		subq.w	#1,invincibility_time(a0)
 		bne.s	Obj01_ChkShoes
 		tst.b	($FFFFF7AA).w
@@ -26140,7 +26135,7 @@ loc_12406:
 loc_1240C:
 		addq.b	#2,routine(a0)
 		move.l	#Map_Sonic,mappings(a0)
-		move.w	#$4DE,art_tile(a0)
+		move.w	#$780,art_tile(a0)
 		bsr.w	Adjust2PArtPointer
 		move.b	#2,priority(a0)
 		rts
@@ -26171,15 +26166,19 @@ Obj38_Delete:
 
 Obj38_Stars:
 		tst.b	($FFFFFE2D).w	; is Sonic invincible?
-		beq.s	Obj38_Delete2	; if not, branch
-		move.w	($FFFFEEE0).w,d0
+		beq.s	Obj38_Delete	; if not, branch
+		move.w	(Sonic_Pos_Record_Index).w,d0
 		move.b	anim(a0),d1
-		subq.b	#1,d1
-		move.b	#$3F,d1
-		lsl.b	#2,d1
+		move.b	d0,d2
+		add.b	d1,d2
+		and.b	#4,d2
+		beq.s	locret_1245A
+		;subq.b	#1,d1
+		;move.b	#$3F,d1
+		;lsl.b	#2,d1
 		addi.b	#4,d1
 		sub.b	d1,d0
-		lea	(Tails_Pos_Record_Buf).w,a1
+		lea	(Sonic_Pos_Record_Buf).w,a1	; position buffer
 		lea	(a1,d0.w),a1
 		move.w	(a1)+,d0
 		andi.w	#$3FFF,d0
@@ -26190,11 +26189,19 @@ Obj38_Stars:
 		move.b	(MainCharacter+status).w,status(a0)
 		move.b	(MainCharacter+mapping_frame).w,mapping_frame(a0)
 		move.b	(MainCharacter+render_flags).w,render_flags(a0)
+		move.w	(MainCharacter+art_tile).w,art_tile(a0)
 		jmp	(DisplaySprite).l
-; ===========================================================================
-; loc_124B2:
-Obj38_Delete2:
-		jmp	(DeleteObject).l
+
+;Obj38_Stars:
+;		tst.b	($FFFFFE2D).w	; is Sonic invincible?
+;		beq.s	Obj38_Delete	; if not, branch
+;
+;
+;		lea	(MainCharacter).w,a1
+;		move.w	x_pos(a1),x_pos(a0)
+;		move.w	y_pos(a1),y_pos(a0)
+;		move.b	render_flags(a1),render_flags(a0)
+;		jmp	(DisplaySprite).l
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -40769,20 +40776,11 @@ Art_Tails:	incbin	"art/uncompressed/Tails' art.bin"
 		even
 SonicDynPLC:	incbin	"mappings/spriteDPLC/Sonic.bin"
 		even
-Nem_Shield:	dc.b $80,$20,$80,  4,  8,$14,  9,$25,$16,$34, $A,$45,$1A,$55,$17,$65,$1B,$72,  0,$81,  4,  4,$16,$39,$26,$3A,$37,$76,$82,  5,$18,$17,$79,$83,  4,  5,$17,$77,$28,$F5,$84,  4,  6,$17,$78,$28,$F4,$85,  5,$19,$28,$FA,$86,  6,$38,$87,  4,  7,$17,$7B,$28,$F8,$38,$F9; 0
-					; DATA XREF: ROM:0001C0C4o
-					; ROM:0001C188o
-		dc.b $FF, $D,$E2,$F8,$4D,$61,$1E,$B0,$8F,$58,$47,$AC,$23,$CA,$5D,$27,  8,$E4,$21,$38,$47,$84,  2,$D8,$5F,$1F,$31,$FA,$2E,$D8,$EB,$E5,$3E,$29,$ED,$DA,$79,$AE,$42,$DE,$B6,$EF,$A5,$BA,$97,$50,$DF,$FD,$8D,$AD,$D5,$F4,$AE,$94,$AE,$94,$AE,$94,$AE,$92,$B7,$59,$57,$42; 64
-		dc.b $14,$95,$74,$85,  2,$CA,$DF,$D5,$8F,$5F,$95,$F8,$EC,$FD,$52,$5B,$F6,$73,$DE,$BB,$85,$BD,$2D,$E3,$4D,$76,$2E,$C1,$BF,$F9,$1B,$6B,$B2,$69,$91,$69,$91,$69,$91,$69,$91,$65,$AE,$D2,$C8,$A4,$31,$2C,$8B, $C,  5,$9B,$3F,$D6,$8F,$4E,$CD,$D7,$EC,$D3,$D6,$96,$DF,$B4; 128
-		dc.b $9F,$15,$E0,$2D,$D5,$B9,$D2,$5D, $B,$A0,$6F,$FE,$66,$F3,$7C,$AE,$B2,$AD,$59,$56,$AC,$AB,$56,$55,$A5,$2E,$93,$95,$62,$10,$9C,$AB,$42,  1,$6C,$F1,$E7,$F6,$D1,$F5,$FB,$3C,$FA,$FE,$D1,$7D,$29,$AD,$DA,$79,$AE,$42,$DF,$16,$F7,$A7,$BB,$97,$70,$DF,$FD, $D,$F1,$7E; 192
-		dc.b $1B,$5C,$32,$57, $C,$95,$C3,$25,$70,$C9,$2F,$77,$9E,$19,  8,$72,$78,$64,$87,  2,$DC,$63,$BF,$EC,$A3,$F4,$DF,$B4,$E3,$D3,$B3,$75,$49,$6F,$99,$F7,$5E,$C2,$DD,$5B,$9D,$25,$D0,$BA,  6,$FF,$EA,  0,  0,  0,$6F,$17,$C2,$6B,  8,$6B,  9, $F,$6C,$21, $F,$6C,$24,$39; 256
-		dc.b   9,$18,$42,$1E,$10,$23,  9, $F,  8,  1,$38,$EF,$E3,$E8,  0,  3,$78,$D7,$94,$B7,$9E,$6D,$8E,$6D,$E5,$27,$E3,$99,$7D,$7B,$9E,$61,$EC,$92,$F3,$CE,$92,$B3,  9,$59,$BE,$65,$2D,$9B,$E6,$F9,$2F,$90,$BE,$40,  0,  0,$27,$FE,$5F,$F1,$3F,$EE,$7F,$C4,$23,$F6,$B1,$F5; 320
-		dc.b $59,  0,  0,  0,$36,  0; 384
-Nem_Stars:	dc.b   0,$22,$80,  6,$3C,$16,$3D,$25,$1A,$35,$1C,$45,$1D,$55,$1B,$64, $B,$72,  0,$83,  4, $C,$84,  3,  4,$85,  2,  1,$17,$7C,$86,  4, $A,$17,$7D,$FF,  0,  3,$88,  0,  0,  0,$17,$40,  0,  0,  1,$6E,$DA,$76,$80,  0,  0,$5E,$5B,$DC,$69,$CE,$B7,$80,  0,  1,$79,$6E; 0
-					; DATA XREF: ROM:0001C0CAo
-		dc.b $F2,$B3,$58,$FE,$99,$CD,$65,$66,$DB,$C0,  0,  0, $F,$5E,$63,$F6,$D0,  0,  0,$CB,$6E,$AE,$9D,$FE,$99,$CD,$53,$BA,$B6,$F0,  0,  0,$DB,$73,$AC,$7C,$FC,$A3,$FB,$6E,$B1,$B9,$68,  1,$2E,$5B,$75,$74,$EE,$A6,$E9,$8F,$3F,$8C,$FE,$52,$98,$F2,$A6,$E9,$DD,$5B,$72,$E0; 64
-		dc.b   0,  0,  0,  1,$FA,$46,$34,  0,  0,  0,  0,  0,  0,$7A,$8E,$B3,$8C,$F2,$72,$54,$7B,$29,$D6,$4F,$9F,$F6,$AD,$64,$F9,$5D,$94,$F2,$54,$78,$CF,$26,$9D,$67,$A8,  0,  0,$76,$5C,$B9,$6D,$B6,$DD,$5D,$5D,$5D,$75,$F2,$B3,$4F,$B5,$3C,$8E,$A9,$95,$35,$4D,$4E,$7D,$F9; 128
-		dc.b $33,$DF,$FB,$7D,$F9,$33,$DA,$6A,$72,$99,$53,$55,$3C,$8E,$AB,$34,$FB,$5D,$7C,$AB,$AB,$AB,$6D,$B6,$E5,$CB,$80,  0,  0,  0,$17,$F5,$8F,$E9,  0,  0,  0,  0,  0; 192
+Nem_Shield:	incbin	"art/nemesis/Shield.bin"
+		even
+Nem_Stars:	incbin	"art/nemesis/Invincibility Stars.bin"
+		even
+		; there was some padding here, likely for the uncompressed art bellow
 Art_SplashDust:	incbin	"art/uncompressed/Dust and water splash.bin"
 		even
 Map_Tails:	incbin	"mappings/sprite/Tails.bin"
