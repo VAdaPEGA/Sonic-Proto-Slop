@@ -7274,75 +7274,87 @@ loc_60B6:				; CODE XREF: Deform_TitleScreen+Ej
 		move.w	(Camera_X_pos).w,d2
 		neg.w	d2
 		moveq	#0,d0
-		bra.s	loc_60E4
+		bra.s	TitleDeform
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Deform_EHZ:				; DATA XREF: ROM:Deform_Indexo
 		tst.w	(Two_player_mode).w
-		bne.w	loc_620E
+		bne.w	Deform_EHZ_2P
 		move.w	(Camera_BG_Y_pos).w,($FFFFF618).w
 		lea	($FFFFE000).w,a1
 		move.w	(Camera_X_pos).w,d0
+
 		neg.w	d0
 		move.w	d0,d2
 		swap	d0
-
-loc_60E4:				; CODE XREF: Deform_TitleScreen+22j
+TitleDeform:				; CODE XREF: Deform_TitleScreen+22j
+	; Top Cloud (unused)
 		move.w	#0,d0
-		move.w	#$15,d1
 
-loc_60EC:				; CODE XREF: Deform_TitleScreen+4Aj
+		move.w	#22-1,d1
+	@LoopScrollCloudsTop:
 		move.l	d0,(a1)+
-		dbf	d1,loc_60EC
+		dbf	d1,@LoopScrollCloudsTop
+
+	; Big Cloud
 		move.w	d2,d0
 		asr.w	#6,d0
-		move.w	#$39,d1	; '9'
 
-loc_60FA:				; CODE XREF: Deform_TitleScreen+58j
+		move.w	#58-1,d1
+	@LoopScrollCloudsBig:
 		move.l	d0,(a1)+
-		dbf	d1,loc_60FA
-		move.w	d0,d3
-		move.b	($FFFFFE0F).w,d1
-		andi.w	#7,d1
-		bne.s	loc_6110
-		subq.w	#1,(TempArray_LayerDef).w
+		dbf	d1,@LoopScrollCloudsBig
 
-loc_6110:				; CODE XREF: Deform_TitleScreen+66j
+	; Water Ripple
+		move.w	d0,d3
+		move.b	(Vint_runcount+3).w,d1
+		andi.w	#3,d1	; used to be 7
+		bne.s	@WaterRippleTimer
+		subq.w	#1,(TempArray_LayerDef).w
+	@WaterRippleTimer:
 		move.w	(TempArray_LayerDef).w,d1
 		andi.w	#$1F,d1
-		lea	(Deform_EHZ_Data).l,a2
+		lea	(SwScrl_RippleData).l,a2
 		lea	(a2,d1.w),a2
-		move.w	#$14,d1
 
-loc_6126:				; CODE XREF: Deform_TitleScreen+8Aj
+		move.w	#22-1,d1
+	@LoopScrollWaterRipple:
 		move.b	(a2)+,d0
 		ext.w	d0
 		add.w	d3,d0
 		move.l	d0,(a1)+
-		dbf	d1,loc_6126
-		move.w	#0,d0
-		move.w	#$A,d1
+		dbf	d1,@LoopScrollWaterRipple
 
-loc_613A:				; CODE XREF: Deform_TitleScreen+98j
+	; Water Cloud (unused)
+		move.w	#0,d0
+
+		move.w	#10-1,d1
+	@LoopScrollWaterCloud:
 		move.l	d0,(a1)+
-		dbf	d1,loc_613A
+		dbf	d1,@LoopScrollWaterCloud
+
+	; Hills Top
 		move.w	d2,d0
 		asr.w	#4,d0
-		move.w	#$F,d1
 
-loc_6148:				; CODE XREF: Deform_TitleScreen+A6j
+		move.w	#16-1,d1
+	@LoopHillsTop:
 		move.l	d0,(a1)+
-		dbf	d1,loc_6148
+		dbf	d1,@LoopHillsTop
+
+	; Hills Bottom	
 		move.w	d2,d0
 		asr.w	#4,d0
 		move.w	d0,d1
 		asr.w	#1,d1
 		add.w	d1,d0
-		move.w	#$F,d1
 
-loc_615C:				; CODE XREF: Deform_TitleScreen+BAj
+		move.w	#16-1,d1
+	@LoopHillsBottom:
 		move.l	d0,(a1)+
-		dbf	d1,loc_615C
+		dbf	d1,@LoopHillsBottom
+
+	; Flower Field		
 		move.l	d0,d4
 		swap	d4
 		move.w	d2,d0
@@ -7351,38 +7363,39 @@ loc_615C:				; CODE XREF: Deform_TitleScreen+BAj
 		asr.w	#3,d1
 		sub.w	d1,d0
 		ext.l	d0
-		asl.l	#4,d0
-		divs.w	#$30,d0	; '0'
+		asl.l	#5,d0
+		divs.w	#48,d0	; '0'
 		ext.l	d0
-		asl.l	#4,d0
+		asl.l	#3,d0
 		asl.l	#8,d0
 		moveq	#0,d3
 		move.w	d2,d3
 		asr.w	#3,d3
-		move.w	#$E,d1
 
-loc_6188:				; CODE XREF: Deform_TitleScreen+EEj
-		move.w	d4,(a1)+
-		move.w	d3,(a1)+
-		swap	d3
-		add.l	d0,d3
-		swap	d3
-		dbf	d1,loc_6188
-		move.w	#8,d1
+		move.w	#15-1,d1
 
-loc_619A:				; CODE XREF: Deform_TitleScreen+106j
-		move.w	d4,(a1)+
-		move.w	d3,(a1)+
+	@LoopFlowerField1:			
 		move.w	d4,(a1)+
 		move.w	d3,(a1)+
 		swap	d3
 		add.l	d0,d3
-		add.l	d0,d3
 		swap	d3
-		dbf	d1,loc_619A
-		move.w	#$E,d1
+		dbf	d1,@LoopFlowerField1
 
-loc_61B2:				; CODE XREF: Deform_TitleScreen+124j
+		move.w	#(18/2)-1,d1
+	@LoopFlowerField2:		
+		move.w	d4,(a1)+
+		move.w	d3,(a1)+
+		move.w	d4,(a1)+
+		move.w	d3,(a1)+
+		swap	d3
+		add.l	d0,d3
+		add.l	d0,d3
+		swap	d3
+		dbf	d1,@LoopFlowerField2
+
+		move.w	#(44/3)-1,d1
+	@LoopFlowerField3:
 		move.w	d4,(a1)+
 		move.w	d3,(a1)+
 		move.w	d4,(a1)+
@@ -7394,124 +7407,134 @@ loc_61B2:				; CODE XREF: Deform_TitleScreen+124j
 		add.l	d0,d3
 		add.l	d0,d3
 		swap	d3
-		dbf	d1,loc_61B2
+		dbf	d1,@LoopFlowerField3
 		rts
 ; End of function Deform_TitleScreen
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Deform_EHZ_Data:dc.b   1,  2,  1,  3,  1,  2,  2,  1,  2,  3,  1,  2,  1,  2,  0,  0; 0
+; ===========================================================================
+SwScrl_RippleData:dc.b   1,  2,  1,  3,  1,  2,  2,  1,  2,  3,  1,  2,  1,  2,  0,  0; 0
 					; DATA XREF: Deform_TitleScreen+74o
 					; sub_6264+28t
 		dc.b   2,  0,  3,  2,  2,  3,  2,  2,  1,  3,  0,  0,  1,  0,  1,  3; 16
 		dc.b   1,  2,  1,  3,  1,  2,  2,  1,  2,  3,  1,  2,  1,  2,  0,  0; 32
 		dc.b   2,  0,  3,  2,  2,  3,  2,  2,  1,  3,  0,  0,  1,  0,  1,  3; 48
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 ; START	OF FUNCTION CHUNK FOR Deform_TitleScreen
 
-loc_620E:				; CODE XREF: Deform_TitleScreen+28j
-		move.b	($FFFFFE0F).w,d1
+Deform_EHZ_2P:	
+		move.b	(Vint_runcount+3).w,d1
 		andi.w	#7,d1
 		bne.s	loc_621C
 		subq.w	#1,(TempArray_LayerDef).w
 
-loc_621C:				; CODE XREF: Deform_TitleScreen+172j
+loc_621C:	
 		move.w	(Camera_BG_Y_pos).w,($FFFFF618).w
 		andi.l	#$FFFEFFFE,(Vscroll_Factor).w
 		lea	($FFFFE000).w,a1
 		move.w	(Camera_X_pos).w,d0
-		move.w	#$A,d1
+		move.w	#(22/2)-1,d1
 		bsr.s	sub_6264
 		moveq	#0,d0
 		move.w	d0,($FFFFF620).w
-		subi.w	#$E0,($FFFFF620).w ; 'à'
+		subi.w	#$E0,($FFFFF620).w
 		move.w	(Camera_Y_pos_P2).w,($FFFFF61E).w
-
-loc_624A:
-		subi.w	#$E0,($FFFFF61E).w ; 'à'
+		subi.w	#$E0,($FFFFF61E).w
 		andi.l	#$FFFEFFFE,($FFFFF61E).w
 		lea	($FFFFE1B0).w,a1
 		move.w	(Camera_X_pos_P2).w,d0
-		move.w	#$E,d1
+		move.w	#((8+22)/2)-1,d1	; account for seperation
 ; END OF FUNCTION CHUNK	FOR Deform_TitleScreen
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
-
-sub_6264:				; CODE XREF: Deform_TitleScreen+192p
+sub_6264:
 		neg.w	d0
 		move.w	d0,d2
 		swap	d0
+		
+	; Top Cloud (unused)
 		move.w	#0,d0
 
-loc_626E:				; CODE XREF: sub_6264+Cj
+	@LoopScrollCloudsTop:
 		move.l	d0,(a1)+
-		dbf	d1,loc_626E
+		dbf	d1,@LoopScrollCloudsTop
+
+	; Big Cloud
 		move.w	d2,d0
 		asr.w	#6,d0
-		move.w	#$1C,d1
 
-loc_627C:				; CODE XREF: sub_6264+1Aj
+		move.w	#(58/2)-1,d1
+	@LoopScrollCloudsBig:
 		move.l	d0,(a1)+
-		dbf	d1,loc_627C
+		dbf	d1,@LoopScrollCloudsBig
+
+	; Water Ripple
 		move.w	d0,d3
 		move.w	(TempArray_LayerDef).w,d1
 		andi.w	#$1F,d1
-		lea	Deform_EHZ_Data(pc),a2
+		lea	SwScrl_RippleData(pc),a2
 		lea	(a2,d1.w),a2
-		move.w	#$A,d1
 
-loc_6298:				; CODE XREF: sub_6264+3Cj
+		move.w	#(22/2)-1,d1
+	@LoopScrollWaterRipple:	
 		move.b	(a2)+,d0
 		ext.w	d0
 		add.w	d3,d0
 		move.l	d0,(a1)+
-		dbf	d1,loc_6298
-		move.w	#0,d0
-		move.w	#4,d1
+		dbf	d1,@LoopScrollWaterRipple
 
-loc_62AC:				; CODE XREF: sub_6264+4Aj
+	; Water Cloud (unused)
+		move.w	#0,d0
+
+		move.w	#(10/2)-1,d1
+	@LoopScrollWaterCloud:
 		move.l	d0,(a1)+
-		dbf	d1,loc_62AC
+		dbf	d1,@LoopScrollWaterCloud
+
+	; Hills Top
 		move.w	d2,d0
 		asr.w	#4,d0
-		move.w	#7,d1
 
-loc_62BA:				; CODE XREF: sub_6264+58j
+		move.w	#(16/2)-1,d1
+	@LoopHillsTop:
 		move.l	d0,(a1)+
-		dbf	d1,loc_62BA
+		dbf	d1,@LoopHillsTop
+
+	; Hills Bottom
 		move.w	d2,d0
 		asr.w	#4,d0
 		move.w	d0,d1
 		asr.w	#1,d1
 		add.w	d1,d0
-		move.w	#7,d1
 
-loc_62CE:				; CODE XREF: sub_6264+6Cj
+		move.w	#(16/2)-1,d1
+@LoopHillsBottom:
 		move.l	d0,(a1)+
-		dbf	d1,loc_62CE
+		dbf	d1,@LoopHillsBottom
+
+	; Flower Field
 		move.w	d2,d0
 		asr.w	#1,d0
 		move.w	d2,d1
 		asr.w	#3,d1
 		sub.w	d1,d0
 		ext.l	d0
-		asl.l	#4,d0
-		divs.w	#$30,d0	; '0'
+		asl.l	#8,d0
+		divs.w	#48,d0
 		ext.l	d0
-		asl.l	#4,d0
 		asl.l	#8,d0
 		moveq	#0,d3
 		move.w	d2,d3
 		asr.w	#3,d3
-		move.w	#$27,d1	; '''
 
-loc_62F6:				; CODE XREF: sub_6264+9Cj
+		move.w	#(80/2)-1,d1
+@LoopFlowerField:
 		move.w	d2,(a1)+
 		move.w	d3,(a1)+
 		swap	d3
 		add.l	d0,d3
 		swap	d3
-		dbf	d1,loc_62F6
+		dbf	d1,@LoopFlowerField
+
 		rts
 ; End of function sub_6264
 
