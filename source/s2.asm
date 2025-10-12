@@ -7865,8 +7865,8 @@ ScrollVertical:
 		move.w	y_pos(a0),d0
 		sub.w	(a1),d0
 
-		cmpi.w	#-$100,(Camera_Min_Y_pos).w	; does the level wrap vertically?
-		bne.s	@NoVerticalWrap			; if not, branch
+		tst.w	(Camera_Min_Y_pos).w	; does the level wrap vertically?
+		bmi.s	@NoVerticalWrap			; if not, branch
 		andi.w	#$7FF,d0
 	@NoVerticalWrap:
 		btst	#PlayerStatusBitSpin,status(a0)
@@ -16974,9 +16974,10 @@ Obj_Index:
 ; but there it lacked any branch and instead fell into ObjectMoveAndFall
 
 ObjNull:
-		move.b	#$16,d7
+		move.l	d0,-(sp)
+		moveq	#$16,d0
 		TRAP	#0
-		moveq	#0,d7
+		move.l	(sp)+,d0
 ; jmp_DeleteObject:
 		bra.w	DeleteObject
 
@@ -21734,9 +21735,9 @@ loc_FABC:
 		move.w	Obj01_Modes(pc,d0.w),d1
 		jsr	Obj01_Modes(pc,d1.w)	; run Sonic's movement control code
 
-		cmpi.w	#-$100,(Camera_Min_Y_pos).w	; is vertical wrapping enabled?
-		bne.s	@NoVerticalWrap			; if not, branch
-		andi.w	#$7FF,y_pos(a0) 		; perform wrapping of Sonic's y position
+		tst.w	(Camera_Min_Y_pos).w	; is vertical wrapping enabled?
+		bpl.s	@NoVerticalWrap		; if not, branch
+		andi.w	#$7FF,y_pos(a0) 	; perform wrapping of Sonic's y position
 	@NoVerticalWrap:
 
 Obj01_ControlsLock:
@@ -22601,9 +22602,16 @@ Sonic_Boundary_CheckBottom:
 
 Sonic_Boundary_Bottom:
 		tst.w	(Camera_Min_Y_pos).w	; check for vertical wrap
-		bpl.w	JmpTo_KillSonic
+		bpl.s	@jmp	;JmpTo_KillSonic
+		moveq	#Err_DeathPit2,d0
+		TRAP	#0
 		rts
 ; ---------------------------------------------------------------------------
+	@jmp:
+		moveq	#Err_DeathPit,d0
+		move.l	(Camera_Min_Y_pos).w,d1
+		TRAP	#0
+		jmp	KillSonic
 
 
 Sonic_Boundary_Sides:

@@ -35,6 +35,15 @@ cAqua:		equ cGreen+cBlue	; colour aqua
 cMagenta:	equ cBlue+cRed		; colour magenta
 
 ; ---------------------------------------------------------------------------
+; Tilemap Format
+TMap_Priority:	equ	$8000
+TMap_PalLine2:	equ	$2000
+TMap_PalLine3:	equ	$4000
+TMap_PalLine4:	equ	TMap_PalLine2+TMap_PalLine3
+TMap_XFlip:	equ	$1000
+TMap_YFlip:	equ	$0800
+
+; ---------------------------------------------------------------------------
 ; VDP addresses
 VDP_data_port:			equ $C00000 ; (8=r/w, 16=r/w)
 VDP_control_port:		equ $C00004 ; (8=r/w, 16=r/w)
@@ -128,12 +137,12 @@ ConvertedChunksLoc:		equ $00FE0000
 ASCII_Linebreak:		equ $0D0A
 ; ---------------------------------------------------------------------------
 ; Animation flags
-afEnd:		equ $FF	; return to beginning of animation
-afBack:		equ $FE	; go back (specified number) bytes
-afChange:	equ $FD	; run specified animation
-afRoutine:	equ $FC	; increment routine counter
-afReset:	equ $FB	; reset animation and 2nd object routine counter
-af2ndRoutine:	equ $FA	; increment 2nd routine counter
+afEnd:		equ -1	; $FF return to beginning of animation
+afBack:		equ -2	; $FE go back (specified number) bytes
+afChange:	equ -3	; $FD run specified animation
+afRoutine:	equ -4	; $FC increment routine counter
+afReset:	equ -5	; $FB reset animation and 2nd object routine counter
+af2ndRoutine:	equ -6	; $FA increment 2nd routine counter
 ; ===========================================================================
 ; These constants will be replaced by an automated system for ease of modification
 ; see macros
