@@ -22604,12 +22604,15 @@ Sonic_Boundary_Bottom:
 		tst.w	(Camera_Min_Y_pos).w	; check for vertical wrap
 		bpl.s	@jmp	;JmpTo_KillSonic
 		moveq	#Err_DeathPit2,d0
+		move.l	(Camera_Min_Y_pos).w,d1
+		move.l	y_pos(a0),d2
 		TRAP	#0
 		rts
 ; ---------------------------------------------------------------------------
 	@jmp:
 		moveq	#Err_DeathPit,d0
 		move.l	(Camera_Min_Y_pos).w,d1
+		move.l	y_pos(a0),d2
 		TRAP	#0
 		jmp	KillSonic
 
