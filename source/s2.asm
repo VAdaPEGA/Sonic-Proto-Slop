@@ -7866,7 +7866,7 @@ ScrollVertical:
 		sub.w	(a1),d0
 
 		tst.w	(Camera_Min_Y_pos).w	; does the level wrap vertically?
-		bmi.s	@NoVerticalWrap			; if not, branch
+		bpl.s	@NoVerticalWrap			; if not, branch
 		andi.w	#$7FF,d0
 	@NoVerticalWrap:
 		btst	#PlayerStatusBitSpin,status(a0)
