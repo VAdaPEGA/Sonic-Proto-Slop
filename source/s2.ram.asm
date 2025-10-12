@@ -220,10 +220,11 @@ Camera_BG_Y_pos_diff:		equ Camera_RAM+$B6
 Camera_X_pos_diff_P2:		equ Camera_RAM+$B8	; (new X pos - old X pos) * 256
 Camera_Y_pos_diff_P2:		equ Camera_RAM+$BA
 
+Camera_Max_Y_pos:		equ Camera_RAM+$C6
 Camera_Min_X_pos:		equ Camera_RAM+$C8
 Camera_Max_X_pos:		equ Camera_RAM+$CA
 Camera_Min_Y_pos:		equ Camera_RAM+$CC
-Camera_Max_Y_pos:		equ Camera_RAM+$CE
+Camera_Max_Y_pos_now:		equ Camera_RAM+$CE
 
 Camera_Y_pos_bias:		equ Camera_RAM+$D8
 Camera_Y_pos_bias_P2:		equ Camera_RAM+$DA
@@ -332,6 +333,9 @@ Vint_runcount:			equ $FFFFFE0C
 Current_ZoneAndAct:		equ $FFFFFE10
 Current_Zone:			equ $FFFFFE10
 Current_Act:			equ $FFFFFE11
+
+Camera_Min_Y_pos_copy:		equ $FFFFFEF0	; used by debug mode
+Camera_Max_Y_pos_copy:		equ $FFFFFEF2
 
 Two_player_mode:		equ $FFFFFFE8
 

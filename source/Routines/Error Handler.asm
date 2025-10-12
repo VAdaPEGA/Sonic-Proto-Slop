@@ -231,8 +231,7 @@ c		=	c+2
 	ErrCode	InvalidObject,	"[INVALID_LVL_OBJECT]"
 	ErrCode	GenericError2,	"[GENERIC_ERROR]"
 	ErrCode	GenericError3,	"[GENERIC_ERROR_TWO]"
-	ErrCode	DeathPit2,	"[FUCK_OFF;_I_FIXED_IT]"
-	ErrCode	DeathPit,	"[THIS_HAS_BOTTOMLESS_PITS???]"
+	ErrCode	DeathPit,	"[SKILL_ISSUE_DETECTED]"
 ; ---------------------------------------------------------------------------
 		rept	c/2
 c		=	c-2
