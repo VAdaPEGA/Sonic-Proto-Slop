@@ -22581,42 +22581,37 @@ Sonic_LevelBound:
 		move.w	(Camera_Min_X_pos).w,d0
 		addi.w	#$10,d0
 		cmp.w	d1,d0
-		bhi.s	loc_101FA
+		bhi.s	Sonic_Boundary_Sides
 		move.w	(Camera_Max_X_pos).w,d0
-		addi.w	#$128,d0
+		addi.w	#320-24,d0	; screen width - Player width
 		tst.b	($FFFFF7AA).w
-		bne.s	loc_101C0
-		addi.w	#$40,d0
-
-loc_101C0:
+		bne.s	@NotABoss
+		addi.w	#64,d0	; extra space on the right for signpost
+	@NotABoss:
 		cmp.w	d1,d0
-		bls.s	loc_101FA
+		bls.s	Sonic_Boundary_Sides
 
-loc_101C4:
+Sonic_Boundary_CheckBottom:
 		move.w	(Camera_Max_Y_pos).w,d0
-		addi.w	#$E0,d0
+		addi.w	#224,d0
 		cmp.w	y_pos(a0),d0
-		blt.s	loc_101D4
+		blt.s	Sonic_Boundary_Bottom
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
-loc_101D4:
-		cmpi.w	#$501,(Current_ZoneAndAct).w	; SBZ2
-		bne.w	JmpTo_KillSonic
-		cmpi.w	#$2000,(MainCharacter+x_pos).w
-		bcs.w	JmpTo_KillSonic
-		clr.b	($FFFFFE30).w
-		move.w	#1,($FFFFFE02).w
-		move.w	#$103,(Current_ZoneAndAct).w	; send to LZ4
+Sonic_Boundary_Bottom:
+		tst.w	(Camera_Min_Y_pos).w	; check for vertical wrap
+		bpl.w	JmpTo_KillSonic
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
-loc_101FA:
+
+Sonic_Boundary_Sides:
 		move.w	d0,x_pos(a0)
 		move.w	#0,x_sub(a0)
 		move.w	#0,x_vel(a0)
 		move.w	#0,ground_speed(a0)
-		bra.s	loc_101C4
+		bra.s	Sonic_Boundary_CheckBottom
 ; End of function Sonic_LevelBound
 
 
