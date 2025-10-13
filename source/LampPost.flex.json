@@ -8,7 +8,7 @@
             "name": "S2_HUD",
             "palettes": [],
             "art": {
-                "path": "Art\\nemesis\\S1TitleCard.bin",
+                "path": "Art\\nemesis\\Points.bin",
                 "compression": "Nemesis",
                 "offset": 0
             },
