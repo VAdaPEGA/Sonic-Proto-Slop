@@ -70,7 +70,11 @@ angle:			equ $26		; angle about the z axis (360 degrees = 256)
 
 x_pixel:		equ x_pos	; 2 bytes ; x coordinate for objects using screen-space coordinate system
 y_pixel:		equ 2+x_pos	; 2 bytes ; y coordinate for objects using screen-space coordinate system
-
+; conventions followed by many objects but NOT Sonic/Tails:
+collision_flags:	equ $20
+collision_property:	equ $21
+respawn_index:		equ $23
+subtype:		equ $28
 ; conventions mostly shared by Player Objects (Obj01, Obj02, and Obj09).
 ; Special Stage Sonic uses some different conventions
 ground_speed:		equ $14		; 2 bytes ; directionless representation of speed... not updated in the air

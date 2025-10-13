@@ -14611,16 +14611,16 @@ Obj26:					; DATA XREF: ROM:Obj_Indexo
 		jmp	Obj26_Index(pc,d1.w)
 ; ===========================================================================
 Obj26_Index:	dc.w Object26_Init-Obj26_Index 
-		dc.w loc_AED6-Obj26_Index
+		dc.w Object26_Solid-Obj26_Index
 		dc.w loc_AFDC-Obj26_Index
-		dc.w loc_AFBA-Obj26_Index
+		dc.w Object26_Display-Obj26_Index
 		dc.w loc_AFC4-Obj26_Index
 ; ===========================================================================
 
 Object26_Init:				; DATA XREF: ROM:Obj26_Indexo
 		addq.b	#2,routine(a0)
-		move.b	#$E,y_radius(a0)
-		move.b	#$E,x_radius(a0)
+		move.b	#28/2,y_radius(a0)
+		move.b	#28/2,x_radius(a0)
 		move.l	#Map_Obj26,mappings(a0)
 		move.w	#$680,art_tile(a0)
 		bsr.w	Adjust2PArtPointer
@@ -14629,53 +14629,55 @@ Object26_Init:				; DATA XREF: ROM:Obj26_Indexo
 		move.b	#$F,width_pixels(a0)
 		lea	($FFFFFC00).w,a2
 		moveq	#0,d0
-		move.b	$23(a0),d0
+		move.b	respawn_index(a0),d0
 		bclr	#7,2(a2,d0.w)
 		btst	#0,2(a2,d0.w)
-		beq.s	loc_AECA
-		move.b	#8,routine(a0)
-		move.b	#$B,mapping_frame(a0)
+		beq.s	@notBroken
+		move.b	#8,routine(a0)		; display only
+		move.b	#$B,mapping_frame(a0)	; Broken Monitor frame
 		rts
 ;----------------------------------------------------
 
-loc_AECA:				; CODE XREF: ROM:0000AEBAj
-		move.b	#$46,$20(a0) ; 'F'
-		move.b	$28(a0),anim(a0)
+	@notBroken:				
+		move.b	#$46,collision_flags(a0)
+		move.b	subtype(a0),anim(a0)
 
-loc_AED6:				; DATA XREF: ROM:0000AE68o
+Object26_Solid:	; Routine 2
 		move.b	routine_secondary(a0),d0
-		beq.s	loc_AF30
+		beq.s	@Normal
 		subq.b	#2,d0
-		bne.s	loc_AF10
+		bne.s	@Fall
+
+		; 2nd Routine 2
 		moveq	#0,d1
 		move.b	width_pixels(a0),d1
 		addi.w	#$B,d1
 		bsr.w	sub_F9C8
 		btst	#3,status(a1)
-		bne.w	loc_AF00
+		bne.w	@OnTop
 		clr.b	routine_secondary(a0)
-		bra.w	loc_AFBA
+		bra.w	Object26_Display
 ;----------------------------------------------------
 
-loc_AF00:				; CODE XREF: ROM:0000AEF4j
+	@OnTop:		; 2nd Routine 4		; CODE XREF: ROM:0000AEF4j
 		move.w	#$10,d3
 		move.w	x_pos(a0),d2
 		bsr.w	MvSonicOnPtfm
-		bra.w	loc_AFBA
+		bra.w	Object26_Display
 ;----------------------------------------------------
 
-loc_AF10:				; CODE XREF: ROM:0000AEDEj
+	@Fall:				; CODE XREF: ROM:0000AEDEj
 		bsr.w	ObjectMoveAndFall
 		jsr	(ObjHitFloor).l
 		tst.w	d1
-		bpl.w	loc_AFBA
+		bpl.w	Object26_Display
 		add.w	d1,y_pos(a0)
 		clr.w	y_vel(a0)
 		clr.b	routine_secondary(a0)
-		bra.w	loc_AFBA
+		bra.w	Object26_Display
 ;----------------------------------------------------
 
-loc_AF30:				; CODE XREF: ROM:0000AEDAj
+@Normal:		; 2nd Routine 0		; CODE XREF: ROM:0000AEDAj
 		move.w	#$1A,d1
 		move.w	#$F,d2
 		bsr.w	Obj26_SolidSides
@@ -14691,7 +14693,7 @@ loc_AF4E:				; CODE XREF: ROM:0000AF44j
 		sub.w	d3,y_pos(a1)
 		bsr.w	RideObject_SetRide
 		move.b	#2,routine_secondary(a0)
-		bra.w	loc_AFBA
+		bra.w	Object26_Display
 ;----------------------------------------------------
 
 loc_AF64:				; CODE XREF: ROM:0000AF50j
@@ -14718,20 +14720,20 @@ loc_AF8A:				; CODE XREF: ROM:0000AF66j
 		bne.s	loc_AFAE
 		bset	#5,status(a1)
 		bset	#5,status(a0)
-		bra.s	loc_AFBA
+		bra.s	Object26_Display
 ;----------------------------------------------------
 
 loc_AFA0:				; CODE XREF: ROM:0000AF3Cj
 					; ROM:0000AF4Cj
 		btst	#5,status(a0)
-		beq.s	loc_AFBA
+		beq.s	Object26_Display
 		move.w	#1,anim(a1)
 
 loc_AFAE:				; CODE XREF: ROM:0000AF90j
 		bclr	#5,status(a0)
 		bclr	#5,status(a1)
-
-loc_AFBA:				; CODE XREF: ROM:0000AEFCj
+;----------------------------------------------------
+Object26_Display:				; CODE XREF: ROM:0000AEFCj
 					; ROM:0000AF0Cj ...
 		lea	(Ani_obj26).l,a1
 		bsr.w	AnimateSprite
@@ -27737,26 +27739,9 @@ locret_13702:				; CODE XREF: Lamppost_LoadInfo+9Cj
 ; End of function Lamppost_LoadInfo
 
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Map_Obj79:	dc.w word_1370A-Map_Obj79 ; DATA XREF: ROM:000134E6o
-					; ROM:Map_Obj79o ...
-		dc.w word_1372C-Map_Obj79
-		dc.w word_1374E-Map_Obj79
-word_1370A:	dc.w 4			; DATA XREF: ROM:Map_Obj79o
-		dc.w $E801,$2000,$2000,$FFF8; 0
-		dc.w $E801,$2800,$2800,	   0; 4
-		dc.w $F803,    6,    3,$FFF8; 8
-		dc.w $F803, $806, $803,	   0; 12
-word_1372C:	dc.w 4			; DATA XREF: ROM:00013706o
-		dc.w $E801,    2,    1,$FFF8; 0
-		dc.w $E801, $802, $801,	   0; 4
-		dc.w $F803,    6,    3,$FFF8; 8
-		dc.w $F803, $806, $803,	   0; 12
-word_1374E:	dc.w 4			; DATA XREF: ROM:00013708o
-		dc.w $E801,$2004,$2002,$FFF8; 0
-		dc.w $E801,$2804,$2802,	   0; 4
-		dc.w $F803,    6,    3,$FFF8; 8
-		dc.w $F803, $806, $803,	   0; 12
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Map_Obj79:	include	"Mappings\sprite\LampPost.asm"
+		even
+
 ;----------------------------------------------------
 ; Object 7D - hidden points at the end of a level
 ;----------------------------------------------------
