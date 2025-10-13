@@ -8,12 +8,12 @@
             "name": "object",
             "palettes": [],
             "art": {
-                "path": "Art\\nemesis\\Credits font from Sonic 1.bin",
+                "path": "Art\\nemesis\\LampPost.bin",
                 "compression": "Nemesis",
                 "offset": 0
             },
             "mappings": {
-                "path": "",
+                "path": "Mappings\\sprite\\obj79.bin",
                 "label": ""
             },
             "dplcs": {

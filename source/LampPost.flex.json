@@ -1,0 +1,47 @@
+{
+    "Flex": 2,
+    "name": "",
+    "node": "22fe963a-af86-4e5b-b06b-bb400f0c10ee",
+    "objects": [
+        {
+            "format": "Sonic 2.js",
+            "name": "S2_HUD",
+            "palettes": [],
+            "art": {
+                "path": "Art\\nemesis\\Points.bin",
+                "compression": "Nemesis",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            },
+            "uuid": "22fe963a-af86-4e5b-b06b-bb400f0c10ee"
+        },
+        {
+            "format": "Sonic 2.js",
+            "name": "TitleCard_HUD",
+            "palettes": [],
+            "art": {
+                "path": "Art\\nemesis\\S1TitleCard.bin",
+                "compression": "Nemesis",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            },
+            "uuid": "49f884fb-dd64-41a3-bade-433ec701474a"
+        }
+    ]
+}
