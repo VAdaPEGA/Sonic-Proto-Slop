@@ -73,13 +73,13 @@ RepositionScreenForError:
 		locVRAM	VRAM_HScroll
 		move.l	#$0,(a6)		; clear X position in VRAM
 
-		locCRAM	2*1			; force colours for visibility and style
+		locCRAM	2*(16-2)			; force colours for visibility and style
 		move.l	#(cBlack<<16)+cWhite,(a6)
-		locCRAM	2*(16+1)
+		locCRAM	2*(16*2-2)
 		move.l	#(cBlack<<16)+cAqua,(a6)
-		locCRAM	2*(16*2+1)
+		locCRAM	2*(16*3-2)
 		move.l	#(cBlack<<16)+cGreen,(a6)
-		locCRAM	2*(16*3+1)
+		locCRAM	2*(16*4-2)
 		move.l	#(cBlack<<16)+cMagenta,(a6)
 
 		locVRAM	(VRAM_sprites)
