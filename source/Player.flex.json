@@ -1,8 +1,28 @@
 {
     "Flex": 2,
     "name": "",
-    "node": "28062df6-0a63-4b3d-8db4-1a57d4c4b325",
+    "node": "75e0e523-52d6-4ae3-9a02-991b42ae8d27",
     "objects": [
+        {
+            "format": "Sonic 2.js",
+            "name": "object",
+            "palettes": [],
+            "art": {
+                "path": "Art\\nemesis\\Credits font from Sonic 1.bin",
+                "compression": "Nemesis",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            },
+            "uuid": "75e0e523-52d6-4ae3-9a02-991b42ae8d27"
+        },
         {
             "format": "Sonic 2.js",
             "name": "Sonic",

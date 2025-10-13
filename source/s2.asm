@@ -6485,7 +6485,7 @@ LevelSizeArray:
 		dc.w	 0,  $3FFF,     0,	$720		; CPZ2
 		dc.w	 0,  $3FFF,     0,	$720		; CPZ3
 		dc.w	 0,  $3FFF,     0,	$720		; CPZ4
-		dc.w	 0,  $6000, -$100,	$800		; EHZ1
+		dc.w	 0,  $3E00, -$100,	$800		; EHZ1
 		dc.w	 0,  $2940,     0,	$420		; EHZ2
 		dc.w	 0,  $25C0,     0,	$720		; EHZ3
 		dc.w	 0,  $3FFF,     0,	$720		; EHZ4
