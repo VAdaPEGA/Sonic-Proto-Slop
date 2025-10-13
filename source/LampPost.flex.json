@@ -8,8 +8,8 @@
             "name": "S2_HUD",
             "palettes": [],
             "art": {
-                "path": "Art\\uncompressed\\Sonic's art.bin",
-                "compression": "Uncompressed",
+                "path": "Art\\nemesis\\S1TitleCard.bin",
+                "compression": "Nemesis",
                 "offset": 0
             },
             "mappings": {
