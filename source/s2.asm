@@ -14609,16 +14609,15 @@ Obj26:					; DATA XREF: ROM:Obj_Indexo
 		move.b	routine(a0),d0
 		move.w	Obj26_Index(pc,d0.w),d1
 		jmp	Obj26_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj26_Index:	dc.w loc_AE70-Obj26_Index ; DATA XREF: ROM:Obj26_Indexo
-					; ROM:0000AE68o ...
+; ===========================================================================
+Obj26_Index:	dc.w Object26_Init-Obj26_Index 
 		dc.w loc_AED6-Obj26_Index
 		dc.w loc_AFDC-Obj26_Index
 		dc.w loc_AFBA-Obj26_Index
 		dc.w loc_AFC4-Obj26_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_AE70:				; DATA XREF: ROM:Obj26_Indexo
+Object26_Init:				; DATA XREF: ROM:Obj26_Indexo
 		addq.b	#2,routine(a0)
 		move.b	#$E,y_radius(a0)
 		move.b	#$E,x_radius(a0)
@@ -14637,7 +14636,7 @@ loc_AE70:				; DATA XREF: ROM:Obj26_Indexo
 		move.b	#8,routine(a0)
 		move.b	#$B,mapping_frame(a0)
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AECA:				; CODE XREF: ROM:0000AEBAj
 		move.b	#$46,$20(a0) ; 'F'
@@ -14656,14 +14655,14 @@ loc_AED6:				; DATA XREF: ROM:0000AE68o
 		bne.w	loc_AF00
 		clr.b	routine_secondary(a0)
 		bra.w	loc_AFBA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AF00:				; CODE XREF: ROM:0000AEF4j
 		move.w	#$10,d3
 		move.w	x_pos(a0),d2
 		bsr.w	MvSonicOnPtfm
 		bra.w	loc_AFBA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AF10:				; CODE XREF: ROM:0000AEDEj
 		bsr.w	ObjectMoveAndFall
@@ -14674,7 +14673,7 @@ loc_AF10:				; CODE XREF: ROM:0000AEDEj
 		clr.w	y_vel(a0)
 		clr.b	routine_secondary(a0)
 		bra.w	loc_AFBA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AF30:				; CODE XREF: ROM:0000AEDAj
 		move.w	#$1A,d1
@@ -14693,7 +14692,7 @@ loc_AF4E:				; CODE XREF: ROM:0000AF44j
 		bsr.w	RideObject_SetRide
 		move.b	#2,routine_secondary(a0)
 		bra.w	loc_AFBA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AF64:				; CODE XREF: ROM:0000AF50j
 		tst.w	d0
@@ -14702,7 +14701,7 @@ loc_AF64:				; CODE XREF: ROM:0000AF50j
 		tst.w	x_vel(a1)
 		bmi.s	loc_AF8A
 		bra.s	loc_AF7A
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AF74:				; CODE XREF: ROM:0000AF6Aj
 		tst.w	x_vel(a1)
@@ -14720,7 +14719,7 @@ loc_AF8A:				; CODE XREF: ROM:0000AF66j
 		bset	#5,status(a1)
 		bset	#5,status(a0)
 		bra.s	loc_AFBA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AFA0:				; CODE XREF: ROM:0000AF3Cj
 					; ROM:0000AF4Cj
@@ -14744,7 +14743,7 @@ loc_AFC4:				; DATA XREF: ROM:0000AE6Eo
 		cmpi.w	#$280,d0
 		bhi.w	DeleteObject
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;----------------------------------------------------
 
 loc_AFDC:				; DATA XREF: ROM:0000AE6Ao
 		addq.b	#2,routine(a0)
@@ -14771,7 +14770,6 @@ loc_B020:				; CODE XREF: ROM:0000B008j
 		bset	#0,2(a2,d0.w)
 		move.b	#$A,anim(a0)
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ;----------------------------------------------------
 ; Object 2E - monitor contents (code for power-up behavior and rising image)
 ;----------------------------------------------------
@@ -41186,16 +41184,10 @@ Nem_Monitors:	incbin	"art/nemesis/Monitor and contents.bin"
 		even
 Nem_VSpikes:	incbin	"art/nemesis/Spikes.bin"
 		even
-Nem_Points:	dc.b $80,$12,$80,  3,  3,$14, $C,$25,$1A,$36,$3D,$47,$7C,$56,$3C,$67,$7D,$72,  0,$81,  3,  2,$15,$1C,$26,$3B,$35,$1B,$86,  3,  4,$87,  4, $A,$14, $B,$26,$3A,$FF,  0, $E,$3D,$BF,$C4,$D2,$97,$17,$E3,$B1,$62,$75,$AB,  3,$CB,$F8,$B1,$65,$29,$73,$B7,$B0,  3,$DE,$3E; 0
-					; DATA XREF: ROM:0001C0B6o
-					; ROM:0001C18Eo
-		dc.b $62,$B5,$2B,$C5,$ED,$6A,$B1,  1,$ED,$78,$BE,$52,$95,$AE,$3E,  0,$1C,$7B,$75,$14,$B8,$9A,$6B,$13,$AD,$58,$19,$5A,$BD,$26,$B1,$3A,$8A,$5C,$ED,$EC,  0,$CD,$BE,$FA,$8A,$57,$A9,$A6,$BA,$D5,$29,$7F,$11,$D7,$CE,$B2,$BC,$4D,$7E,$DD,$4A,$7B,$7C,  0,$38,$F6,$EA,$29; 64
-		dc.b $71,$34,$D6,$27,$5A,$B0,$32,$B5,$7A,$4D,$62,$75,$14,$B9,$DB,$D8,  0,$FF,$E2,$FF,$6E,$E5,$78,$B5,$D6,$56,$5C,$FA,$B4,$BA,$F5,$75,$AA,$F5,$35,$9D,$47,$2B,$FE,$20,  7,$1E,$DD,$45,$2E,$26,$9A,$C4,$EB,$56,  6,$56,$AF,$49,$AC,$4E,$A2,$97,$3B,$7B,  0,$1E,$DF,$72; 128
-		dc.b $E2,$96,$B1,$35,$AB,$D5,$80,$EF,$56,$B1,$35,$92,$E2,$97,$B7,$D8,  0,$BE,$C5,$E2,  0,$3E,$AF,$B1,$78,  0; 192
-Nem_Lamppost:	dc.b $80, $A,$80,  3,  2,$14,  9,$24, $A,$72,  0,$81,  3,  3,$15,$1D,$83,  6,$3D,$85,  5,$1B,$87,  7,$7C,$89,  4,  8,$8A,  4, $B,$8B,  5,$1C,$8C,  5,$18,$8D,  6,$3C,$8E,  7,$7D,$8F,  5,$19,$15,$1A,$FF,$FE,  4,$7E,$6A,$A3,$78,$FC,$BC,$EF, $B,$F1,  9,$A8,$9C,$A7; 0
-					; DATA XREF: ROM:0001C09Eo
-		dc.b $6B,$1F,$D0,$8A,$F9,$58,  0,  0,$3F,$C1,$FB,$5F,$13,$E5,$7E,$77,$F8,$1E,$57,$57,$85,$39,$F0,  0,  0,$3F,$C1,$FC,$DD,$FE,$5A,$BF,$32,$BF,$25,$31,$2D,$65,$44,$FA,$B2,$C8,$AF,$C1,  0,  0,  5,$3F,$CF,$67,$F3,$CD,$3D,$75,$30,$51,$F9,$8F,$9F,$75,$F6,$A3,$BA,$98; 64
-		dc.b $6B,$29,$A8,$7A,$61,$FB, $D,$DF,$2F,$96,  4,$EE,$F9,$7C,$B0,$27,$DF,$D4,$46,  9,$F7,$F5,$11,$80,  0,$50,$F4,$F2,$FF,$11,$F3,$F5,$CF,$EF,$75,$D4,$C1,  0; 128
+Nem_Points:	incbin	"art/nemesis/Points.bin"
+		even
+Nem_Lamppost:	incbin	"art/nemesis/LampPost.bin"
+		even
 Nem_Signpost:	incbin	"art/nemesis/Signpost.bin"
 		even
 Nem_Crocobot:	dc.b   0,$2C,$80,  5,$11,$16,$2A,$26,$30,$36,$33,$47,$76,$58,$EF,$67,$70,$74,  4,$81,  3,  0,$14,  6,$26,$2E,$36,$35,$48,$F2,$57,$6C,$77,$78,$82,  4,  2,$15,$13,$27,$74,$38,$F7,$83,  4,  3,$15, $B,$26,$2B,$47,$6F,$58,$F6,$84,  5,$14,$17,$6E,$85,  6,$31,$17,$6D; 0
