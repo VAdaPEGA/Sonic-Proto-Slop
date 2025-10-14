@@ -8,8 +8,8 @@
             "name": "S2_HUD",
             "palettes": [],
             "art": {
-                "path": "Art\\nemesis\\Points.bin",
-                "compression": "Nemesis",
+                "path": "Art\\uncompressed\\HudNumbers.bin",
+                "compression": "Uncompressed",
                 "offset": 0
             },
             "mappings": {
