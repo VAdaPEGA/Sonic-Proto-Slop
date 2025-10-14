@@ -1030,15 +1030,15 @@ PlaySound_Unk:
 
 PauseGame:
 		nop
-		tst.b	($FFFFFE12).w
+		tst.b	(Life_count).w
 		beq.s	Unpause
-		tst.w	($FFFFF63A).w
+		tst.w	(Game_paused).w
 		bne.s	Pause_AlreadyPaused
 		btst	#7,($FFFFF605).w
 		beq.s	Pause_DoNothing
 
 Pause_AlreadyPaused:
-		move.w	#1,($FFFFF63A).w
+		move.w	#1,(Game_paused).w
 		move.b	#1,($FFFFF000+StopMusic).w
 
 Pause_Loop:
@@ -1067,14 +1067,14 @@ Pause_Resume:
 		move.b	#$80,($FFFFF000+StopMusic).w
 
 Unpause:
-		move.w	#0,($FFFFF63A).w
+		move.w	#0,(Game_paused).w
 
 Pause_DoNothing:
 		rts
 ; ===========================================================================
 ; loc_1472:
 Pause_SlowMo:
-		move.w	#1,($FFFFF63A).w
+		move.w	#1,(Game_paused).w
 		move.b	#$80,($FFFFF000+StopMusic).w
 		rts
 ; End of function PauseGame
@@ -4147,12 +4147,12 @@ LevelSelect_StartGame:
 ; LevelSelect_SpecialStage:
 		move.b	#GameModeID_SpecialStage,(Game_Mode).w
 		clr.w	(Current_ZoneAndAct).w
-		move.b	#3,($FFFFFE12).w
+		move.b	#3,(Life_count).w
 		moveq	#0,d0
-		move.w	d0,($FFFFFE20).w
-		move.l	d0,($FFFFFE22).w
-		move.l	d0,($FFFFFE26).w
-		move.l	#$1388,($FFFFFFC0).w
+		move.w	d0,(Ring_count).w
+		move.l	d0,(Timer).w
+		move.l	d0,(Score).w
+		move.l	#5000,(Next_Extra_life_score).w
 		rts
 ; ===========================================================================
 
@@ -4175,17 +4175,17 @@ LevelSelect_StartZone:
 
 PlayLevel:
 		move.b	#GameModeID_Level,(Game_Mode).w
-		move.b	#3,($FFFFFE12).w
+		move.b	#3,(Life_count).w
 		moveq	#0,d0
-		move.w	d0,($FFFFFE20).w
-		move.l	d0,($FFFFFE22).w
-		move.l	d0,($FFFFFE26).w
+		move.w	d0,(Ring_count).w
+		move.l	d0,(Timer).w
+		move.l	d0,(Score).w
 		move.b	d0,($FFFFFE16).w
 		move.b	d0,($FFFFFE57).w
 		move.l	d0,($FFFFFE58).w
 		move.l	d0,($FFFFFE5C).w
 		move.b	d0,($FFFFFE18).w
-		move.l	#$1388,($FFFFFFC0).w
+		move.l	#$1388,(Next_Extra_life_score).w
 		move.b	#$E0,d0
 		bsr.w	PlaySound_Special
 		rts
@@ -4247,12 +4247,12 @@ loc_36AC:				; CODE XREF: ROM:000036A4j
 		clr.b	($FFFFFE16).w
 
 loc_36C0:				; CODE XREF: ROM:000036B0j
-		move.b	#3,($FFFFFE12).w
+		move.b	#3,(Life_count).w
 		moveq	#0,d0
-		move.w	d0,($FFFFFE20).w
-		move.l	d0,($FFFFFE22).w
-		move.l	d0,($FFFFFE26).w
-		move.l	#$1388,($FFFFFFC0).w
+		move.w	d0,(Ring_count).w
+		move.l	d0,(Timer).w
+		move.l	d0,(Score).w
+		move.l	#$1388,(Next_Extra_life_score).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Demo_Levels:	dc.w  $200, $300	; 0
@@ -4784,8 +4784,8 @@ loc_3DD0:
 		moveq	#0,d0
 		tst.b	($FFFFFE30).w
 		bne.s	loc_3E00
-		move.w	d0,($FFFFFE20).w
-		move.l	d0,($FFFFFE22).w
+		move.w	d0,(Ring_count).w
+		move.l	d0,(Timer).w
 		move.b	d0,($FFFFFE1B).w
 
 loc_3E00:
@@ -4798,9 +4798,9 @@ loc_3E00:
 		move.w	d0,($FFFFFE02).w
 		move.w	d0,($FFFFFE04).w
 		bsr.w	OscillateNumInit
-		move.b	#1,($FFFFFE1F).w
-		move.b	#1,($FFFFFE1D).w
-		move.b	#1,($FFFFFE1E).w
+		move.b	#1,(Update_HUD_score).w
+		move.b	#1,(Update_HUD_rings).w
+		move.b	#1,(Update_HUD_timer).w
 		move.w	#4,(Sonic_Pos_Record_Index).w
 		move.w	#0,(Sonic_Pos_Record_Buf).w
 		move.w	#0,($FFFFF790).w
@@ -5779,7 +5779,7 @@ SignpostArtLoad:
 		subi.w	#$100,d1
 		cmp.w	d1,d0
 		blt.s	locret_47E2
-		tst.b	($FFFFFE1E).w
+		tst.b	(Update_HUD_timer).w
 		beq.s	locret_47E2
 		cmp.w	(Camera_Min_X_pos).w,d1
 		beq.s	locret_47E2
@@ -6032,7 +6032,7 @@ loc_50CC:
 		movea.l	(a1,d0.w),a1
 		move.b	1(a1),($FFFFF792).w
 		subq.b	#1,($FFFFF792).w
-		clr.w	($FFFFFE20).w
+		clr.w	(Ring_count).w
 		clr.b	($FFFFFE1B).w
 		move.w	#0,(Debug_placement_mode).w
 		move.w	#$708,(Demo_Time_left).w
@@ -6111,11 +6111,11 @@ loc_5214:
 		bsr.w	LoadPLC2
 		moveq	#$1B,d0
 		bsr.w	LoadPLC
-		move.b	#1,($FFFFFE1F).w
-		move.b	#1,($FFFFF7D6).w
-		move.w	($FFFFFE20).w,d0
+		move.b	#1,(Update_HUD_score).w
+		move.b	#1,(Update_Bonus_score).w
+		move.w	(Ring_count).w,d0
 		mulu.w	#$A,d0
-		move.w	d0,($FFFFF7D4).w
+		move.w	d0,(Bonus_Countdown_2).w
 		move.w	#$8E,d0
 		jsr	(PlaySound_Special).l
 		lea	(Object_Space).w,a1
@@ -6230,7 +6230,7 @@ loc_5360:				; CODE XREF: S1_SSBGLoad+6Ej
 
 PalCycle_S1SS:				; CODE XREF: ROM:00000E90p
 					; ROM:000050FCp
-		tst.w	($FFFFF63A).w
+		tst.w	(Game_paused).w
 		bne.s	locret_5424
 		subq.w	#1,($FFFFF79C).w
 		bpl.s	locret_5424
@@ -14207,21 +14207,21 @@ loc_A8DA:				; CODE XREF: ROM:0000A8A0j
 
 sub_A8DE:				; CODE XREF: ROM:0000A8B6p
 					; ROM:0000AA5Cp ...
-		addq.w	#1,($FFFFFE20).w
-		ori.b	#1,($FFFFFE1D).w
+		addq.w	#1,(Ring_count).w
+		ori.b	#1,(Update_HUD_rings).w
 		move.w	#$B5,d0	; 'µ'
-		cmpi.w	#$64,($FFFFFE20).w ; 'd'
+		cmpi.w	#$64,(Ring_count).w ; 'd'
 		bcs.s	loc_A918
 		bset	#1,($FFFFFE1B).w
 		beq.s	loc_A90C
-		cmpi.w	#$C8,($FFFFFE20).w ; 'È'
+		cmpi.w	#$C8,(Ring_count).w ; 'È'
 		bcs.s	loc_A918
 		bset	#2,($FFFFFE1B).w
 		bne.s	loc_A918
 
 loc_A90C:				; CODE XREF: sub_A8DE+1Cj
-		addq.b	#1,($FFFFFE12).w
-		addq.b	#1,($FFFFFE1C).w
+		addq.b	#1,(Life_count).w
+		addq.b	#1,(Update_HUD_lives).w
 		move.w	#MusID_ExtraLife,d0
 
 loc_A918:				; CODE XREF: sub_A8DE+14j sub_A8DE+24j ...
@@ -14250,7 +14250,7 @@ Obj37_Index:	dc.w loc_A936-Obj37_Index ; DATA XREF: ROM:Obj37_Indexo
 loc_A936:				; DATA XREF: ROM:Obj37_Indexo
 		movea.l	a0,a1
 		moveq	#0,d5
-		move.w	($FFFFFE20).w,d5
+		move.w	(Ring_count).w,d5
 		moveq	#$20,d0	; ' '
 		cmp.w	d0,d5
 		bcs.s	loc_A946
@@ -14306,8 +14306,8 @@ loc_A9CE:				; CODE XREF: ROM:0000A9AAj
 		dbf	d5,loc_A94E
 
 loc_A9DE:				; CODE XREF: ROM:0000A952j
-		move.w	#0,($FFFFFE20).w
-		move.b	#$80,($FFFFFE1D).w
+		move.w	#0,(Ring_count).w
+		move.b	#$80,(Update_HUD_rings).w
 		move.b	#0,($FFFFFE1B).w
 		move.w	#$C6,d0	; 'Æ'
 		jsr	(PlaySound_Special).l
@@ -14385,7 +14385,7 @@ loc_AA88:				; DATA XREF: ROM:S1Obj4B_Indexo
 		bpl.s	loc_AAD6
 		cmpi.b	#6,($FFFFFE57).w
 		beq.w	loc_AB38
-		cmpi.w	#$32,($FFFFFE20).w ; '2'
+		cmpi.w	#$32,(Ring_count).w ; '2'
 		bcc.s	loc_AAC0
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
@@ -14843,27 +14843,27 @@ Monitor_Null:				; DATA XREF: ROM:Monitor_Subroutineso
 Monitor_SonicLife:			; CODE XREF: ROM:0000B11Aj
 					; ROM:0000B12Cj
 					; DATA XREF: ...
-		addq.b	#1,($FFFFFE12).w
-		addq.b	#1,($FFFFFE1C).w
+		addq.b	#1,(Life_count).w
+		addq.b	#1,(Update_HUD_lives).w
 		move.w	#MusID_ExtraLife,d0
 		jmp	(PlaySound).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Monitor_TailsLife:			; DATA XREF: ROM:0000B0CAo
-		addq.b	#1,($FFFFFE12).w
-		addq.b	#1,($FFFFFE1C).w
+		addq.b	#1,(Life_count).w
+		addq.b	#1,(Update_HUD_lives).w
 		move.w	#MusID_ExtraLife,d0
 		jmp	(PlaySound).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 Monitor_Rigns:				; DATA XREF: ROM:0000B0CEo
-		addi.w	#$A,($FFFFFE20).w
-		ori.b	#1,($FFFFFE1D).w
-		cmpi.w	#$64,($FFFFFE20).w ; 'd'
+		addi.w	#$A,(Ring_count).w
+		ori.b	#1,(Update_HUD_rings).w
+		cmpi.w	#$64,(Ring_count).w ; 'd'
 		bcs.s	loc_B130
 		bset	#1,($FFFFFE1B).w
 		beq.w	Monitor_SonicLife
-		cmpi.w	#$C8,($FFFFFE20).w ; 'È'
+		cmpi.w	#$C8,(Ring_count).w ; 'È'
 		bcs.s	loc_B130
 		bset	#2,($FFFFFE1B).w
 		beq.w	Monitor_SonicLife
@@ -15713,18 +15713,18 @@ Obj3A_Wait:
 ; ===========================================================================
 Obj3A_TimeBonus:
 		bsr.w	DisplaySprite
-		move.b	#1,($FFFFF7D6).w
+		move.b	#1,(Update_Bonus_score).w
 		moveq	#0,d0
-		tst.w	($FFFFF7D2).w
+		tst.w	(Bonus_Countdown_1).w
 		beq.s	Obj3A_RingBonus
 		addi.w	#$A,d0
-		subi.w	#$A,($FFFFF7D2).w
+		subi.w	#$A,(Bonus_Countdown_1).w
 ; loc_BC30:
 Obj3A_RingBonus:
-		tst.w	($FFFFF7D4).w
+		tst.w	(Bonus_Countdown_2).w
 		beq.s	Obj3A_ChkBonus
 		addi.w	#$A,d0
-		subi.w	#$A,($FFFFF7D4).w
+		subi.w	#$A,(Bonus_Countdown_2).w
 ; loc_BC40:
 Obj3A_ChkBonus:
 		tst.w	d0
@@ -15862,7 +15862,7 @@ loc_BDAE:				; CODE XREF: ROM:0000BDAAj
 		movea.l	a0,a1
 		lea	(S1Obj7E_Conf).l,a2
 		moveq	#3,d1
-		cmpi.w	#$32,($FFFFFE20).w ; '2'
+		cmpi.w	#$32,(Ring_count).w ; '2'
 		bcs.s	loc_BDC2
 		addq.w	#1,d1
 
@@ -15937,10 +15937,10 @@ loc_BE66:				; CODE XREF: ROM:0000BE60j
 
 loc_BE6A:				; DATA XREF: ROM:0000BD96o
 		bsr.w	DisplaySprite
-		move.b	#1,($FFFFF7D6).w
-		tst.w	($FFFFF7D4).w
+		move.b	#1,(Update_Bonus_score).w
+		tst.w	(Bonus_Countdown_2).w
 		beq.s	loc_BE9C
-		subi.w	#$A,($FFFFF7D4).w
+		subi.w	#$A,(Bonus_Countdown_2).w
 		moveq	#$A,d0
 		jsr	(AddPoints).l
 		move.b	($FFFFFE0F).w,d0
@@ -15955,7 +15955,7 @@ loc_BE9C:				; CODE XREF: ROM:0000BE78j
 		jsr	(PlaySound_Special).l
 		addq.b	#2,routine(a0)
 		move.w	#$B4,anim_frame_duration(a0) ; '´'
-		cmpi.w	#$32,($FFFFFE20).w ; '2'
+		cmpi.w	#$32,(Ring_count).w ; '2'
 		bcs.s	locret_BEC2
 		move.w	#$3C,anim_frame_duration(a0) ; '<'
 		addq.b	#4,routine(a0)
@@ -20617,7 +20617,7 @@ Obj0D_Main:
 		bcc.s	locret_F026
 		move.w	#$CF,d0
 		jsr	(PlaySound).l
-		clr.b	($FFFFFE1E).w
+		clr.b	(Update_HUD_timer).w
 		move.w	(Camera_Max_X_pos).w,(Camera_Min_X_pos).w
 		addq.b	#2,routine(a0)
 
@@ -20706,16 +20706,16 @@ Load_EndOfAct:
 		bne.s	locret_F15E
 		move.w	(Camera_Max_X_pos).w,(Camera_Min_X_pos).w
 		clr.b	($FFFFFE2D).w
-		clr.b	($FFFFFE1E).w
+		clr.b	(Update_HUD_timer).w
 		move.b	#$3A,(Object_Space+$5C0).w
 		moveq	#$10,d0
 		jsr	(LoadPLC2).l
-		move.b	#1,($FFFFF7D6).w
+		move.b	#1,(Update_Bonus_score).w
 		moveq	#0,d0
-		move.b	($FFFFFE23).w,d0
+		move.b	(Timer_minute).w,d0
 		mulu.w	#$3C,d0
 		moveq	#0,d1
-		move.b	($FFFFFE24).w,d1
+		move.b	(Timer_second).w,d1
 		add.w	d1,d0
 		divu.w	#$F,d0
 		moveq	#$14,d1
@@ -20725,10 +20725,10 @@ Load_EndOfAct:
 
 loc_F140:
 		add.w	d0,d0
-		move.w	TimeBonuses(pc,d0.w),($FFFFF7D2).w
-		move.w	($FFFFFE20).w,d0
+		move.w	TimeBonuses(pc,d0.w),(Bonus_Countdown_1).w
+		move.w	(Ring_count).w,d0
 		mulu.w	#$A,d0
-		move.w	d0,($FFFFF7D4).w
+		move.w	d0,(Bonus_Countdown_2).w
 		move.w	#$8E,d0
 		jsr	(PlaySound_Special).l
 
@@ -23288,9 +23288,9 @@ Sonic_GameOver:
 		bcc.w	locret_108B4
 		move.w	#$FFC8,y_vel(a0)
 		addq.b	#2,routine(a0)
-		clr.b	($FFFFFE1E).w
-		addq.b	#1,($FFFFFE1C).w
-		subq.b	#1,($FFFFFE12).w
+		clr.b	(Update_HUD_timer).w
+		addq.b	#1,(Update_HUD_lives).w
+		subq.b	#1,(Life_count).w
 		bne.s	loc_10888
 		move.w	#0,$3A(a0)
 		move.b	#$39,(Object_Space+$80).w
@@ -27665,9 +27665,9 @@ Lamppost_StoreInfo:			; CODE XREF: ROM:000135B6p
 		move.b	($FFFFFE30).w,($FFFFFE31).w
 		move.w	x_pos(a0),($FFFFFE32).w
 		move.w	y_pos(a0),($FFFFFE34).w
-		move.w	($FFFFFE20).w,($FFFFFE36).w
+		move.w	(Ring_count).w,($FFFFFE36).w
 		move.b	($FFFFFE1B).w,($FFFFFE54).w
-		move.l	($FFFFFE22).w,($FFFFFE38).w
+		move.l	(Timer).w,($FFFFFE38).w
 		move.b	($FFFFEEDF).w,($FFFFFE3C).w
 		move.w	(Camera_Max_Y_pos_now).w,($FFFFFE3E).w
 		move.w	(Camera_X_pos).w,($FFFFFE40).w
@@ -27692,13 +27692,13 @@ Lamppost_LoadInfo:			; CODE XREF: LevelSizeLoad+180p
 		move.b	($FFFFFE31).w,($FFFFFE30).w
 		move.w	($FFFFFE32).w,(MainCharacter+x_pos).w
 		move.w	($FFFFFE34).w,(MainCharacter+y_pos).w
-		move.w	($FFFFFE36).w,($FFFFFE20).w
+		move.w	($FFFFFE36).w,(Ring_count).w
 		move.b	($FFFFFE54).w,($FFFFFE1B).w
-		clr.w	($FFFFFE20).w
+		clr.w	(Ring_count).w
 		clr.b	($FFFFFE1B).w
-		move.l	($FFFFFE38).w,($FFFFFE22).w
+		move.l	($FFFFFE38).w,(Timer).w
 		move.b	#$3B,($FFFFFE25).w ; ';'
-		subq.b	#1,($FFFFFE24).w
+		subq.b	#1,(Timer_second).w
 		move.b	($FFFFFE3C).w,($FFFFEEDF).w
 		move.b	($FFFFFE52).w,($FFFFF64D).w
 		move.w	($FFFFFE3E).w,(Camera_Max_Y_pos_now).w
@@ -30071,7 +30071,7 @@ Obj04_Main:				; DATA XREF: ROM:000154E4o
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_15530:				; CODE XREF: ROM:0001551Aj
-		tst.w	($FFFFF63A).w
+		tst.w	(Game_paused).w
 		bne.s	loc_15540
 		move.b	#0,$32(a0)
 		subq.b	#3,mapping_frame(a0)
@@ -34878,7 +34878,7 @@ Obj3E_Switched:				; DATA XREF: ROM:00019514o
 		addq.w	#8,y_pos(a0)
 		move.b	#$A,routine(a0)
 		move.w	#$3C,anim_frame_duration(a0) ; '<'
-		clr.b	($FFFFFE1E).w
+		clr.b	(Update_HUD_timer).w
 		clr.b	($FFFFF7AA).w
 		move.b	#1,($FFFFF7CC).w
 		move.w	#$800,($FFFFF602).w
@@ -35300,7 +35300,7 @@ Touch_Hurt:				; CODE XREF: TouchResponse+20Ej
 HurtSonic:				; CODE XREF: ROM:0000C75Ep
 		tst.b	($FFFFFE2C).w
 		bne.s	HurtShield
-		tst.w	($FFFFFE20).w
+		tst.w	(Ring_count).w
 
 loc_19A10:
 		beq.w	Hurt_NoRings
@@ -36483,7 +36483,7 @@ loc_1A7C4:				; CODE XREF: Obj09_ChkItems+2Cj
 
 loc_1A7D8:				; CODE XREF: Obj09_ChkItems+44j
 		jsr	(sub_A8DE).l
-		cmpi.w	#$32,($FFFFFE20).w ; '2'
+		cmpi.w	#$32,(Ring_count).w ; '2'
 		bcs.s	loc_1A7FC
 		bset	#0,($FFFFFE1B).w
 		bne.s	loc_1A7FC
@@ -36506,8 +36506,8 @@ loc_1A800:				; CODE XREF: Obj09_ChkItems+3Ej
 		move.l	a1,4(a2)
 
 loc_1A814:				; CODE XREF: Obj09_ChkItems+80j
-		addq.b	#1,($FFFFFE12).w
-		addq.b	#1,($FFFFFE1C).w
+		addq.b	#1,(Life_count).w
+		addq.b	#1,(Update_HUD_lives).w
 		move.w	#MusID_ExtraLife,d0
 		jsr	(PlaySound).l
 		moveq	#0,d4
@@ -37214,12 +37214,12 @@ Obj21_Init:
 		move.b	#0,priority(a0)
 
 Obj21_Main:
-		tst.w	($FFFFFE20).w
+		tst.w	(Ring_count).w
 		beq.s	Obj21_NoRings
 		moveq	#0,d0
 		btst	#3,($FFFFFE05).w
 		bne.s	Obj21_Display
-		cmpi.b	#9,($FFFFFE23).w
+		cmpi.b	#9,(Timer_minute).w
 		bne.s	Obj21_Display
 		addq.w	#2,d0
 ; loc_1B082:
@@ -37233,7 +37233,7 @@ Obj21_NoRings:
 		btst	#3,($FFFFFE05).w
 		bne.s	Obj21_Display2
 		addq.w	#1,d0
-		cmpi.b	#9,($FFFFFE23).w
+		cmpi.b	#9,(Timer_minute).w
 		bne.s	Obj21_Display2
 		addq.w	#2,d0
 ; loc_1B0A2:
@@ -37255,8 +37255,8 @@ Map_obj21:	incbin	"mappings/sprite/obj21.bin"
 
 
 AddPoints:
-		move.b	#1,($FFFFFE1F).w
-		lea	($FFFFFE26).w,a3
+		move.b	#1,(Update_HUD_score).w
+		lea	(Score).w,a3
 		add.l	d0,(a3)
 		move.l	#999999,d1
 		cmp.l	(a3),d1
@@ -37265,13 +37265,11 @@ AddPoints:
 
 loc_1B214:
 		move.l	(a3),d0
-		cmp.l	($FFFFFFC0).w,d0
+		cmp.l	(Next_Extra_life_score).w,d0
 		bcs.s	locret_1B23C
-		addi.l	#5000,($FFFFFFC0).w
-		tst.b	($FFFFFFF8).w	; is this a Japanese console?
-		bmi.s	locret_1B23C	; if not, branch
-		addq.b	#1,($FFFFFE12).w
-		addq.b	#1,($FFFFFE1C).w
+		addi.l	#5000,(Next_Extra_life_score).w
+		addq.b	#1,(Life_count).w
+		addq.b	#1,(Update_HUD_lives).w
 		move.w	#MusID_ExtraLife,d0
 		jmp	(PlaySound).l
 
@@ -37279,42 +37277,40 @@ locret_1B23C:
 		rts
 ; End of function AddPoints
 
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
+; =============== S U B	R O U T	I N E =======================================
 
 HudUpdate:
 		lea	(VDP_data_port).l,a6
 		tst.w	(Debug_mode_flag).w
 		bne.w	loc_1B330
-		tst.b	($FFFFFE1F).w
+		tst.b	(Update_HUD_score).w
 		beq.s	loc_1B266
-		clr.b	($FFFFFE1F).w
+		clr.b	(Update_HUD_score).w
 		hudVRAM	$DC80		; set VRAM address
-		move.l	($FFFFFE26).w,d1
+		move.l	(Score).w,d1
 		bsr.w	HUD_Score
 
 loc_1B266:
-		tst.b	($FFFFFE1D).w
+		tst.b	(Update_HUD_rings).w
 		beq.s	loc_1B286
 		bpl.s	loc_1B272
 		bsr.w	HUD_LoadZero
 
 loc_1B272:
-		clr.b	($FFFFFE1D).w
+		clr.b	(Update_HUD_rings).w
 		hudVRAM	$DF40		; set VRAM address
 		moveq	#0,d1
-		move.w	($FFFFFE20).w,d1
+		move.w	(Ring_count).w,d1
 		bsr.w	HUD_Rings
 
 loc_1B286:
-		tst.b	($FFFFFE1E).w
+		tst.b	(Update_HUD_timer).w
 		beq.s	loc_1B2E2
-		tst.w	($FFFFF63A).w
+		tst.w	(Game_paused).w
 		bne.s	loc_1B2E2
-		lea	($FFFFFE22).w,a1
-		cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+ ; is the time 9:59:59?
-		nop			; ...do nothing since this has been nopped out
+		lea	(Timer+4).w,a1
+	;	cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+ ; is the time 9:59:59?
+	;	nop			; ...do nothing since this has been nopped out
 		addq.b	#1,-(a1)
 		cmpi.b	#60,(a1)
 		bcs.s	loc_1B2E2
@@ -37331,29 +37327,29 @@ loc_1B286:
 loc_1B2C2:
 		hudVRAM	$DE40
 		moveq	#0,d1
-		move.b	($FFFFFE23).w,d1
+		move.b	(Timer_minute).w,d1
 		bsr.w	HUD_Mins
 		hudVRAM	$DEC0
 		moveq	#0,d1
-		move.b	($FFFFFE24).w,d1
+		move.b	(Timer_second).w,d1
 		bsr.w	HUD_Secs
 
 loc_1B2E2:
-		tst.b	($FFFFFE1C).w
+		tst.b	(Update_HUD_lives).w
 		beq.s	loc_1B2F0
-		clr.b	($FFFFFE1C).w
+		clr.b	(Update_HUD_lives).w
 		bsr.w	HUD_Lives
 
 loc_1B2F0:
-		tst.b	($FFFFF7D6).w
+		tst.b	(Update_Bonus_score).w
 		beq.s	locret_1B318
-		clr.b	($FFFFF7D6).w
-		move.l	#$6E000002,(VDP_control_port).l
+		clr.b	(Update_Bonus_score).w
+		locVRAM	$AE00
 		moveq	#0,d1
-		move.w	($FFFFF7D2).w,d1
+		move.w	(Bonus_Countdown_1).w,d1
 		bsr.w	HUD_TimeRingBonus
 		moveq	#0,d1
-		move.w	($FFFFF7D4).w,d1
+		move.w	(Bonus_Countdown_2).w,d1
 		bsr.w	HUD_TimeRingBonus
 
 locret_1B318:
@@ -37362,110 +37358,104 @@ locret_1B318:
 ; kills the player if the time has reached 9:59, except now it's unused due
 ; to its "beq" command being noped out above
 S1TimeOver:
-		clr.b	($FFFFFE1E).w
+		clr.b	(Update_HUD_timer).w
 		lea	(MainCharacter).w,a0
 		movea.l	a0,a2
 		bsr.w	KillSonic
 		move.b	#1,($FFFFFE1A).w
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_1B330:				; CODE XREF: HudUpdate+Cj
+loc_1B330:	
 		bsr.w	HUDDebug_XY
-		tst.b	($FFFFFE1D).w
+		tst.b	(Update_HUD_rings).w
 		beq.s	loc_1B354
 		bpl.s	loc_1B340
 		bsr.w	HUD_LoadZero
 
-loc_1B340:				; CODE XREF: HudUpdate+FCj
-		clr.b	($FFFFFE1D).w
+loc_1B340:	
+		clr.b	(Update_HUD_rings).w
 		move.l	#$5F400003,d0
 		moveq	#0,d1
-		move.w	($FFFFFE20).w,d1
+		move.w	(Ring_count).w,d1
 		bsr.w	HUD_Rings
 
-loc_1B354:				; CODE XREF: HudUpdate+FAj
+loc_1B354:	
 		move.l	#$5EC00003,d0
 		moveq	#0,d1
 		move.b	($FFFFF62C).w,d1
 		bsr.w	HUD_Secs
-		tst.b	($FFFFFE1C).w
+		tst.b	(Update_HUD_lives).w
 		beq.s	loc_1B372
-		clr.b	($FFFFFE1C).w
+		clr.b	(Update_HUD_lives).w
 		bsr.w	HUD_Lives
 
-loc_1B372:				; CODE XREF: HudUpdate+12Aj
-		tst.b	($FFFFF7D6).w
+loc_1B372:	
+		tst.b	(Update_Bonus_score).w
 		beq.s	locret_1B39A
-		clr.b	($FFFFF7D6).w
+		clr.b	(Update_Bonus_score).w
 		move.l	#$6E000002,(VDP_control_port).l
 		moveq	#0,d1
-		move.w	($FFFFF7D2).w,d1
+		move.w	(Bonus_Countdown_1).w,d1
 		bsr.w	HUD_TimeRingBonus
 		moveq	#0,d1
-		move.w	($FFFFF7D4).w,d1
+		move.w	(Bonus_Countdown_2).w,d1
 		bsr.w	HUD_TimeRingBonus
 
-locret_1B39A:				; CODE XREF: HudUpdate+138j
+locret_1B39A:	
 		rts
 ; End of function HudUpdate
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ===========================================================================
 
-
-HUD_LoadZero:				; CODE XREF: HudUpdate+30p
-					; HudUpdate+FEp
+HUD_LoadZero:	
 		locVRAM	$DF40
 		lea	HUD_TilesZero(pc),a2
-		move.w	#2,d2
+		move.w	#3-1,d2
 		bra.s	loc_1B3CC
-; End of function HUD_LoadZero
+
+; ===========================================================================
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-HUD_Base:				; CODE XREF: ROM:00003D24p
-					; ROM:00005248p
+HUD_Base:				
 		lea	(VDP_data_port).l,a6
 		bsr.w	HUD_Lives
 		locVRAM	$DC40
 		lea	HUD_TilesBase(pc),a2
-		move.w	#$E,d2
+		move.w	#15-1,d2
 
-loc_1B3CC:				; CODE XREF: HUD_LoadZero+12j
+loc_1B3CC:	
 		lea	Art_HUD(pc),a1
 
-loc_1B3D0:				; CODE XREF: HUD_Base:loc_1B3E6j
+loc_1B3D0:	
 		move.w	#$F,d1
 		move.b	(a2)+,d0
-		bmi.s	loc_1B3EC
+		bmi.s	@MakeBlank
 		ext.w	d0
 		lsl.w	#5,d0
 		lea	(a1,d0.w),a3
 
-loc_1B3E0:				; CODE XREF: HUD_Base+32j
+loc_1B3E0:	
 		move.l	(a3)+,(a6)
 		dbf	d1,loc_1B3E0
 
-loc_1B3E6:				; CODE XREF: HUD_Base+46j
+loc_1B3E6:	
 		dbf	d2,loc_1B3D0
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_1B3EC:				; CODE XREF: HUD_Base+26j HUD_Base+42j
+; ===========================================================================
+	@MakeBlank:	
 		move.l	#0,(a6)
-		dbf	d1,loc_1B3EC
+		dbf	d1,@MakeBlank
 		bra.s	loc_1B3E6
 ; End of function HUD_Base
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-HUD_TilesBase:	dc.b $16,$FF,$FF,$FF,$FF,$FF,$FF,  0,  0,$14,  0,  0; 0
-					; DATA XREF: HUD_Base+14t
-HUD_TilesZero:	dc.b $FF,$FF,  0,  0	; 0 ; DATA XREF: HUD_LoadZero+At
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ===========================================================================
+HUD_TilesBase:	dc.b 11*2, -1,-1,-1,-1,-1,-1, 0  ; Score
+		dc.b 0, 0, 10*2, 0		 ; Time
+HUD_TilesZero:	dc.b -1,-1, 0			 ; Rings
+		even
+; ===========================================================================
 
 
 HUDDebug_XY:				; CODE XREF: HudUpdate:loc_1B330p
@@ -37484,7 +37474,7 @@ HUDDebug_XY:				; CODE XREF: HudUpdate:loc_1B330p
 
 
 HUDDebug_XY2:				; CODE XREF: HUDDebug_XY+14p
-		moveq	#7,d6
+		moveq	#8-1,d6
 		lea	(Art_Text).l,a1
 
 loc_1B430:				; CODE XREF: HUDDebug_XY2+32j
@@ -37518,27 +37508,26 @@ loc_1B442:				; CODE XREF: HUDDebug_XY2+14j
 HUD_Rings:				; CODE XREF: HudUpdate+44p
 					; HudUpdate+112p
 		lea	(HUD_100).l,a2
-		moveq	#2,d6
-		bra.s	loc_1B472
+		moveq	#3-1,d6
+		bra.s	HUD_LoadArt
 ; End of function HUD_Rings
 
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
-
-HUD_Score:				; CODE XREF: HudUpdate+24p
+HUD_Score:				
 		lea	(HUD_100000).l,a2
-		moveq	#5,d6
+		moveq	#4-1,d6
 
-loc_1B472:				; CODE XREF: HUD_Rings+8j
+HUD_LoadArt:	
 		moveq	#0,d4
 		lea	Art_HUD(pc),a1
 
-loc_1B478:				; CODE XREF: HUD_Score+58j
+loc_1B478:	
 		moveq	#0,d2
 		move.l	(a2)+,d3
 
-loc_1B47C:				; CODE XREF: HUD_Score+18j
+loc_1B47C:	
 		sub.l	d3,d1
 		bcs.s	loc_1B484
 		addq.w	#1,d2
@@ -37557,40 +37546,27 @@ loc_1B48E:				; CODE XREF: HUD_Score+1Ej
 		lsl.w	#6,d2
 		move.l	d0,4(a6)
 		lea	(a1,d2.w),a3
+		rept	8*2
 		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
+		endr
 
 loc_1B4BC:				; CODE XREF: HUD_Score+26j
-		addi.l	#$400000,d0
+		addi.l	#(($20*2)<<16),d0
 		dbf	d6,loc_1B478
 		rts
 ; End of function HUD_Score
 
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-HUD_Unk:
-		hudVRAM	$DF80
+ContScrCounter:
+		locVRAM	$DF80
 		lea	(VDP_data_port).l,a6
 		lea	(HUD_10).l,a2
 		moveq	#1,d6
 		moveq	#0,d4
 		lea	Art_HUD(pc),a1
 
-loc_1B4E6:				; CODE XREF: ROM:0001B51Aj
+ContScr_Loop:				; CODE XREF: ROM:0001B51Aj
 		moveq	#0,d2
 		move.l	(a2)+,d3
 
@@ -37605,31 +37581,18 @@ loc_1B4F2:				; CODE XREF: ROM:0001B4ECj
 		add.l	d3,d1
 		lsl.w	#6,d2
 		lea	(a1,d2.w),a3
+		rept	8*2
 		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		dbf	d6,loc_1B4E6
+		endr
+		dbf	d6,ContScr_Loop
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-HUD_100000:	dc.l 100000		; DATA XREF: HUD_Scoreo
+HUD_100000:	dc.l 100000
 HUD_10000:	dc.l 10000
-HUD_1000:	dc.l 1000		; DATA XREF: HUD_TimeRingBonust
-HUD_100:	dc.l 100		; DATA XREF: HUD_Ringso
-HUD_10:		dc.l 10			; DATA XREF: ROM:0001B4D8o HUD_Secst ...
-HUD_1:		dc.l 1			; DATA XREF: HUD_Minst
+HUD_1000:	dc.l 1000
+HUD_100:	dc.l 100
+HUD_10:		dc.l 10
+HUD_1:		dc.l 1
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -37676,23 +37639,12 @@ loc_1B562:				; CODE XREF: HUD_Secs+1Cj
 		lsl.w	#6,d2
 		move.l	d0,4(a6)
 		lea	(a1,d2.w),a3
+
+		rept	8*2
 		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		addi.l	#$400000,d0
+		endr
+
+		addi.l	#(($20*2)<<16),d0
 		dbf	d6,loc_1B54C
 		rts
 ; End of function HUD_Secs
@@ -37730,22 +37682,9 @@ loc_1B5BA:				; CODE XREF: HUD_TimeRingBonus+1Cj
 		beq.s	loc_1B5EA
 		lsl.w	#6,d2
 		lea	(a1,d2.w),a3
+		rept	8*2
 		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
+		endr
 
 loc_1B5E4:				; CODE XREF: HUD_TimeRingBonus+5Ej
 		dbf	d6,loc_1B5A4
@@ -37769,7 +37708,7 @@ HUD_Lives:				; CODE XREF: HudUpdate+AEp
 					; HudUpdate+130p ...
 		hudVRAM	$FBA0		; set VRAM address
 		moveq	#0,d1
-		move.b	($FFFFFE12).w,d1
+		move.b	(Life_count).w,d1
 		lea	HUD_10(pc),a2
 		moveq	#1,d6
 		moveq	#0,d4
@@ -37800,17 +37739,12 @@ loc_1B62A:				; CODE XREF: HUD_Lives+2Cj
 loc_1B62E:				; CODE XREF: HUD_Lives+5Aj
 		lsl.w	#5,d2
 		lea	(a1,d2.w),a3
+		rept	8*2
 		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
-		move.l	(a3)+,(a6)
+		endr
 
 loc_1B644:				; CODE XREF: HUD_Lives+68j
-		addi.l	#$400000,d0
+		addi.l	#(($20*2)<<16),d0
 		dbf	d6,loc_1B610
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ

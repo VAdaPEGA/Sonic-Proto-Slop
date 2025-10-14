@@ -267,6 +267,9 @@ Vscroll_Factor:			equ $FFFFF616
 
 Hint_counter_reserve:		equ $FFFFF624
 Vint_routine:			equ $FFFFF62A
+
+Game_paused:			equ $FFFFF63A
+
 DMA_data_thunk:			equ $FFFFF640
 Hint_flag:			equ $FFFFF644
 Water_fullscreen_flag:		equ $FFFFF64E
@@ -311,6 +314,10 @@ Obj_load_addr_3:		equ $FFFFF77C
 
 Camera_X_pos_last_P2:		equ $FFFFF78C
 
+Bonus_Countdown_1:		equ $FFFFF7D2
+Bonus_Countdown_2:		equ $FFFFF7D4
+Update_Bonus_score:		equ $FFFFF7D6
+
 Camera_X_pos_coarse:		equ $FFFFF7DA
 Camera_X_pos_coarse_P2:		equ $FFFFF7DC
 
@@ -338,8 +345,27 @@ Current_ZoneAndAct:		equ $FFFFFE10
 Current_Zone:			equ $FFFFFE10
 Current_Act:			equ $FFFFFE11
 
+Life_count:			equ $FFFFFE12
+
+
+
+Update_HUD_lives:		equ $FFFFFE1C 
+Update_HUD_rings:		equ $FFFFFE1D 
+Update_HUD_timer:		equ $FFFFFE1E
+Update_HUD_score:		equ $FFFFFE1F
+
+Ring_count:			equ $FFFFFE20 
+Timer:				equ $FFFFFE22
+Timer_minute:			equ Timer+1
+Timer_second:			equ Timer+2
+Timer_frame:			equ Timer+3
+
+Score:				equ $FFFFFE26
+
 Camera_Min_Y_pos_copy:		equ $FFFFFEF0	; used by debug mode
 Camera_Max_Y_pos_copy:		equ $FFFFFEF2
+
+Next_Extra_life_score:		equ $FFFFFFC0
 
 Two_player_mode:		equ $FFFFFFE8
 
