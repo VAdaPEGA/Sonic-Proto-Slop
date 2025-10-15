@@ -37308,8 +37308,8 @@ loc_1B286:
 		tst.w	(Game_paused).w
 		bne.s	loc_1B2E2
 		lea	(Timer+4).w,a1
-	;	cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+ ; is the time 9:59:59?
-	;	nop			; ...do nothing since this has been nopped out
+		cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+ ; is the time 9:59:59?
+		beq.s	loc_1B2C2	; prevent timer from updating
 		addq.b	#1,-(a1)
 		cmpi.b	#60,(a1)
 		bcs.s	loc_1B2E2
@@ -37525,7 +37525,7 @@ HUD_Score:
 ;	d6	= Number of digits -1 
 ;	a2	= reference number in decimal
 ; output :
-;	d0	= VDP VRAM write command (unchanged)
+;	d0	= VDP VRAM write command (Last Digit)
 ;	d1.l	= trash
 ;	d2.w	= Last Digit of value in decimal * 64
 ;	d3.l	= 1
