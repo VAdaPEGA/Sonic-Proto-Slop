@@ -268,6 +268,8 @@ Vscroll_Factor:			equ $FFFFF616
 Hint_counter_reserve:		equ $FFFFF624
 Vint_routine:			equ $FFFFF62A
 
+Sprite_count:			equ $FFFFF62C
+
 Game_paused:			equ $FFFFF63A
 
 DMA_data_thunk:			equ $FFFFF640

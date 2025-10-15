@@ -17429,7 +17429,7 @@ BuildSprites_NextObj:
 BuildSprites_NextLevel:				
 		lea	$80(a4),a4
 		dbf	d7,loc_D02C
-		move.b	d5,($FFFFF62C).w
+		move.b	d5,(Sprite_count).w
 		cmpi.b	#80,d5	; 'P'
 		beq.s	@LimitReached
 		move.l	#0,(a2)
@@ -17806,7 +17806,7 @@ loc_D406:				; CODE XREF: BuildSprites+33Cj
 loc_D410:				; CODE XREF: BuildSprites+32Ej
 		lea	$80(a4),a4
 		dbf	d7,loc_D338
-		move.b	d5,($FFFFF62C).w
+		move.b	d5,(Sprite_count).w
 		cmpi.b	#$50,d5	; 'P'
 		bcc.s	loc_D42A
 		move.l	#0,(a2)
@@ -17928,7 +17928,7 @@ loc_D520:				; CODE XREF: BuildSprites+45Cj
 loc_D528:				; CODE XREF: BuildSprites+450j
 		lea	$80(a4),a4
 		dbf	d7,loc_D45A
-		move.b	d5,($FFFFF62C).w
+		move.b	d5,(Sprite_count).w
 		cmpi.b	#$50,d5	; 'P'
 		beq.s	loc_D542
 		move.l	#0,(a2)
@@ -28290,12 +28290,9 @@ word_13E14:	dc.w 1			; DATA XREF: ROM:00013D16o
 word_13E1E:	dc.w 1			; DATA XREF: ROM:00013D18o
 		dc.w $F805,  $70,  $38,$FFF8; 0
 word_13E28:	dc.w 0			; DATA XREF: ROM:00013D1Ao
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		nop
 ;----------------------------------------------------
 ; Object 03 - collision	index switcher (in loops)
 ;----------------------------------------------------
-
 Obj03:					; DATA XREF: ROM:Obj_Indexo
 		moveq	#0,d0
 		move.b	routine(a0),d0
@@ -28304,12 +28301,14 @@ Obj03:					; DATA XREF: ROM:Obj_Indexo
 		tst.w	(Debug_mode_flag).w
 		beq.w	MarkObjGone2
 		jmp	(MarkObjGone).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj03_Index:	dc.w Obj03_Init-Obj03_Index ; DATA XREF: ROM:Obj03_Indexo
-					; ROM:00013E4Ao ...
-		dc.w loc_13EB4-Obj03_Index
-		dc.w loc_13FB6-Obj03_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+Obj03_Index:	dc.w Obj03_Init-Obj03_Index 
+		dc.w Obj03_Vertical-Obj03_Index
+		dc.w Obj03_Horizontal-Obj03_Index
+; ===========================================================================
+
+Obj03_Length	=	$32
+Obj03_Touched	=	$30
 
 Obj03_Init:				; DATA XREF: ROM:Obj03_Indexo
 		addq.b	#2,routine(a0)
@@ -28319,146 +28318,146 @@ Obj03_Init:				; DATA XREF: ROM:Obj03_Indexo
 		move.b	#4,render_flags(a0)
 		move.b	#$10,width_pixels(a0)
 		move.b	#5,priority(a0)
-		move.b	$28(a0),d0
+		move.b	subtype(a0),d0
 		btst	#2,d0
-		beq.s	loc_13EA4
+		beq.s	@vertical_Sprite
+		; Vertical (tall) Pathswapper
 		addq.b	#2,routine(a0)
 		andi.w	#7,d0
 		move.b	d0,mapping_frame(a0)
 		andi.w	#3,d0
 		add.w	d0,d0
-		move.w	Obj03_Data(pc,d0.w),$32(a0)
-		bra.w	loc_13FB6
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj03_Data:	dc.w   $20,  $40,  $80,	$100; 0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_13EA4:				; CODE XREF: ROM:00013E7Ej
+		move.w	@Length(pc,d0.w),Obj03_Length(a0)
+		bra.w	Obj03_Horizontal
+; ===========================================================================
+	@Length:	dc.w	64/2	; half chunk
+			dc.w	128/2	; chunk
+			dc.w	256/2	; two chunk
+			dc.w	512/2	; oh boy he large
+; ===========================================================================
+	@vertical_Sprite:
 		andi.w	#3,d0
 		move.b	d0,mapping_frame(a0)
 		add.w	d0,d0
-		move.w	Obj03_Data(pc,d0.w),$32(a0)
+		move.w	@Length(pc,d0.w),Obj03_Length(a0)
 
-loc_13EB4:				; DATA XREF: ROM:00013E4Ao
+Obj03_Vertical:	
 		tst.w	(Debug_placement_mode).w
-		bne.w	locret_13FB4
-		move.w	$30(a0),d5
+		bne.w	Obj03_Vertical_ShiftTouchedValues
+		move.w	Obj03_Touched(a0),d5
+
 		move.w	x_pos(a0),d0
 		move.w	d0,d1
 		subq.w	#8,d0
-		addq.w	#8,d1
+		addq.w	#8,d1	; that Janky 16px hitbox tho
+
 		move.w	y_pos(a0),d2
 		move.w	d2,d3
-		move.w	$32(a0),d4
+		move.w	Obj03_Length(a0),d4
 		sub.w	d4,d2
 		add.w	d4,d3
-		lea	(dword_140B8).l,a2
-		moveq	#7,d6
+		lea	(Obj03_PlayerRAM).l,a2
+		moveq	#8-1,d6		; WHYYY????
 
-loc_13EE0:				; CODE XREF: ROM:00013FAAj
+	@CheckNextObject:
 		move.l	(a2)+,d4
-		beq.w	loc_13FA8
+		beq.w	@ShiftTouchedValues	; ignore if blank
 		movea.l	d4,a1
 		move.w	x_pos(a1),d4
-		cmp.w	d0,d4
-		bcs.w	loc_13F10
-		cmp.w	d1,d4
-		bcc.w	loc_13F10
+		cmp.w	d0,d4		; left
+		blo.w	@NotTouched
+		cmp.w	d1,d4		; right
+		bhs.w	@NotTouched
 		move.w	y_pos(a1),d4
-		cmp.w	d2,d4
-		bcs.w	loc_13F10
-		cmp.w	d3,d4
-		bcc.w	loc_13F10
-		ori.w	#$8000,d5
-		bra.w	loc_13FA8
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		cmp.w	d2,d4		; top
+		blo.w	@NotTouched
+		cmp.w	d3,d4		; bottom
+		bhs.w	@NotTouched
+		ori.w	#$8000,d5	; Player has touched pathswapper
+		bra.w	@ShiftTouchedValues
+; ---------------------------------------------------------------------------
 
-loc_13F10:				; CODE XREF: ROM:00013EEEj
-					; ROM:00013EF4j ...
+	@NotTouched:	
 		tst.w	d5
-		bpl.w	loc_13FA8
-		swap	d0
-		move.b	$28(a0),d0
-		bpl.s	loc_13F26
-		btst	#1,status(a1)
-		bne.s	loc_13FA2
-
-loc_13F26:				; CODE XREF: ROM:00013F1Cj
+		bpl.w	@ShiftTouchedValues
+		swap	d0	; store player's X position (???)
+		move.b	subtype(a0),d0
+		bpl.s	@NoFloorCheck
+		btst	#PlayerStatusBitAir,status(a1)
+		bne.s	@NotOnGround
+	@NoFloorCheck:	
 		move.w	x_pos(a1),d4
 		cmp.w	x_pos(a0),d4
-		bcs.s	loc_13F62
-		move.b	#$C,top_solid_bit(a1)
+		bcs.s	@ObjectOnTheLeft
+		move.b	#$C,top_solid_bit(a1)	; Path 1
 		move.b	#$D,lrb_solid_bit(a1)
-		btst	#3,d0
-		beq.s	loc_13F4E
-		move.b	#$E,top_solid_bit(a1)
+		btst	#3,d0		
+		beq.s	@RightSideTriggersPath1
+		move.b	#$E,top_solid_bit(a1)	; Right side triggers path 2
 		move.b	#$F,lrb_solid_bit(a1)
 
-loc_13F4E:				; CODE XREF: ROM:00013F40j
+	@RightSideTriggersPath1:	
 		bclr	#7,art_tile(a1)
 		btst	#5,d0
-		beq.s	loc_13F92
+		beq.s	@DebugPlaySound		; Right side sets priority
 		bset	#7,art_tile(a1)
-		bra.s	loc_13F92
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		bra.s	@DebugPlaySound
+; ---------------------------------------------------------------------------
 
-loc_13F62:				; CODE XREF: ROM:00013F2Ej
-		move.b	#$C,top_solid_bit(a1)
+	@ObjectOnTheLeft:	
+		move.b	#$C,top_solid_bit(a1)	; Path 1
 		move.b	#$D,lrb_solid_bit(a1)
-		btst	#4,d0
-		beq.s	loc_13F80
-		move.b	#$E,top_solid_bit(a1)
+		btst	#4,d0		
+		beq.s	@LeftSideTriggersPath1
+		move.b	#$E,top_solid_bit(a1)	; Left side triggers path 2
 		move.b	#$F,lrb_solid_bit(a1)
 
-loc_13F80:				; CODE XREF: ROM:00013F72j
+	@LeftSideTriggersPath1:	
 		bclr	#7,art_tile(a1)
 		btst	#6,d0
-		beq.s	loc_13F92
+		beq.s	@DebugPlaySound		; Left side sets priority
 		bset	#7,art_tile(a1)
 
-loc_13F92:				; CODE XREF: ROM:00013F58j
-					; ROM:00013F60j ...
+	@DebugPlaySound:	
 		tst.w	(Debug_mode_flag).w
-		beq.s	loc_13FA2
+		beq.s	@NotOnGround
 		move.w	#$A1,d0	; '¡'
 		jsr	(PlaySound_Special).l
 
-loc_13FA2:				; CODE XREF: ROM:00013F24j
-					; ROM:00013F96j
-		swap	d0
+	@NotOnGround:	
+		swap	d0		; get back object's position for no reason
 		andi.w	#$7FFF,d5
 
-loc_13FA8:				; CODE XREF: ROM:00013EE2j
-					; ROM:00013F0Cj ...
-		add.l	d5,d5
-		dbf	d6,loc_13EE0
+	@ShiftTouchedValues:	
+		add.l	d5,d5		; shift to the left by 1
+		dbf	d6,@CheckNextObject
 		swap	d5
-		move.b	d5,$30(a0)
+		move.b	d5,Obj03_Touched(a0)
 
-locret_13FB4:				; CODE XREF: ROM:00013EB8j
+Obj03_Vertical_ShiftTouchedValues:				; CODE XREF: ROM:00013EB8j
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_13FB6:				; CODE XREF: ROM:00013E98j
+Obj03_Horizontal:				; CODE XREF: ROM:00013E98j
 					; DATA XREF: ROM:00013E4Co
 		tst.w	(Debug_placement_mode).w
-		bne.w	locret_140B6
-		move.w	$30(a0),d5
+		bne.w	Obj03_Horizontal_ShiftTouchedValues
+		move.w	Obj03_Touched(a0),d5
 		move.w	x_pos(a0),d0
 		move.w	d0,d1
-		move.w	$32(a0),d4
+		move.w	Obj03_Length(a0),d4
 		sub.w	d4,d0
 		add.w	d4,d1
 		move.w	y_pos(a0),d2
 		move.w	d2,d3
 		subq.w	#8,d2
 		addq.w	#8,d3
-		lea	(dword_140B8).l,a2
-		moveq	#7,d6
+		lea	(Obj03_PlayerRAM).l,a2
+		moveq	#8-1,d6
 
-loc_13FE2:				; CODE XREF: ROM:000140ACj
-		move.l	(a2)+,d4
-		beq.w	loc_140AA
+loc_13FE2:	
+		move.l	(a2)+,d4	
+		beq.w	loc_140AA	; branch if zero (why even have em then???)
 		movea.l	d4,a1
 		move.w	x_pos(a1),d4
 		cmp.w	d0,d4
@@ -28472,16 +28471,16 @@ loc_13FE2:				; CODE XREF: ROM:000140ACj
 		bcc.w	loc_14012
 		ori.w	#$8000,d5
 		bra.w	loc_140AA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 loc_14012:				; CODE XREF: ROM:00013FF0j
 					; ROM:00013FF6j ...
 		tst.w	d5
 		bpl.w	loc_140AA
 		swap	d0
-		move.b	$28(a0),d0
+		move.b	subtype(a0),d0
 		bpl.s	loc_14028
-		btst	#1,status(a1)
+		btst	#PlayerStatusBitAir,status(a1)
 		bne.s	loc_140A4
 
 loc_14028:				; CODE XREF: ROM:0001401Ej
@@ -28501,7 +28500,7 @@ loc_14050:				; CODE XREF: ROM:00014042j
 		beq.s	loc_14094
 		bset	#7,art_tile(a1)
 		bra.s	loc_14094
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
 loc_14064:				; CODE XREF: ROM:00014030j
 		move.b	#$C,top_solid_bit(a1)
@@ -28534,13 +28533,13 @@ loc_140AA:				; CODE XREF: ROM:00013FE4j
 		add.l	d5,d5
 		dbf	d6,loc_13FE2
 		swap	d5
-		move.b	d5,$30(a0)
+		move.b	d5,Obj03_Touched(a0)
 
-locret_140B6:				; CODE XREF: ROM:00013FBAj
+Obj03_Horizontal_ShiftTouchedValues:				; CODE XREF: ROM:00013FBAj
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-dword_140B8:	dc.l MainCharacter		; DATA XREF: ROM:00013ED8o
-					; ROM:00013FDAo
+; ===========================================================================
+Obj03_PlayerRAM:	
+		dc.l MainCharacter
 		dc.l Sidekick
 		dc.l 0
 		dc.l 0
@@ -35576,7 +35575,7 @@ loc_19C9A:				; CODE XREF: S1SS_ShowLayout+C6j
 		dbf	d6,loc_19C42
 		lea	$70(a0),a0
 		dbf	d7,loc_19C3E
-		move.b	d5,($FFFFF62C).w
+		move.b	d5,(Sprite_count).w
 		cmpi.b	#80,d5	; check for sprite limit
 		beq.s	loc_19CBA
 		move.l	#0,(a2)
@@ -37282,7 +37281,7 @@ locret_1B23C:
 HudUpdate:
 		lea	(VDP_data_port).l,a6
 		tst.w	(Debug_mode_flag).w
-		bne.w	loc_1B330
+		bne.w	HUD_Debug
 		tst.b	(Update_HUD_score).w
 		beq.s	loc_1B266
 		clr.b	(Update_HUD_score).w
@@ -37366,7 +37365,7 @@ S1TimeOver:
 		rts
 ; ===========================================================================
 
-loc_1B330:	
+HUD_Debug:	
 		bsr.w	HUDDebug_XY
 		tst.b	(Update_HUD_rings).w
 		beq.s	loc_1B354
@@ -37381,10 +37380,23 @@ loc_1B340:
 		bsr.w	HUD_Rings
 
 loc_1B354:	
-		move.l	#$5EC00003,d0
+		hudVRAM	$DE40
 		moveq	#0,d1
-		move.b	($FFFFF62C).w,d1
+		btst.b	#7,(MainCharacter+art_tile).w	; check Player 1's priority
+		beq.s	@NotPrio
+		moveq	#10,d1
+	@NotPrio:
+		btst.b	#1,(MainCharacter+lrb_solid_bit).w	; check Player 1's path
+		beq.s	@NotPath
+		addq	#1,d1
+	@NotPath:
 		bsr.w	HUD_Secs
+
+		hudVRAM	$DEC0
+		moveq	#0,d1
+		move.b	(Sprite_count).w,d1
+		bsr.w	HUD_Secs
+
 		tst.b	(Update_HUD_lives).w
 		beq.s	loc_1B372
 		clr.b	(Update_HUD_lives).w
@@ -37392,7 +37404,7 @@ loc_1B354:
 
 loc_1B372:	
 		tst.b	(Update_Bonus_score).w
-		beq.s	locret_1B39A
+		beq.s	@DoNothing
 		clr.b	(Update_Bonus_score).w
 		move.l	#$6E000002,(VDP_control_port).l
 		moveq	#0,d1
@@ -37401,23 +37413,15 @@ loc_1B372:
 		moveq	#0,d1
 		move.w	(Bonus_Countdown_2).w,d1
 		bsr.w	HUD_TimeRingBonus
-
-locret_1B39A:	
-		rts
-; End of function HudUpdate
-
-
+@DoNothing:	rts
 ; ===========================================================================
-
 HUD_LoadZero:	
 		locVRAM	$DF40
 		lea	HUD_TilesZero(pc),a2
 		move.w	#3-1,d2
-		bra.s	loc_1B3CC
+		bra.s	HUD_DrawBase
 
 ; ===========================================================================
-
-
 HUD_Base:				
 		lea	(VDP_data_port).l,a6
 		bsr.w	HUD_Lives
@@ -37425,40 +37429,41 @@ HUD_Base:
 		lea	HUD_TilesBase(pc),a2
 		move.w	#15-1,d2
 
-loc_1B3CC:	
+HUD_DrawBase:	
 		lea	Art_HUD(pc),a1
 
-loc_1B3D0:	
-		move.w	#$F,d1
+	@Loop:
+		move.w	#((8*2)-2)-1,d1	; Fixing a skill issue
 		move.b	(a2)+,d0
 		bmi.s	@MakeBlank
 		ext.w	d0
 		lsl.w	#5,d0
 		lea	(a1,d0.w),a3
 
-loc_1B3E0:	
-		move.l	(a3)+,(a6)
-		dbf	d1,loc_1B3E0
-
-loc_1B3E6:	
-		dbf	d2,loc_1B3D0
+	@LoadTiles:
+		move.l	(a3)+,(a6)	; Send to VRAM via Data Port
+		dbf	d1,@LoadTiles
+		move.l	#0,(a6)
+		move.l	#0,(a6)
+	@BackToLoop:
+		dbf	d2,@Loop
 		rts
-; ===========================================================================
+	; ---------
 	@MakeBlank:	
 		move.l	#0,(a6)
 		dbf	d1,@MakeBlank
-		bra.s	loc_1B3E6
-; End of function HUD_Base
-
+		move.l	#0,(a6)		; goddamnit Jeff, look what you made me do
+		move.l	#0,(a6)
+		bra.s	@BackToLoop
 ; ===========================================================================
 HUD_TilesBase:	dc.b 11*2, -1,-1,-1,-1,-1,-1, 0  ; Score
-		dc.b 0, 0, 10*2, 0		 ; Time
+		dc.b 0, 10*2, 0, 0		 ; Time
 HUD_TilesZero:	dc.b -1,-1, 0			 ; Rings
 		even
 ; ===========================================================================
 
 
-HUDDebug_XY:				; CODE XREF: HudUpdate:loc_1B330p
+HUDDebug_XY:				; CODE XREF: HudUpdate:HUD_Debugp
 		locVRAM	$DC40
 		move.w	(Camera_X_pos).w,d1
 		swap	d1
@@ -37546,7 +37551,7 @@ loc_1B48E:				; CODE XREF: HUD_Score+1Ej
 		lsl.w	#6,d2
 		move.l	d0,4(a6)
 		lea	(a1,d2.w),a3
-		rept	8*2
+		rept	(8*2)-2		; Fixing Jeff's a skill issue
 		move.l	(a3)+,(a6)
 		endr
 
@@ -37581,7 +37586,7 @@ loc_1B4F2:				; CODE XREF: ROM:0001B4ECj
 		add.l	d3,d1
 		lsl.w	#6,d2
 		lea	(a1,d2.w),a3
-		rept	8*2
+		rept	(8*2)-2		; Fixing Jeff's a skill issue
 		move.l	(a3)+,(a6)
 		endr
 		dbf	d6,ContScr_Loop
@@ -37640,7 +37645,7 @@ loc_1B562:				; CODE XREF: HUD_Secs+1Cj
 		move.l	d0,4(a6)
 		lea	(a1,d2.w),a3
 
-		rept	8*2
+		rept	(8*2)-2		; Fixing Jeff's a skill issue
 		move.l	(a3)+,(a6)
 		endr
 
