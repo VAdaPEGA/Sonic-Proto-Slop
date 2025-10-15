@@ -37307,7 +37307,7 @@ loc_1B286:
 		beq.s	loc_1B2E2
 		tst.w	(Game_paused).w
 		bne.s	loc_1B2E2
-		lea	(Timer+4).w,a1
+		lea	(Timer).w,a1
 		cmpi.l	#(9*$10000)+(59*$100)+59,(a1)+ ; is the time 9:59:59?
 		beq.s	loc_1B2C2	; prevent timer from updating
 		addq.b	#1,-(a1)
@@ -37413,7 +37413,8 @@ loc_1B372:
 		moveq	#0,d1
 		move.w	(Bonus_Countdown_2).w,d1
 		bsr.w	HUD_TimeRingBonus
-@DoNothing:	rts
+@DoNothing:	
+		rts
 ; ===========================================================================
 HUD_LoadZero:	
 		locVRAM	$DF40
@@ -37558,6 +37559,7 @@ Hud_DrawDigitsLoop:
 	@NotZero:
 		tst.w	d4		; is this one of the first Zeros?
 		beq.s	@DontDraw
+		move.l	d0,4(a6)	; send write VRAM command to Control Port
 		lsl.w	#6,d2		; multiply by 64 (2 tiles worth)
 		lea	(a1,d2.w),a3	; fetch correct digit
 		rept	(8*2)-2		; Fixing Jeff's a skill issue
@@ -37566,7 +37568,6 @@ Hud_DrawDigitsLoop:
 
 	@DontDraw:	
 		addi.l	#(($20*2)<<16),d0
-		move.l	d0,4(a6)	; send write VRAM command to Control Port
 		dbf	d6,Hud_DrawDigitsLoop
 		rts
 ; End of function HUD_Score
