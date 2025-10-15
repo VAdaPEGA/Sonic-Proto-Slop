@@ -37507,61 +37507,71 @@ loc_1B442:				; CODE XREF: HUDDebug_XY2+14j
 ; End of function HUDDebug_XY2
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-HUD_Rings:				; CODE XREF: HudUpdate+44p
-					; HudUpdate+112p
+; ===========================================================================
+HUD_Rings:	
 		lea	(HUD_100).l,a2
 		moveq	#3-1,d6
 		bra.s	HUD_LoadArt
-; End of function HUD_Rings
-
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
+; ===========================================================================
 HUD_Score:				
 		lea	(HUD_100000).l,a2
-		moveq	#4-1,d6
-
-HUD_LoadArt:	
+		moveq	#6-1,d6
+		; code continues bellow
+; ---------------------------------------------------------------------------
+; Load Digits into a Tilemap Layer (used for HUDs and Time)
+; input : 
+;	d0	= VDP VRAM write command
+;	d1	= Digits to Draw
+;	d6	= Number of digits -1 
+;	a2	= reference number in decimal
+; output :
+;	d0	= VDP VRAM write command (unchanged)
+;	d1.l	= trash
+;	d2.w	= Last Digit of value in decimal * 64
+;	d3.l	= 1
+;	d4.w	= Number of Zeroes
+;	d6.w	= -1 (end of loop)
+;	a1	= trash
+;	a2	= (Hud_1)+4
+;	a3	= trash
+; ---------------------------------------------------------------------------
+Hud_LoadArt:
 		moveq	#0,d4
 		lea	Art_HUD(pc),a1
 
-loc_1B478:	
+Hud_DrawDigitsLoop:
 		moveq	#0,d2
-		move.l	(a2)+,d3
+		move.l	(a2)+,d3	; get next multiple of 10
 
-loc_1B47C:	
-		sub.l	d3,d1
-		bcs.s	loc_1B484
-		addq.w	#1,d2
-		bra.s	loc_1B47C
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+@ConvertHexToDecimal:
+		sub.l	d3,d1		; subtract decimal and compare with hex number
+		bcs.s	@DigitFound	; if underflown, branch
+		addq.w	#1,d2		; increase digit to draw
+		bra.s	@ConvertHexToDecimal	; loop until 
+; ===========================================================================
 
-loc_1B484:				; CODE XREF: HUD_Score+14j
-		add.l	d3,d1
-		tst.w	d2
-		beq.s	loc_1B48E
-		move.w	#1,d4
-
-loc_1B48E:				; CODE XREF: HUD_Score+1Ej
-		tst.w	d4
-		beq.s	loc_1B4BC
-		lsl.w	#6,d2
-		move.l	d0,4(a6)
-		lea	(a1,d2.w),a3
+	@DigitFound:
+		add.l	d3,d1		; undo last subtract
+		tst.w	d2		; is digit a zero
+		beq.s	@NotZero
+		move.w	#1,d4		; count up
+	@NotZero:
+		tst.w	d4		; is this one of the first Zeros?
+		beq.s	@DontDraw
+		lsl.w	#6,d2		; multiply by 64 (2 tiles worth)
+		lea	(a1,d2.w),a3	; fetch correct digit
 		rept	(8*2)-2		; Fixing Jeff's a skill issue
 		move.l	(a3)+,(a6)
 		endr
 
-loc_1B4BC:				; CODE XREF: HUD_Score+26j
+	@DontDraw:	
 		addi.l	#(($20*2)<<16),d0
-		dbf	d6,loc_1B478
+		move.l	d0,4(a6)	; send write VRAM command to Control Port
+		dbf	d6,Hud_DrawDigitsLoop
 		rts
 ; End of function HUD_Score
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 ContScrCounter:
 		locVRAM	$DF80
@@ -37580,7 +37590,7 @@ loc_1B4EA:				; CODE XREF: ROM:0001B4F0j
 		bcs.s	loc_1B4F2
 		addq.w	#1,d2
 		bra.s	loc_1B4EA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 loc_1B4F2:				; CODE XREF: ROM:0001B4ECj
 		add.l	d3,d1
@@ -37591,7 +37601,7 @@ loc_1B4F2:				; CODE XREF: ROM:0001B4ECj
 		endr
 		dbf	d6,ContScr_Loop
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 HUD_100000:	dc.l 100000
 HUD_10000:	dc.l 10000
 HUD_1000:	dc.l 1000
@@ -37599,7 +37609,7 @@ HUD_100:	dc.l 100
 HUD_10:		dc.l 10
 HUD_1:		dc.l 1
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ===========================================================================
 
 
 HUD_Mins:				; CODE XREF: HudUpdate+90p
@@ -37609,7 +37619,7 @@ HUD_Mins:				; CODE XREF: HudUpdate+90p
 ; End of function HUD_Mins
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ===========================================================================
 
 
 HUD_Secs:				; CODE XREF: HudUpdate+A0p
