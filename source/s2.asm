@@ -3507,14 +3507,19 @@ palptr	macro	ptr,ram,size
 	dc.w size	; Size of palette in (bytes / 4)
 	endm
 
-PalPointers:	palptr	Pal_SegaBG,$FB00,$1F
+PalPointers:
+		palptr	Pal_SegaBG,$FB00,$1F
 		palptr	Pal_Title,$FB00,$1F
 		palptr	Pal_LevelSelect,$FB00,$1F
 		palptr	Pal_SonicTails,$FB00,7
 		palptr	Pal_GHZ,$FB20,$17
-		palptr	Pal_CPZ,$FB20,$17
-		palptr	Pal_CPZ,$FB20,$17
-		palptr	Pal_EHZ,$FB20,$17
+		palptr	Pal_CPZ_1,$FB20,$17		; splitting up CPZ palettes to one per act (jeff)
+		palptr	Pal_CPZ_2,$FB20,$17
+		palptr	Pal_CPZ_3,$FB20,$17
+		palptr	Pal_CPZ_1,$FB20,$17		; CPZ palette pointer used for Labyrinth (jeff)
+		palptr	Pal_EHZ_1,$FB20,$17		; splitting up EHZ palettes to one per act (jeff)
+		palptr	Pal_EHZ_2,$FB20,$17
+		palptr	Pal_EHZ_3,$FB20,$17
 		palptr	Pal_HPZ,$FB20,$17
 		palptr	Pal_HTZ,$FB20,$17
 		palptr	Pal_S1SpecialStage,$FB00,$1F
@@ -3535,8 +3540,12 @@ Pal_LevelSelect:	incbin	"art/palettes/Level select.bin"
 Pal_SonicTails:		incbin	"art/palettes/Sonic and Tails.bin"
 Pal_GHZ:		incbin	"art/palettes/GHZ.bin"
 Pal_HPZWater:		incbin	"art/palettes/HPZ underwater.bin"
-Pal_CPZ:		incbin	"art/palettes/CPZ.bin"
-Pal_EHZ:		incbin	"art/palettes/EHZ.bin"
+Pal_CPZ_1:		incbin	"art/palettes/CPZ_1.bin"
+Pal_CPZ_2		incbin	"art/palettes/CPZ_2.bin"
+Pal_CPZ_3:		incbin	"art/palettes/CPZ_3.bin"
+Pal_EHZ_1:		incbin	"art/palettes/EHZ_1.bin"
+Pal_EHZ_2:		incbin	"art/palettes/EHZ_2.bin"
+Pal_EHZ_3:		incbin	"art/palettes/EHZ_3.bin"
 Pal_HPZ:		incbin	"art/palettes/HPZ.bin"
 Pal_HTZ:		incbin	"art/palettes/HTZ.bin"
 			; Sonic 1 leftovers
@@ -39386,6 +39395,8 @@ Level_EHZ1:	incbin	"level/layout/EHZ_1.bin"
 		even
 Level_EHZ2:	incbin	"level/layout/EHZ_2.bin"
 		even
+Level_EHZ3: incbin	"level/layout/EHZ_3.bin"
+		even
 Level_EHZBg:	incbin	"level/layout/EHZ_BG.bin"
 		even
 Level_HTZ1:	incbin	"level/layout/HTZ_1.bin"
@@ -39395,6 +39406,10 @@ Level_HTZ2:	incbin	"level/layout/HTZ_2.bin"
 Level_HTZBg:	incbin	"level/layout/HTZ_BG.bin"
 		even
 Level_CPZ1:	incbin	"level/layout/CPZ_1.bin"
+		even
+Level_CPZ2:	incbin	"level/layout/CPZ_2.bin"
+		even
+Level_CPZ3:	incbin	"level/layout/CPZ_3.bin"
 		even
 Level_HPZ1:	incbin	"level/layout/HPZ_1.bin"
 		even
@@ -39974,13 +39989,16 @@ ObjPos_S1LZ3pf2:dc.w	 8,$1252, $20A	; 0 ; DATA XREF: ROM:ObjPos_Indexo
 		dc.w	 0		; 30
 ObjPos_CPZ1:	incbin	"level/objects/CPZ_1.bin"
 		dc.w $FFFF,    0,    0
-ObjPos_CPZ2:	dc.w $FFFF,    0,    0
-ObjPos_CPZ3:	dc.w $FFFF,    0,    0
+ObjPos_CPZ2:	incbin	"level/objects/CPZ_2.bin"
+		dc.w $FFFF,    0,    0
+ObjPos_CPZ3:	incbin	"level/objects/CPZ_3.bin"	
+		dc.w $FFFF,    0,    0
 ObjPos_EHZ1:	incbin	"level/objects/EHZ_1.bin"
 		dc.w $FFFF,    0,    0
 ObjPos_EHZ2:	incbin	"level/objects/EHZ_2.bin"
 		dc.w $FFFF,    0,    0
-ObjPos_EHZ3:	dc.w $FFFF,    0,    0
+ObjPos_EHZ3:	incbin	"level/objects/EHZ_3.bin"
+		dc.w $FFFF,    0,    0
 ObjPos_HPZ1:	incbin	"level/objects/HPZ_1.bin"
 		dc.w $FFFF,    0,    0
 ObjPos_HPZ2:	dc.w $FFFF,    0,    0
@@ -40155,11 +40173,17 @@ RingPos_EHZ1:	incbin	"level/rings/EHZ_1.bin"
 		even
 RingPos_EHZ2:	incbin	"level/rings/EHZ_2.bin"
 		even
+RingPos_EHZ3:	incbin	"level/rings/EHZ_3.bin"
+		even
 RingPos_HTZ1:	incbin	"level/rings/HTZ_1.bin"
 		even
 RingPos_HTZ2:	incbin	"level/rings/HTZ_2.bin"
 		even
 RingPos_CPZ1:	incbin	"level/rings/CPZ_1.bin"
+		even
+RingPos_CPZ2:	incbin	"level/rings/CPZ_2.bin"
+		even
+RingPos_CPZ3:	incbin	"level/rings/CPZ_3.bin"
 		even
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
