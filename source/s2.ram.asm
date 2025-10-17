@@ -270,6 +270,9 @@ Vint_routine:			equ $FFFFF62A
 
 Sprite_count:			equ $FFFFF62C
 
+PalCycle_Frame:			equ $FFFFF632
+PalCycle_Timer:			equ $FFFFF634
+
 Game_paused:			equ $FFFFF63A
 
 DMA_data_thunk:			equ $FFFFF640
@@ -331,6 +334,18 @@ TailsTails_LastLoadedDPLC:	equ $FFFFF7DF
 Anim_Counters:			equ $FFFFF7F0
 
 Sprite_Table:			equ $FFFFF800
+
+Normal_palette:			equ $FFFFFB00	; main palette for non-underwater parts of the screen
+Normal_palette_line2:		equ $FFFFFB20
+Normal_palette_line3:		equ $FFFFFB40
+Normal_palette_line4:		equ $FFFFFB60
+Normal_palette_End:		equ Normal_palette+$80
+
+Target_palette:			equ $FFFFFB80	; This is used by the screen-fading subroutines.
+Target_palette_line2:		equ $FFFFFBA0	; While Normal_palette contains the blacked-out palette caused by the fading,
+Target_palette_line3:		equ $FFFFFBC0	; Target_palette will contain the palette the screen will ultimately fade in to.
+Target_palette_line4:		equ $FFFFFBE0
+Target_palette_End:		equ Target_palette+$80
 
 Error_Registers:		equ $FFFFFC00	; stores registers d0-a7 during an error event ($40 bytes)
 Error_Stack_Pointer:		equ $FFFFFC40	; stores most recent sp address (4 bytes)

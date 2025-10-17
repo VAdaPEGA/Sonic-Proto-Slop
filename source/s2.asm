@@ -2812,11 +2812,11 @@ PalCycle_GHZ:
 		lea	(Pal_GHZCyc).l,a0
 
 loc_1E7C:
-		subq.w	#1,($FFFFF634).w
+		subq.w	#1,(PalCycle_Timer).w
 		bpl.s	locret_1EA2
-		move.w	#5,($FFFFF634).w
-		move.w	($FFFFF632).w,d0
-		addq.w	#1,($FFFFF632).w
+		move.w	#5,(PalCycle_Timer).w
+		move.w	(PalCycle_Frame).w,d0
+		addq.w	#1,(PalCycle_Frame).w
 		andi.w	#3,d0
 		lsl.w	#3,d0
 		lea	($FFFFFB50).w,a1
@@ -2828,15 +2828,15 @@ locret_1EA2:
 ; ===========================================================================
 
 PalCycle_CPZ:
-		subq.w	#1,($FFFFF634).w
+		subq.w	#1,(PalCycle_Timer).w
 		bpl.s	locret_1F14
-		move.w	#7,($FFFFF634).w
+		move.w	#7,(PalCycle_Timer).w
 		lea	(Pal_CPZCyc1).l,a0
-		move.w	($FFFFF632).w,d0
-		addq.w	#6,($FFFFF632).w
-		cmpi.w	#$36,($FFFFF632).w
+		move.w	(PalCycle_Frame).w,d0
+		addq.w	#6,(PalCycle_Frame).w
+		cmpi.w	#$36,(PalCycle_Frame).w
 		bcs.s	loc_1ECC
-		move.w	#0,($FFFFF632).w
+		move.w	#0,(PalCycle_Frame).w
 
 loc_1ECC:
 		lea	($FFFFFB78).w,a1
@@ -2862,14 +2862,14 @@ locret_1F14:
 ; ===========================================================================
 
 PalCycle_HPZ:
-		subq.w	#1,($FFFFF634).w
+		subq.w	#1,(PalCycle_Timer).w
 		bpl.s	locret_1F56
-		move.w	#4,($FFFFF634).w
+		move.w	#4,(PalCycle_Timer).w
 		lea	(Pal_HPZCyc1).l,a0
-		move.w	($FFFFF632).w,d0
-		subq.w	#2,($FFFFF632).w
+		move.w	(PalCycle_Frame).w,d0
+		subq.w	#2,(PalCycle_Frame).w
 		bcc.s	loc_1F38
-		move.w	#6,($FFFFF632).w
+		move.w	#6,(PalCycle_Frame).w
 
 loc_1F38:
 		lea	($FFFFFB72).w,a1
@@ -2885,28 +2885,32 @@ locret_1F56:
 ; ===========================================================================
 
 PalCycle_EHZ:
+	subq.w	#1,(PalCycle_Timer).w
+	bpl.s	@DoNothing
+		move.w	#8-1,(PalCycle_Timer).w
+
+		move.w	(PalCycle_Frame).w,d0
+		addq.w	#1,(PalCycle_Frame).w
+
 		lea	(Pal_EHZCyc).l,a0
-		subq.w	#1,($FFFFF634).w
-		bpl.s	locret_1F84
-		move.w	#7,($FFFFF634).w
-		move.w	($FFFFF632).w,d0
-		addq.w	#1,($FFFFF632).w
 		andi.w	#3,d0
 		lsl.w	#3,d0
-		move.l	(a0,d0.w),($FFFFFB26).w
-		move.l	4(a0,d0.w),($FFFFFB3C).w
+		add.w	d0,a0	; DANGER : may mess up if the palette cycle data happens to surpass the $10000 threshhold
+		lea	(Normal_palette_line2+2),a1 ; first colour of second line
 
-locret_1F84:
-		rts
+		move.l	(a0)+,(a1)+
+		move.l	(a0),(a1)
+	@DoNothing:
+	rts
 ; ===========================================================================
 
 PalCycle_HTZ:
 		lea	(Pal_HTZCyc1).l,a0
-		subq.w	#1,($FFFFF634).w
+		subq.w	#1,(PalCycle_Timer).w
 		bpl.s	locret_1FB8
-		move.w	#0,($FFFFF634).w
-		move.w	($FFFFF632).w,d0
-		addq.w	#1,($FFFFF632).w
+		move.w	#0,(PalCycle_Timer).w
+		move.w	(PalCycle_Frame).w,d0
+		addq.w	#1,(PalCycle_Frame).w
 		andi.w	#$F,d0
 		move.b	Pal_HTZCyc2(pc,d0.w),($FFFFF635).w
 		lsl.w	#3,d0
@@ -2940,7 +2944,7 @@ Pal_FadeFromBlack:
 ; Pal_FadeTo2:
 Pal_FadeFromBlack2:
 		moveq	#0,d0
-		lea	($FFFFFB00).w,a0
+		lea	(Normal_palette).w,a0
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		moveq	#0,d1
@@ -2969,7 +2973,7 @@ loc_216C:
 
 Pal_FadeIn:
 		moveq	#0,d0
-		lea	($FFFFFB00).w,a0
+		lea	(Normal_palette).w,a0
 		lea	($FFFFFB80).w,a1
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
@@ -3066,7 +3070,7 @@ loc_21F8:
 
 Pal_FadeOut:
 		moveq	#0,d0
-		lea	($FFFFFB00).w,a0
+		lea	(Normal_palette).w,a0
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		move.b	($FFFFF627).w,d0
@@ -3132,7 +3136,7 @@ Pal_NoDec:
 Pal_MakeWhite:				; CODE XREF: ROM:00005166p
 		move.w	#$3F,($FFFFF626).w ; '?'
 		moveq	#0,d0
-		lea	($FFFFFB00).w,a0
+		lea	(Normal_palette).w,a0
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		move.w	#$EEE,d1
@@ -3158,7 +3162,7 @@ loc_2290:				; CODE XREF: Pal_MakeWhite+34j
 
 Pal_WhiteToBlack:			; CODE XREF: Pal_MakeWhite+2Ep
 		moveq	#0,d0
-		lea	($FFFFFB00).w,a0
+		lea	(Normal_palette).w,a0
 		lea	($FFFFFB80).w,a1
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
@@ -3252,7 +3256,7 @@ loc_2320:				; CODE XREF: Pal_MakeFlash+1Aj
 Pal_ToWhite:				; CODE XREF: Pal_MakeFlash+14p
 					; ROM:00005210p
 		moveq	#0,d0
-		lea	($FFFFFB00).w,a0
+		lea	(Normal_palette).w,a0
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		move.b	($FFFFF627).w,d0
@@ -3327,7 +3331,7 @@ PalCycle_Sega:				; CODE XREF: ROM:000031A0p
 		lea	($FFFFFB20).w,a1
 		lea	(Pal_Sega1).l,a0
 		moveq	#5,d1
-		move.w	($FFFFF632).w,d0
+		move.w	(PalCycle_Frame).w,d0
 
 loc_23BA:				; CODE XREF: PalCycle_Sega+1Ej
 		bpl.s	loc_23C4
@@ -3352,7 +3356,7 @@ loc_23CE:				; CODE XREF: PalCycle_Sega+26j
 loc_23D8:				; CODE XREF: PalCycle_Sega+2Ej
 		addq.w	#2,d0
 		dbf	d1,loc_23C4
-		move.w	($FFFFF632).w,d0
+		move.w	(PalCycle_Frame).w,d0
 		addq.w	#2,d0
 		move.w	d0,d2
 		andi.w	#$1E,d2
@@ -3362,20 +3366,20 @@ loc_23D8:				; CODE XREF: PalCycle_Sega+2Ej
 loc_23EE:				; CODE XREF: PalCycle_Sega+46j
 		cmpi.w	#$64,d0	; 'd'
 		blt.s	loc_23FC
-		move.w	#$401,($FFFFF634).w
+		move.w	#$401,(PalCycle_Timer).w
 		moveq	#$FFFFFFF4,d0
 
 loc_23FC:				; CODE XREF: PalCycle_Sega+4Ej
-		move.w	d0,($FFFFF632).w
+		move.w	d0,(PalCycle_Frame).w
 		moveq	#1,d0
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_2404:				; CODE XREF: PalCycle_Sega+4j
-		subq.b	#1,($FFFFF634).w
+		subq.b	#1,(PalCycle_Timer).w
 		bpl.s	loc_2456
-		move.b	#4,($FFFFF634).w
-		move.w	($FFFFF632).w,d0
+		move.b	#4,(PalCycle_Timer).w
+		move.w	(PalCycle_Frame).w,d0
 		addi.w	#$C,d0
 		cmpi.w	#$30,d0	; '0'
 		bcs.s	loc_2422
@@ -3384,7 +3388,7 @@ loc_2404:				; CODE XREF: PalCycle_Sega+4j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_2422:				; CODE XREF: PalCycle_Sega+78j
-		move.w	d0,($FFFFF632).w
+		move.w	d0,(PalCycle_Frame).w
 		lea	(Pal_Sega2).l,a0
 		lea	(a0,d0.w),a0
 		lea	($FFFFFB04).w,a1
@@ -3815,8 +3819,8 @@ SegaScreen:
 loc_316A:
 		moveq	#0,d0
 		bsr.w	PalLoad2
-		move.w	#-$A,($FFFFF632).w
-		move.w	#0,($FFFFF634).w
+		move.w	#-$A,(PalCycle_Frame).w
+		move.w	#0,(PalCycle_Timer).w
 		move.w	#0,($FFFFF662).w
 		move.w	#0,($FFFFF660).w
 		move.w	(VDP_Reg1_val).w,d0
@@ -3927,7 +3931,7 @@ loc_32C4:				; CODE XREF: ROM:000032C6j
 		move.w	#0,($FFFFFFF0).w
 		move.w	#0,($FFFFFFEA).w
 		move.w	#0,(Current_ZoneAndAct).w
-		move.w	#0,($FFFFF634).w
+		move.w	#0,(PalCycle_Timer).w
 		bsr.w	Pal_FadeToBlack
 		move	#$2700,sr
 		lea	($FFFF0000).l,a1
