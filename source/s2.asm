@@ -10260,8 +10260,7 @@ DynResize_EHZ:				; DATA XREF: ROM:DynResize_Indexo
 		move.w	off_78F0(pc,d0.w),d0
 		jmp	off_78F0(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-off_78F0:	dc.w DynResize_EHZ1-off_78F0 ; DATA XREF: ROM:off_78F0o
-					; ROM:000078F2o ...
+off_78F0:	dc.w DynResize_EHZ1-off_78F0
 		dc.w DynResize_EHZ2-off_78F0
 		dc.w locret_7980-off_78F0
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
@@ -10277,13 +10276,12 @@ DynResize_EHZ2:				; DATA XREF: ROM:000078F2o
 		jmp	DynResize_EHZ2_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 DynResize_EHZ2_Index:dc.w DynResize_EHZ2_01-DynResize_EHZ2_Index
-					; DATA XREF: ROM:DynResize_EHZ2_Indexo
-					; ROM:00007908o ...
 		dc.w DynResize_EHZ2_02-DynResize_EHZ2_Index
 		dc.w DynResize_EHZ2_03-DynResize_EHZ2_Index
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 DynResize_EHZ2_01:			; DATA XREF: ROM:DynResize_EHZ2_Indexo
+		rts
 		cmpi.w	#$26E0,(Camera_X_pos).w
 		bcs.s	locret_795A
 		move.w	(Camera_X_pos).w,(Camera_Min_X_pos).w
