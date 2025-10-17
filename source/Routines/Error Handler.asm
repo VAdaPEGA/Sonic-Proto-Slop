@@ -100,7 +100,7 @@ ErrorTextVRAM	=	$F800
 ErrorTextTile	=	(TMap_Priority+(ErrorTextVRAM/$20)-"0")	; For writing to VRAM
 		lea	(vdp_data_port).l,a6
 		locVRAM	ErrorTextVRAM
-		lea	(Art_Text).l,a0
+		lea	(ArtUnc_DebugTXT).l,a0
 		move.w	#(48*8)-1,d1
 	@loadgfx:
 		move.l	(a0)+,(a6)

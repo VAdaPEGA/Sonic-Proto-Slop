@@ -2,9 +2,11 @@
 ; Main RAM
 ; ---------------------------------------------------------------------------
 		rsset $FF0000|$FF000000
-				rs.b $8000
 ; ---------------------------------------------------------------------------
 ; LEVEL LAYOUTS
+Chunk_Table:			rs.b $8000
+Chunk_Table_End:		equ __rs
+
 levelrowsize:		equ 128		; maximum width of a level layout in chunks
 levelrowcount:		equ 32		; maximum height of a level layout in chunks			
 
@@ -167,6 +169,9 @@ Object_Space_End:	equ __rs
 
 ; ---------------------------------------------------------------------------
 
+Primary_Collision:		equ $FFFFD000	; hilariously innefficient
+Secondary_Collision:		equ $FFFFD600
+
 VDP_Command_Buffer:		equ $FFFFDC00
 VDP_Command_Buffer_Slot:	equ $FFFFDCFC
 
@@ -319,6 +324,8 @@ Obj_load_addr_3:		equ $FFFFF77C
 
 Camera_X_pos_last_P2:		equ $FFFFF78C
 
+Collision_addr:  		equ $FFFFF796
+
 Bonus_Countdown_1:		equ $FFFFF7D2
 Bonus_Countdown_2:		equ $FFFFF7D4
 Update_Bonus_score:		equ $FFFFF7D6
@@ -335,6 +342,16 @@ Anim_Counters:			equ $FFFFF7F0
 
 Sprite_Table:			equ $FFFFF800
 
+Underwater_target_palette:		equ $FFFFFA00     ; This is used by the screen-fading subroutines.
+Underwater_target_palette_line2:	equ $FFFFFA20     ; While Underwater_palette contains the blacked-out palette caused by the fading,
+Underwater_target_palette_line3:	equ $FFFFFA40     ; Underwater_target_palette will contain the palette the screen will ultimately fade in to.
+Underwater_target_palette_line4:	equ $FFFFFA60             
+
+Underwater_palette:		equ $FFFFFA80	; main palette for underwater parts of the screen
+Underwater_palette_line2:	equ $FFFFFAA0
+Underwater_palette_line3:	equ $FFFFFAC0
+Underwater_palette_line4:	equ $FFFFFAE0
+               
 Normal_palette:			equ $FFFFFB00	; main palette for non-underwater parts of the screen
 Normal_palette_line2:		equ $FFFFFB20
 Normal_palette_line3:		equ $FFFFFB40
@@ -363,8 +380,6 @@ Current_Zone:			equ $FFFFFE10
 Current_Act:			equ $FFFFFE11
 
 Life_count:			equ $FFFFFE12
-
-
 
 Update_HUD_lives:		equ $FFFFFE1C 
 Update_HUD_rings:		equ $FFFFFE1D 

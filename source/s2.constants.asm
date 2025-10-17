@@ -194,37 +194,23 @@ MusID_Boss:			equ ((MusPtr_Boss-MusicIndex)/4)+MusID__First		; $8C
 
 
 ; Game modes
-;	IncludeGameMode	Logo,		GM_Logo,	"LOGO INTRO"
-;	IncludeGameMode	Title,		GM_Title,	"TITLE"
-;	IncludeGameMode	Overworld,	GM_Overworld,	"OVERWORLD"
-;	IncludeGameMode	SSTV,		GM_SSTV,	"SSTV"
-;	IncludeGameMode	Tomypogo,	GM_Tomypogo,	"TOMYPOGO"
-;	IncludeGameMode	RESERVED2,	GM_Logo,	"RESERVED SLOT 02"
-;	IncludeGameMode	RESERVED3,	GM_Logo,	"RESERVED SLOT 03"
-;	IncludeGameMode	RESERVED4,	GM_Logo,	"RESERVED SLOT 04"
-;	IncludeGameMode	RESERVED5,	GM_Logo,	"RESERVED SLOT 05"
-;	IncludeGameMode	RESERVED6,	GM_Logo,	"RESERVED SLOT 06"
-;	IncludeGameMode	RESERVED7,	GM_Logo,	"RESERVED SLOT 07"
-;	IncludeGameMode	RESERVED8,	GM_Logo,	"RESERVED SLOT 08"
-;	IncludeGameMode	Credits,	GM_Logo,	"CREDITS"
+;	IncludeGameMode	Logo,		GM_Logo,	"Logo intro"
+;	IncludeGameMode	Title,		GM_Title,	"Title"
+;	IncludeGameMode	Level,		GM_Level,	"Level"
+;	IncludeGameMode	Special,	GM_Special,	"Special Stage"
+;	IncludeGameMode	Credits,	GM_Logo,	"Credits"
 ;
 ;	inform	0, " Game Modes : \#GamemodeCount\"
 
-; Dialog
-;	IncludeDialog	Global
-;	IncludeDialog	PipesOfDream
-;	IncludeDialog	CatstleOutside
-;	IncludeDialog	CatstleInterior
-;
-;	inform	0, " Dialog Tables : \#DialogCount\"
-; Levels
-	;	Starts, folder, 	dialog, 	debug
-;	IncludePlace 1,	PipesOfGreen,	PipesOfDream,	"PIPES OF DREAM"
-;	IncludePlace 3,	CatstleOutside,	CatstleOutside,	"CATSTLE COURTYARD"
-;	IncludePlace 2,	CatstleInterior,CatstleInterior,"CATSTLE INTERIOR"
-;	IncludePlace 1,	BattleArea,	Global,		"BATTLE AREA"
-;	IncludePlace 1,	Dummy,		PipesOfDream,	"DUMMY"
-;	inform	0, " Places : \#PlaceCount\"
+; 	Levels		folder,	water,	debug
+	IncludeZone	GHZ,	0,	"Green Hill but Broken"
+	IncludeZone	CPZ,	1,	"Chemical Plant"
+	IncludeZone	MMZ,	0,	"Morning Mill"
+	IncludeZone	EHZ,	0,	"Emerald Hill"
+	IncludeZone	HPZ,	1,	"Hidden Palace"
+	IncludeZone	HTZ,	0,	"Hill Top"
+	IncludeZone	CNZ,	0,	"Casino Night"
+	inform	0, " Zones : \#ZoneCount\"
 
 ; Background music
 

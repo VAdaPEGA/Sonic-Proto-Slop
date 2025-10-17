@@ -67,8 +67,12 @@ locVRAM:	macro loc,controlport
 		endc
 		endm
 ; ---------------------------------------------------------------------------
-hudVRAM:	macro loc
+locVRAMtemp:	macro loc
+		if (narg=1)
 		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),d0
+		else
+_VDPcommand	=	($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14))
+		endif
 		endm
 ; ---------------------------------------------------------------------------
 ; Set a CRAM address via the VDP control port.
@@ -291,7 +295,7 @@ Eni_\name:	incbin	'\path\\file\.mapeni'
 ; ---------------------------------------------------------------------------
 ; Adding Uncompressed Art + Mapping + dplc
 Artunc_Add:		macro	options, name, path, file
-			if	(offset(*)&$1FFFF>(offset(*)+filesize('\path\\file\.artunc'))&$1FFFF)
+			if	(*&$1FFFF>(*+filesize('\path\\file\.artunc'))&$1FFFF)
 			align	$20000,$69	; allign art if it surpasses DMA boundary
 			endif
 ArtSize_\name:		equ	filesize("\path\\file\.artunc")
@@ -428,7 +432,7 @@ IndexStart		macro	name
 c	=		0
 			endm
 ; ---
-GenerateIndex		macro	label
+GenerateLocalIndex	macro	label
 			dc.w	@\label\-@Index
 		if (narg=1)
 @Index\label:		equ	c
@@ -436,90 +440,25 @@ GenerateIndex		macro	label
 c	=		c+2
 			endm
 ; ---
-AnimationIndex		macro	LabelName,anim
-			dc.w	@\anim\-@Index
-\LabelName\_\anim:		equ	c
-c	=		c+1
+GenerateIndex		macro	Increase,LabelName,name
+			dc.w	@\name\-@Index
+\LabelName\_\name:		equ	c
+c	=		c+increase
 			endm
 
 ; ---------------------------------------------------------------------------
-
-Artunc_FakeVScroll	macro	place, name, num
+Artunc_FakeVScroll	macro	Zone, name, num
 c	=	0
-size	=	filesize('Gamemode/Overworld/Places/\place\/AnimatedTiles/\name\0.bin')
+size	=	filesize('Level/\Zone\/AnimatedTiles/\name\0.bin')
 	rept	num
-	if	(offset(*)&$1FFFF>(offset(*)+(size))&$1FFFF)
+	if	(*&$1FFFF>(*+(size))&$1FFFF)
 	align	$20000,$69	; allign art if it surpasses DMA boundary
 	endif
-Artunc_\name\_\#c:	incbin	'Gamemode/Overworld/Places/\place\/AnimatedTiles/\name\\#c\.bin'
+Artunc_\name\_\#c:	incbin	'Level/\Zone\/AnimatedTiles/\name\\#c\.bin'
 c	=	c+1
 	endr
 	even
 	endm
-; ---------------------------------------------------------------------------
-; Starting a new text group
-Text_Header	macro	name
-	@header:
-Text_Header_name equs "\name"
-c	=	0
-increment	=	\2
-		endm
-; ---------------------------------------------------------------------------
-; Adding new Text Entries for Adies
-Text_Entry_Adie	macro	name
-		dc.w	@\name\-@header
-_TextOverCheck	=	offset(*)
-		if (narg=1)
-Textid_\name\:	equ	c
-		endif
-c	=	c+increment
-		endm
-; ---------------------------------------------------------------------------
-; Adding new Text Entries
-Text_Entry	macro	name
-		dc.w	@\#c\-offset(*)
-Textid_\Text_Header_name\_\name\:	equ	c
-_text\#c:	equs	"Dialog/\Text_Header_name\/\name\.asm"
-c	=	c+increment
-		endm
-; ---------------------------------------------------------------------------
-Text_Load_Entries	macro
-d	=	c
-c	=	0
-		rept	d
-_TextOverCheck	=	offset(*)
-@\#c:
-_temp	equs	_text\#c
-		if	(filesize("\_temp")=-1)
-			inform	1,"Text file not found at \_temp\"
-			dc.b	"ERROR : FILE NOT FOUND"
-			TxtEnd	End
-		else
-		include "\_temp"
-		endif
-c	=	c+1
-		endr
-		endm
-; ---------------------------------------------------------------------------
-Text_Adie_Entry	macro	name
-Text_Adie_\name\:	
-	include	"Dialog/Battle/\name\.asm"
-	even
-	endm
-Text_Addie_TableEntry:	macro	name
-		dc.l	Text_Adie_\name\
-		endm
-; ===========================================================================
-; Font Entry Macro
-FontSpriteMacro:	macro	y,size,vram1,vram2,x1,x2,dplc1,dplc2
-			dc.w	y		; y offset
-			dc.b	size,0		; sprite size
-x	=	(-x2)&$FF	; ASM68k being stupid
-			dc.b	x-1		; x offset
-			dc.b	dplc1>>4+1	; Number of tiles
-			dc.w	dplc2<<5	; Tile Offset
-			endm
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Adding new Game Modes
 GameModeCount	=	0
@@ -530,36 +469,15 @@ _GameMode\#GameModeCount:	equ	routine
 GameModeCount	=	GameModeCount+1
 		endm
 ; ---------------------------------------------------------------------------
-; Adding new Game Modes
-DialogCount	=	0
-IncludeDialog	macro	name
-DialogID_\name\:		equ	(DialogCount*4)
-_Dialog\#Dialogcount:		equs	"Dialog/\name\.asm"
-DialogCount	=	DialogCount+1
-		endm
-; ---------------------------------------------------------------------------
-; Adding new Places
-PlaceCount	=	0
-IncludePlace	macro	starts, folder, Dialog, debug
-PlaceID_\folder\:		equ	PlaceCount
-PlaceName\#PlaceCount:		equs	\debug
-UncArt_Place_\#PlaceCount:	equ	filesize("GameMode/Overworld/Places/\folder\/Art.Artunc")
-_PlaceArt\#PlaceCount:		equs	"GameMode/Overworld/Places/\folder\/"
-_PlaceCollide\#PlaceCount:	equs	"GameMode/Overworld/Places/\folder\/collide.bin"
-_PlaceLayout\#PlaceCount:	equs	"GameMode/Overworld/Places/\folder\/Layout.bin"
-_PlaceLayoutBG\#PlaceCount:	equs	"GameMode/Overworld/Places/\folder\/LayoutBG.bin"
-_PlaceMap16\#PlaceCount:	equs	"GameMode/Overworld/Places/\folder\/map16.bin"
-_PlaceMap256\#PlaceCount:	equs	"GameMode/Overworld/Places/\folder\/map256.bin"
-_PlaceObjPos\#PlaceCount:	equs	"GameMode/Overworld/Places/\folder\/ObjPos.bin"
-_PlacePal\#PlaceCount:		equs	"GameMode/Overworld/Places/\folder\/Palette.pal"
-_PlaceStarts\#PlaceCount:	equ	starts
-_PlaceDialog\#PlaceCount:	equ	DialogID_\Dialog
-c	=	0
-				rept	starts
-_PlaceStart\#PlaceCount\\#c:	equs	"GameMode/Overworld/Places/\folder\/Start\#c\.bin"
-c	=	c+1
-				endr
-PlaceCount	=	PlaceCount+1
+; Adding new Zones
+ZoneCount	=	0
+IncludeZone	macro	Name, water, debug
+ZoneID_\Name\:		equ	ZoneCount
+ZoneName\#ZoneCount:		equs	\debug
+UncArt_Zone_\#ZoneCount:	equ	filesize("Level/\Name\/Art.Artunc")
+_ZoneFolder\#ZoneCount:		equs	"Level/\Name\/"
+ZonePal_Water\#ZoneCount	=	water
+ZoneCount	=	ZoneCount+1
 		endm
 ; ---------------------------------------------------------------------------
 ; Adding new Music

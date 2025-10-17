@@ -5,6 +5,34 @@
       <ArtFile filename="../source/art/nemesis/Spikes.bin" />
       <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
     </ImageFromMappings>
+    <ImageFromMappings id="horiz2">
+      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
+      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+    </ImageFromMappings>
+    <ImageFromMappings id="horiz3">
+      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
+      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+    </ImageFromMappings>
+    <ImageFromMappings id="horiz4">
+      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
+      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+    </ImageFromMappings>
+    <ImageFromMappings id="vert1">
+      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
+      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+    </ImageFromMappings>
+    <ImageFromMappings id="vert2">
+      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
+      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+    </ImageFromMappings>
+    <ImageFromMappings id="vert3">
+      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
+      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+    </ImageFromMappings>
+    <ImageFromMappings id="vert4">
+      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
+      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+    </ImageFromMappings>
   </Images>
   <Subtypes>
     <Subtype id="00" name="One Horizontal" image="horiz1" />
