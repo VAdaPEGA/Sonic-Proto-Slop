@@ -14,13 +14,16 @@ dynamic2:		equ 4
 dynamic3:		equ 6
 ; ---------------------------------------------------------------------------
 ; Common VRAM addresses
-VRAM_Window:	equ $A000	; Window plane namespace
+VRAM_FG2P:	equ $A000	; Foreground namespace for 2P
 VRAM_FG:	equ $C000	; Foreground namespace
 VRAM_Dyn:	equ $D000	; Dynamic area for misc. art
 VRAM_BG:	equ $E000	; Background namespace
-VRAM_Sprites:	equ $F000	; Sprite table
+VRAM_Sprites:	equ $F800	; Sprite table
 
-VRAM_Player:	equ $F280	; Player graphics
+VRAM_Plr1:	equ $F000	; Player 1 graphics
+VRAM_Plr1Extra:	equ $F200	; Player 1 Extra (ex: Tails' Tails)
+VRAM_Plr2:	equ $F400	; Player 2 graphics
+VRAM_Plr2Extra:	equ $F600	; Player 2 Extra (ex: Tails' Tails)
 
 VRAM_HScroll:	equ $FC00	; Horizontal scroll table
 ; ---------------------------------------------------------------------------

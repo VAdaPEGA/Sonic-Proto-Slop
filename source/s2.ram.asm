@@ -132,19 +132,21 @@ Object_Space:			equ __rs	; Start of Object RAM
 
 MainCharacter:			rs.b Object_RAM	; Player 1
 Sidekick:			rs.b Object_RAM	; Player 2
-Reserved_Object_02:		rs.b Object_RAM
-Reserved_Object_03:		rs.b Object_RAM
-Reserved_Object_04:		rs.b Object_RAM
-Reserved_Object_05:		rs.b Object_RAM
-Reserved_Object_06:		rs.b Object_RAM
-Reserved_Object_07:		rs.b Object_RAM
-Reserved_Object_08:		rs.b Object_RAM
-Reserved_Object_09:		rs.b Object_RAM
-Reserved_Object_10:		rs.b Object_RAM
-Reserved_Object_11:		rs.b Object_RAM
-Reserved_Object_12:		rs.b Object_RAM
-Reserved_Object_13:		rs.b Object_RAM
-Reserved_Object_14:		rs.b Object_RAM
+Title_Card:			rs.b Object_RAM ; Title Card and Game/Time Over
+Game_Over:			equ Title_Card	; Title Card 
+Title_Card2:			rs.b Object_RAM ; 
+Game_Over2:			equ Title_Card2
+Title_Card3:			rs.b Object_RAM ; 
+Title_Card4:			rs.b Object_RAM ; 
+Reserved_Object_06:		rs.b Object_RAM ; Shield
+Sidekick_Extra:			rs.b Object_RAM ; Tails's Tail
+Reserved_Object_08:		rs.b Object_RAM ; Invincibility
+Reserved_Object_09:		rs.b Object_RAM ; Invincibility 2
+Reserved_Object_10:		rs.b Object_RAM ; Invincibility 3
+Reserved_Object_11:		rs.b Object_RAM ; Invincibility 4
+Water_Splash:			rs.b Object_RAM ; Splash Object
+MainCharacter_Bubbles:		rs.b Object_RAM ; Breathing Bubbles and Countdown
+HudObject:			rs.b Object_RAM
 Reserved_Object_15:		rs.b Object_RAM
 Reserved_Object_16:		rs.b Object_RAM
 Reserved_Object_17:		rs.b Object_RAM
@@ -153,15 +155,15 @@ Reserved_Object_19:		rs.b Object_RAM
 Reserved_Object_20:		rs.b Object_RAM
 Reserved_Object_21:		rs.b Object_RAM
 Reserved_Object_22:		rs.b Object_RAM
-Reserved_Object_23:		rs.b Object_RAM
-Reserved_Object_24:		rs.b Object_RAM
-Reserved_Object_25:		rs.b Object_RAM
-Reserved_Object_26:		rs.b Object_RAM
-Reserved_Object_27:		rs.b Object_RAM
-Reserved_Object_28:		rs.b Object_RAM
-Reserved_Object_29:		rs.b Object_RAM
-Reserved_Object_30:		rs.b Object_RAM
-Reserved_Object_31:		rs.b Object_RAM
+End_Of_act_Title_Card:		rs.b Object_RAM
+End_Of_act_Title_Card2:		rs.b Object_RAM
+End_Of_act_Title_Card3:		rs.b Object_RAM
+End_Of_act_Title_Card4:		rs.b Object_RAM
+End_Of_act_Title_Card5:		rs.b Object_RAM ; Special Stage uses this as the continue sonic
+End_Of_act_Title_Card6:		rs.b Object_RAM
+End_Of_act_Title_Card7:		rs.b Object_RAM
+Water_Surface_Object:		rs.b Object_RAM
+Water_Surface_Object2:		rs.b Object_RAM
 
 Level_Object_Space:		rs.b Object_RAM*(128-32)	; Objects spawned in level
 
@@ -174,6 +176,8 @@ Secondary_Collision:		equ $FFFFD600
 
 VDP_Command_Buffer:		equ $FFFFDC00
 VDP_Command_Buffer_Slot:	equ $FFFFDCFC
+
+Sprite_Table_2P:		equ $FFFFDD00
 
 Sonic_Stat_Record_Buf:		equ $FFFFE400
 Sonic_Pos_Record_Buf:		equ $FFFFE500
@@ -280,7 +284,7 @@ PalCycle_Timer:			equ $FFFFF634
 
 Game_paused:			equ $FFFFF63A
 
-DMA_data_thunk:			equ $FFFFF640
+DMA_data_thunk:			equ $FFFFF640	; Used as a RAM holder for the final DMA command word. Data will NOT be preserved across V-INTs, so consider this space reserved.
 Hint_flag:			equ $FFFFF644
 Water_fullscreen_flag:		equ $FFFFF64E
 Do_Updates_in_H_int:		equ $FFFFF64F
@@ -400,5 +404,7 @@ Camera_Max_Y_pos_copy:		equ $FFFFFEF2
 Next_Extra_life_score:		equ $FFFFFFC0
 
 Two_player_mode:		equ $FFFFFFE8
+
+Demo_Mode_Flag:			equ $FFFFFFF0
 
 Debug_mode_flag:		equ $FFFFFFFA
