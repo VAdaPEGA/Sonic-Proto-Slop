@@ -4679,6 +4679,7 @@ Level_ClrTitleCard:
 		addi.w	#PLCID_GHZAnimals,d0
 		jsr	(LoadPLC).l
 
+
 Level_StartGame:
 		bclr	#GameModeFlag_TitleCard,(Game_Mode).w
 
@@ -9335,7 +9336,7 @@ LevelLayoutLoad2:
 		add.w	d1,d0
 		lea	(Level_Index).l,a1
 		move.w	(a1,d0.w),d0
-		lea	(a1,d0.w),a1
+		lea	(a1,d0.l),a1
 
 		moveq	#0,d1
 		move.w	d1,d2
@@ -9404,46 +9405,43 @@ loc_756C:
 		add.w	d1,d1
 		add.w	d1,d1
 
-loc_7586:				; CODE XREF: DynScreenResizeLoad+4Cj
-					; DynScreenResizeLoad+54j
+loc_7586:	
 		add.w	d1,(Camera_Max_Y_pos_now).w
 		move.b	#1,(Camera_Max_Y_pos_Changing).w
 		rts
 ; End of function DynScreenResizeLoad
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 DynResize_Index:dc.w DynResize_GHZ-DynResize_Index; 0
-		dc.w DynResize_LZ-DynResize_Index; 1
-		dc.w DynResize_CPZ-DynResize_Index; 2
+		dc.w DynResize_CPZ-DynResize_Index; 1
+		dc.w DynResize_MMZ-DynResize_Index; 2
 		dc.w DynResize_EHZ-DynResize_Index; 3
 		dc.w DynResize_HPZ-DynResize_Index; 4
 		dc.w DynResize_HTZ-DynResize_Index; 5
-		dc.w DynResize_S1Ending-DynResize_Index; 6
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-DynResize_GHZ:				; DATA XREF: ROM:DynResize_Indexo
+		dc.w DynResize_CNZ-DynResize_Index; 6
+; ===========================================================================
+DynResize_GHZ:	
 		moveq	#0,d0
 		move.b	(Current_Act).w,d0
 		add.w	d0,d0
 		move.w	DynResize_GHZ_Index(pc,d0.w),d0
 		jmp	DynResize_GHZ_Index(pc,d0.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_GHZ_Index:dc.w DynResize_GHZ1-DynResize_GHZ_Index; 0
-					; DATA XREF: ROM:DynResize_GHZ_Indexo
-					; ROM:DynResize_GHZ_Index+2o ...
+; ===========================================================================
+DynResize_GHZ_Index:
+		dc.w DynResize_GHZ1-DynResize_GHZ_Index; 0
 		dc.w DynResize_GHZ2-DynResize_GHZ_Index; 1
 		dc.w DynResize_GHZ3-DynResize_GHZ_Index; 2
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-DynResize_GHZ1:				; DATA XREF: ROM:DynResize_GHZ_Indexo
+DynResize_GHZ1:				
 		move.w	#$300,(Camera_Max_Y_pos).w
 		cmpi.w	#$1780,(Camera_X_pos).w
 		bcs.s	locret_75CA
 		move.w	#$400,(Camera_Max_Y_pos).w
 
-locret_75CA:				; CODE XREF: ROM:000075C2j
+locret_75CA:	
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 DynResize_GHZ2:				; DATA XREF: ROM:DynResize_GHZ_Indexo
 		move.w	#$300,(Camera_Max_Y_pos).w
@@ -9538,26 +9536,26 @@ DynResize_GHZ3_End:			; DATA XREF: ROM:DynResize_GHZ3_Indexo
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-DynResize_LZ:				; DATA XREF: ROM:DynResize_Indexo
+DynResize_MMZ:				; DATA XREF: ROM:DynResize_Indexo
 		moveq	#0,d0
 		move.b	(Current_Act).w,d0
 		add.w	d0,d0
-		move.w	DynResize_LZ_Index(pc,d0.w),d0
-		jmp	DynResize_LZ_Index(pc,d0.w)
+		move.w	DynResize_MMZ_Index(pc,d0.w),d0
+		jmp	DynResize_MMZ_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_LZ_Index:dc.w	DynResize_LZ_Null-DynResize_LZ_Index; 0
-					; DATA XREF: ROM:DynResize_LZ_Indexo
-					; ROM:DynResize_LZ_Index+2o ...
-		dc.w DynResize_LZ_Null-DynResize_LZ_Index; 1
-		dc.w DynResize_LZ3-DynResize_LZ_Index; 2
-		dc.w DynResize_LZ4-DynResize_LZ_Index; 3
+DynResize_MMZ_Index:dc.w	DynResize_MMZ_Null-DynResize_MMZ_Index; 0
+					; DATA XREF: ROM:DynResize_MMZ_Indexo
+					; ROM:DynResize_MMZ_Index+2o ...
+		dc.w DynResize_MMZ_Null-DynResize_MMZ_Index; 1
+		dc.w DynResize_MMZ3-DynResize_MMZ_Index; 2
+		dc.w DynResize_MMZ4-DynResize_MMZ_Index; 3
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-DynResize_LZ_Null:			; DATA XREF: ROM:DynResize_LZ_Indexo
+DynResize_MMZ_Null:			; DATA XREF: ROM:DynResize_MMZ_Indexo
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-DynResize_LZ3:				; DATA XREF: ROM:DynResize_LZ_Indexo
+DynResize_MMZ3:				; DATA XREF: ROM:DynResize_MMZ_Indexo
 		tst.b	($FFFFF7EF).w
 		beq.s	loc_76EA
 		lea	(Level_Layout+$206).w,a1
@@ -9597,7 +9595,7 @@ locret_7726:				; CODE XREF: ROM:000076EEj
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-DynResize_LZ4:				; DATA XREF: ROM:DynResize_LZ_Indexo
+DynResize_MMZ4:				; DATA XREF: ROM:DynResize_MMZ_Indexo
 		cmpi.w	#$D00,(Camera_X_pos).w
 		bcs.s	locret_774E
 		cmpi.w	#$18,(MainCharacter+y_pos).w
@@ -10150,9 +10148,9 @@ loc_7B9C:				; DATA XREF: ROM:00007B58o
 		bra.s	loc_7B3A
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-DynResize_S1Ending:			; DATA XREF: ROM:DynResize_Indexo
+DynResize_CNZ:			; DATA XREF: ROM:DynResize_Indexo
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 ;----------------------------------------------------
 ; Object 11 - Bridge
 ;----------------------------------------------------
@@ -14940,7 +14938,7 @@ word_B8A4:	dc.w 2			; DATA XREF: ROM:0000B87Co
 word_B8B6:	dc.w 2			; DATA XREF: ROM:0000B87Eo
 		dc.w $F40E,   $C,    6,$FFF0; 0
 		dc.w $F505,$101C,$100E,	 $10; 4
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 ;----------------------------------------------------
 ; Object 34 - leftover Sonic 1 title cards
 ;----------------------------------------------------
@@ -14950,13 +14948,16 @@ Obj34:					; DATA XREF: ROM:Obj_Indexo
 		move.b	routine(a0),d0
 		move.w	Obj34_Index(pc,d0.w),d1
 		jmp	Obj34_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj34_Index:	dc.w Obj34_CheckLZ4-Obj34_Index; 0 ; DATA XREF:	ROM:Obj34_Indexo
-					; ROM:Obj34_Index+2o ...
-		dc.w Obj34_CheckPos-Obj34_Index; 1
-		dc.w Obj34_Wait-Obj34_Index; 2
-		dc.w Obj34_Wait-Obj34_Index; 3
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+Obj34_Index:	dc.w Obj34_CheckLZ4-Obj34_Index
+		dc.w Obj34_CheckPos-Obj34_Index
+		dc.w Obj34_Wait-Obj34_Index
+		dc.w Obj34_Wait-Obj34_Index
+
+Obj34_card_mainX:	equ $30		; position for card to display on
+Obj34_card_finalX:	equ $32		; position for card to finish on
+Obj34_card_timer:	equ $34		; timer for if the title card is spawned in from mid level ala sonic 3
+; ===========================================================================
 
 Obj34_CheckLZ4:	
 		movea.l	a0,a1
@@ -14973,15 +14974,15 @@ Obj34_CheckConfig:
 Obj34_Loop:				
 		move.b	#$34,id(a1)
 		move.w	(a3),x_pixel(a1)
-		move.w	(a3)+,$32(a1)
-		move.w	(a3)+,$30(a1)
+		move.w	(a3)+,Obj34_card_finalX(a1)
+		move.w	(a3)+,Obj34_card_mainX(a1)
 		move.w	(a2)+,y_pixel(a1)
 		move.b	(a2)+,routine(a1)
 		move.b	(a2)+,d0
 		bne.s	Obj34_ActNumber
 		move.b	d2,d0
 
-Obj34_ActNumber:			; CODE XREF: ROM:0000B92Cj
+Obj34_ActNumber:			
 		cmpi.b	#7,d0
 		bne.s	Obj34_MakeSprite
 		add.b	(Current_Act).w,d0
@@ -14989,8 +14990,7 @@ Obj34_ActNumber:			; CODE XREF: ROM:0000B92Cj
 		bne.s	Obj34_MakeSprite
 		subq.b	#1,d0
 
-Obj34_MakeSprite:			; CODE XREF: ROM:0000B934j
-					; ROM:0000B940j
+Obj34_MakeSprite:	
 		move.b	d0,mapping_frame(a1)
 		move.l	#Map_Obj34,mappings(a1)
 		move.w	#$8580,art_tile(a1)
@@ -15002,42 +15002,40 @@ Obj34_MakeSprite:			; CODE XREF: ROM:0000B934j
 		lea	$40(a1),a1
 		dbf	d1,Obj34_Loop
 
-Obj34_CheckPos:				; DATA XREF: ROM:Obj34_Indexo
+Obj34_CheckPos:			
 		moveq	#$10,d1
-		move.w	$30(a0),d0
+		move.w	Obj34_card_mainX(a0),d0
 		cmp.w	x_pixel(a0),d0
 		beq.s	loc_B98E
 		bge.s	Obj34_Move
 		neg.w	d1
 
-Obj34_Move:				; CODE XREF: ROM:0000B986j
+Obj34_Move:		
 		add.w	d1,x_pixel(a0)
 
-loc_B98E:				; CODE XREF: ROM:0000B984j
+loc_B98E:	
 		move.w	x_pixel(a0),d0
 		bmi.s	Obj34_NoDisplay
 		cmpi.w	#$200,d0
 		bcc.s	Obj34_NoDisplay
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-Obj34_NoDisplay:			; CODE XREF: ROM:0000B992j
-					; ROM:0000B998j
+; ===========================================================================
+Obj34_NoDisplay:	
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 Obj34_Wait:				; DATA XREF: ROM:Obj34_Indexo
 		tst.w	anim_frame_duration(a0)
 		beq.s	Obj34_CheckPos2
 		subq.w	#1,anim_frame_duration(a0)
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 Obj34_CheckPos2:			; CODE XREF: ROM:0000B9A6j
 		tst.b	render_flags(a0)
 		bpl.s	Obj34_ChangeArt
 		moveq	#$20,d1	; ' '
-		move.w	$32(a0),d0
+		move.w	Obj34_card_finalX(a0),d0
 		cmp.w	x_pixel(a0),d0
 		beq.s	Obj34_ChangeArt
 		bge.s	Obj34_Move2
@@ -15050,15 +15048,13 @@ Obj34_Move2:				; CODE XREF: ROM:0000B9C4j
 		cmpi.w	#$200,d0
 		bcc.s	Obj34_NoDisplay2
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Obj34_NoDisplay2:			; CODE XREF: ROM:0000B9D0j
-					; ROM:0000B9D6j
+Obj34_NoDisplay2:	
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Obj34_ChangeArt:			; CODE XREF: ROM:0000B9B6j
-					; ROM:0000B9C2j
+Obj34_ChangeArt:	
 		cmpi.b	#4,routine(a0)
 		bne.s	Obj34_Delete
 		moveq	#PLCID_Explode,d0
@@ -15068,10 +15064,10 @@ Obj34_ChangeArt:			; CODE XREF: ROM:0000B9B6j
 		addi.w	#PLCID_GHZAnimals,d0
 		jsr	(LoadPLC).l
 
-Obj34_Delete:				; CODE XREF: ROM:0000B9E6j
+Obj34_Delete:				
 		bra.w	DeleteObject
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj34_ItemData:	dc.w $D0		; DATA XREF: ROM:0000B908o
+; ===========================================================================
+Obj34_ItemData:	dc.w $D0		
 		dc.b   2,  0		; 0
 		dc.w $E4
 		dc.b   2,  6		; 0
@@ -15087,7 +15083,7 @@ Obj34_Config:	dc.w	 0, $120,$FEFC,	$13C, $414, $154, $214,	$154; 0
 		dc.w	 0, $120,$FF04,	$144, $41C, $15C, $21C,	$15C; 32
 		dc.w	 0, $120,$FF04,	$144, $41C, $15C, $21C,	$15C; 40
 		dc.w	 0, $120,$FEE4,	$124, $3EC, $3EC, $1EC,	$12C; 48
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 ;----------------------------------------------------
 ; Object 39 - Game over	/ time over
 ;----------------------------------------------------
@@ -18296,7 +18292,7 @@ loc_DB66:
 		lsr.w	#5,d0
 		lea	(RingPos_Index).l,a1
 		move.w	(a1,d0.w),d0
-		lea	(a1,d0.w),a1
+		lea	(a1,d0.l),a1
 		lea	(Ring_Positions+6).w,a2
 ; loc_DB88:
 RingsMgr_NextRowOrCol:
@@ -18406,8 +18402,8 @@ ObjectsManager_Init:
 		lsl.b	#6,d0
 		lsr.w	#4,d0
 		lea	(ObjPos_Index).l,a0
-		movea.l	a0,a1
-		adda.w	(a0,d0.w),a0
+		move.w	(a0,d0.w),d0
+		lea	(a0,d0.l),a0
 		move.l	a0,(Obj_load_addr_right).w
 		move.l	a0,(Obj_load_addr_left).w
 		move.l	a0,(Obj_load_addr_2).w
@@ -36650,8 +36646,8 @@ LoadLevelBlocks_2P:
 ; Map16Delta_Index:
 AnimPatMaps:
 		dc.w APM_GHZ-AnimPatMaps
-		dc.w APM_LZ-AnimPatMaps
 		dc.w APM_CPZ-AnimPatMaps
+		dc.w APM_LZ-AnimPatMaps
 		dc.w APM_GHZ-AnimPatMaps
 		dc.w APM_HPZ-AnimPatMaps
 		dc.w APM_GHZ-AnimPatMaps
