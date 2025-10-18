@@ -96,7 +96,7 @@ RepositionScreenForError:
 		rte
 ; ===========================================================================
 ShowErrorMessage:
-ErrorTextVRAM	=	$F800
+ErrorTextVRAM	=	$F820
 ErrorTextTile	=	(TMap_Priority+(ErrorTextVRAM/$20)-"0")	; For writing to VRAM
 		lea	(vdp_data_port).l,a6
 		locVRAM	ErrorTextVRAM
