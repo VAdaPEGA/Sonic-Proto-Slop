@@ -196,6 +196,8 @@ MusID_Ending:			equ ((MusPtr_Ending-MusicIndex)/4)+MusID__First		; $8B
 MusID_Boss:			equ ((MusPtr_Boss-MusicIndex)/4)+MusID__First		; $8C
 
 
+id_roll	=	2
+
 ; Game modes
 ;	IncludeGameMode	Logo,		GM_Logo,	"Logo intro"
 ;	IncludeGameMode	Title,		GM_Title,	"Title"

@@ -10207,18 +10207,19 @@ loc_7BC6:
 		move.w	#$44C6,art_tile(a0)
 
 		cmpi.b	#ZoneID_EHZ,(Current_Zone).w
-		bne.s	@NotEHZorHPZBridge
+		bne.s	@NotEHZ
 
 		move.l	#Map_obj11,mappings(a0)
 		move.w	#$43C6,art_tile(a0)
+	@NotEHZ:
 
 		cmpi.b	#ZoneID_HPZ,(Current_Zone).w
-		bne.s	@NotEHZorHPZBridge
+		bne.s	@NotHPZ
 		addq.b	#4,routine(a0)
 		move.l	#Map_obj11_HPZ,mappings(a0)
 		move.w	#$6300,art_tile(a0)
 
-@NotEHZorHPZBridge:	
+	@NotHPZ:	
 		bsr.w	Adjust2PArtPointer
 		move.b	#4,render_flags(a0)
 		move.b	#$80,width_pixels(a0)
@@ -16235,7 +16236,7 @@ loc_C96E:				; CODE XREF: ROM:0000C960j
 		bclr	#5,status(a1)
 		moveq	#7,d1
 		move.w	#$70,d2	; 'p'
-		bsr.s	sub_C99E
+		bsr.s	SmashObject
 
 loc_C988:				; DATA XREF: ROM:0000C8DAo
 		bsr.w	ObjectMove
@@ -16247,7 +16248,7 @@ loc_C988:				; DATA XREF: ROM:0000C8DAo
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-sub_C99E:				; CODE XREF: ROM:0000C986p
+SmashObject:				; CODE XREF: ROM:0000C986p
 		moveq	#0,d0
 		move.b	mapping_frame(a0),d0
 		add.w	d0,d0
@@ -16261,12 +16262,12 @@ sub_C99E:				; CODE XREF: ROM:0000C986p
 		bra.s	loc_C9CA
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_C9C2:				; CODE XREF: sub_C99E:loc_CA18j
+loc_C9C2:				; CODE XREF: SmashObject:loc_CA18j
 		bsr.w	SingleObjLoad
 		bne.s	loc_CA1C
 		addq.w	#8,a3
 
-loc_C9CA:				; CODE XREF: sub_C99E+22j
+loc_C9CA:				; CODE XREF: SmashObject+22j
 		move.b	#4,routine(a1)
 		move.b	d4,id(a1)
 		move.l	a3,mappings(a1)
@@ -16287,13 +16288,13 @@ loc_C9CA:				; CODE XREF: sub_C99E+22j
 		movea.l	(sp)+,a0
 		bsr.w	DisplaySprite2
 
-loc_CA18:				; CODE XREF: sub_C99E+66j
+loc_CA18:				; CODE XREF: SmashObject+66j
 		dbf	d1,loc_C9C2
 
-loc_CA1C:				; CODE XREF: sub_C99E+28j
+loc_CA1C:				; CODE XREF: SmashObject+28j
 		move.w	#$CB,d0	; 'Ë'
 		jmp	(PlaySound_Special).l
-; End of function sub_C99E
+; End of function SmashObject
 
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj3C_FragSpdRight:dc.w	 $400,$FB00	   ; 0 ; DATA XREF: ROM:0000C952o
@@ -28144,8 +28145,8 @@ loc_141C8:				; DATA XREF: ROM:Obj0B_Indexo
 		move.b	#$10,width_pixels(a0)
 		move.b	#4,priority(a0)
 		moveq	#0,d0
-		move.b	$28(a0),d0
-		andi.w	#$F0,d0	; 'ð'
+		move.b	subtype(a0),d0
+		andi.w	#$F0,d0
 		addi.w	#$10,d0
 		move.w	d0,d1
 		subq.w	#1,d0
@@ -28221,46 +28222,45 @@ word_142C6:	dc.w 1			; DATA XREF: ROM:000142A4o
 		dc.w	$F,$1015,$100A,$FFF0; 0
 word_142D0:	dc.w 1			; DATA XREF: ROM:000142A6o
 		dc.w $100C,$1011,$1008,$FFF0; 0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		nop
-
-Obj0C:					; DATA XREF: ROM:Obj_Indexo
+; ===========================================================================
+Obj0C:		; Weird AF Object
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	Obj0C_Index(pc,d0.w),d1
 		jmp	Obj0C_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj0C_Index:	dc.w Obj0C_Init-Obj0C_Index ; DATA XREF: ROM:Obj0C_Indexo
-					; ROM:000142ECo
+; ===========================================================================
+Obj0C_Index:	dc.w Obj0C_Init-Obj0C_Index
 		dc.w Obj0C_Main-Obj0C_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Obj0C_Init:				; DATA XREF: ROM:Obj0C_Indexo
+Obj0C_Init:	
 		addq.b	#2,routine(a0)
 		move.l	#Map_Obj0C,mappings(a0)
-		move.w	#$E418,art_tile(a0)
+		move.w	#$E000+($8300/$20),art_tile(a0)
 		bsr.w	Adjust2PArtPointer
 		ori.b	#4,render_flags(a0)
-		move.b	#$10,width_pixels(a0)
+		move.b	#(32/2),width_pixels(a0)	; Platform width
 		move.b	#4,priority(a0)
 		move.w	y_pos(a0),d0
-		subi.w	#$10,d0
+		subi.w	#16,d0
 		move.w	d0,$3A(a0)
 		moveq	#0,d0
-		move.b	$28(a0),d0
-		andi.w	#$F0,d0	; 'ð'
-		addi.w	#$10,d0
-		move.w	d0,d1
+
+		move.b	subtype(a0),d0
+		andi.w	#$F0,d0
+		addi.w	#16,d0
+		move.w	d0,d1		; Time over, hand over your tests :V
 		subq.w	#1,d0
-		move.w	d0,$30(a0)
+		move.w	d0,$30(a0)	; Unused subtype Property
 		move.w	d0,$32(a0)
+
 		moveq	#0,d0
-		move.b	$28(a0),d0
+		move.b	subtype(a0),d0
 		andi.w	#$F,d0
 		move.b	d0,$3E(a0)
 		move.b	d0,$3F(a0)
 
-Obj0C_Main:				; DATA XREF: ROM:000142ECo
+Obj0C_Main:		
 		move.b	$3C(a0),d0
 		beq.s	loc_1438C
 		cmpi.b	#$80,d0
@@ -28271,58 +28271,52 @@ Obj0C_Main:				; DATA XREF: ROM:000142ECo
 		bpl.s	loc_1436E
 		move.b	$3F(a0),$3E(a0)
 		bra.s	loc_1439C
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ---------------------------------------------------------------------------
 
-loc_1436E:				; CODE XREF: ROM:0001435Ej
-					; ROM:00014364j
+loc_1436E:	
 		addq.b	#1,$3D(a0)
 		move.b	d1,d0
 		bsr.w	j_CalcSine
 		addi.w	#8,d0
 		asr.w	#6,d0
-		subi.w	#$10,d0
+		subi.w	#16,d0
 		add.w	$3A(a0),d0
 		move.w	d0,y_pos(a0)
-		bra.s	loc_143B2
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		bra.s	Obj0C_SolidAndDisplay
+; ---------------------------------------------------------------------------
 
-loc_1438C:				; CODE XREF: ROM:00014352j
-		move.w	($FFFFFE0E).w,d1
+loc_1438C:	
+		move.w	(Vint_runcount+2).w,d1
 		andi.w	#$3FF,d1
 		bne.s	loc_143A0
-		move.b	#1,$3D(a0)
+		move.b	#1,$3D(a0)	
 
-loc_1439C:				; CODE XREF: ROM:00014358j
-					; ROM:0001436Cj
-		addq.b	#1,$3C(a0)
+loc_1439C:	
+		addq.b	#1,$3C(a0)	; every 17 Second
 
-loc_143A0:				; CODE XREF: ROM:00014394j
+loc_143A0:	
 		bsr.w	j_CalcSine
 		addi.w	#8,d1
 		asr.w	#4,d1
 		add.w	$3A(a0),d1
 		move.w	d1,y_pos(a0)
-
-loc_143B2:				; CODE XREF: ROM:0001438Aj
+; ---------------------------------------------------------------------------
+Obj0C_SolidAndDisplay:	
 		moveq	#0,d1
 		move.b	width_pixels(a0),d1
 		moveq	#9,d3
 		move.w	x_pos(a0),d4
-		bsr.w	sub_F78A
-		bra.w	MarkObjGone
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Map_Obj0C:	dc.w word_143C8-Map_Obj0C ; DATA XREF: ROM:000142F2o
-					; ROM:Map_Obj0Co ...
-word_143C8:	dc.w 1			; DATA XREF: ROM:Map_Obj0Co
-		dc.w $F80D,    0,    0,$FFF0; 0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		nop
+		bsr.w	sub_F78A	; act as Platform
 
-j_CalcSine:				; CODE XREF: ROM:00014374p
-					; ROM:loc_143A0p
+		bra.w	MarkObjGone	; Display the sprite (also check for remember state?)
+; ===========================================================================
+Map_Obj0C:	dc.w word_143C8-Map_Obj0C
+word_143C8:	dc.w 1	
+		dc.w $F80D,    0,    0,$FFF0
+; ---------------------------------------------------------------------------
+j_CalcSine:	
 		jmp	(CalcSine).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		align 4
+; ===========================================================================
 ;----------------------------------------------------
 ; Object 12 - Master Emerald from HPZ
 ;----------------------------------------------------
@@ -28332,11 +28326,12 @@ Obj12:					; DATA XREF: ROM:Obj_Indexo
 		move.b	routine(a0),d0
 		move.w	Obj12_Index(pc,d0.w),d1
 		jmp	Obj12_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj12_Index:	dc.w Obj12_Init-Obj12_Index ; DATA XREF: ROM:Obj12_Indexo
-					; ROM:000143ECo
+; ===========================================================================
+Obj12_Index:	dc.w Obj12_Init-Obj12_Index
 		dc.w Obj12_Display-Obj12_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		dc.w Smab_Points-Obj12_Index
+sonicAniFrame:	equ $32		; Sonic's current animation number
+; ===========================================================================
 
 Obj12_Init:				; DATA XREF: ROM:Obj12_Indexo
 		addq.b	#2,routine(a0)
@@ -28348,25 +28343,53 @@ Obj12_Init:				; DATA XREF: ROM:Obj12_Indexo
 		move.b	#4,priority(a0)
 
 Obj12_Display:				; DATA XREF: ROM:000143ECo
-		move.w	#$20,d1	; ' '
+		move.b	(MainCharacter+Anim).w,sonicAniFrame(a0) ; load Sonic's animation number
+		move.w	#$20,d1
 		move.w	#$10,d2
 		move.w	#$10,d3
 		move.w	x_pos(a0),d4
 		bsr.w	SolidObject
-		move.w	x_pos(a0),d0
-		andi.w	#$FF80,d0
-		sub.w	(Camera_X_pos_coarse).w,d0
-		cmpi.w	#$280,d0
-		bhi.w	DeleteObject
+		btst	#StatusBitP1Stand,status(a0)	; has Sonic landed on the block?
+		bne.s	@smash				; if yes, branch
+
+		out_of_range	DeleteObject
+	@notspinning:
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+
+@smash:
+		lea	MainCharacter,a1
+		cmpi.b	#id_Roll,sonicAniFrame(a0) ; is Sonic rolling/jumping?
+		bne.s	@notspinning	; if not, branch
+		bset	#2,status(a1)
+		move.b	#$E,y_radius(a1)
+		move.b	#7,x_radius(a1)
+		move.b	#id_Roll,anim(a1)	; make Sonic roll
+		move.w	#-$300,y_vel(a1)	; rebound Sonic
+		bset	#PlayerStatusBitAir,status(a1)
+		bclr	#PlayerStatusBitOnObject,status(a1)
+		bclr	#StatusBitP1Stand,status(a0)
+		move.b	#1,mapping_frame(a0)
+		lea	(Smab_Speeds).l,a4	; load broken fragment speed data
+		moveq	#2-1,d1			; set number of	fragments to 4
+		move.w	#$38,d2
+		bsr.w	SmashObject
+
+Smab_Points:	; Routine 4
+		bsr.w	ObjectMoveAndFall
+		tst.b	render_flags(a0)
+		bpl.w	DeleteObject
+		bra.w	DisplaySprite
+; ===========================================================================
+Smab_Speeds:	dc.w -$200, -$200	; x-speed, y-speed
+		dc.w $200, -$200
+; ===========================================================================
 Map_Obj12:	dc.w word_14444-Map_Obj12 ; DATA XREF: ROM:000143F2o
 					; ROM:Map_Obj12o
 word_14444:	dc.w 2			; DATA XREF: ROM:Map_Obj12o
 		dc.w $F00F,    0,    0,$FFE0; 0
 		dc.w $F00F,  $10,    8,	   0; 4
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		nop
+; ===========================================================================
 ;----------------------------------------------------
 ; Object 13 - HPZ waterfall
 ;----------------------------------------------------
@@ -34627,7 +34650,7 @@ loc_19820:
 		move.b	collision_flags(a1),d0
 		bne.s	Touch_Height
 
-loc_19826:				
+Touch_Failed:				
 		lea	Object_RAM(a1),a1
 		dbf	d6,loc_19820
 		moveq	#0,d0
@@ -34709,12 +34732,12 @@ Touch_Height:
 		add.w	d1,d1
 		add.w	d1,d0
 		bcs.s	loc_198A2
-		bra.w	loc_19826
+		bra.w	Touch_Failed
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1989C:				; CODE XREF: TouchResponse+A8j
 		cmp.w	d4,d0
-		bhi.w	loc_19826
+		bhi.w	Touch_Failed
 
 loc_198A2:				; CODE XREF: TouchResponse+AEj
 		moveq	#0,d1
@@ -34726,22 +34749,22 @@ loc_198A2:				; CODE XREF: TouchResponse+AEj
 		add.w	d1,d1
 		add.w	d1,d0
 		bcs.s	loc_198C0
-		bra.w	loc_19826
+		bra.w	Touch_Failed
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_198BA:				; CODE XREF: TouchResponse+C6j
 		cmp.w	d5,d0
-		bhi.w	loc_19826
+		bhi.w	Touch_Failed
 
 loc_198C0:				; CODE XREF: TouchResponse+CCj
-		move.b	$20(a1),d1
+		move.b	collision_flags(a1),d1
 		andi.b	#$C0,d1
 		beq.w	loc_1993A
 		cmpi.b	#$C0,d1
 		beq.w	Touch_Special
 		tst.b	d1
 		bmi.w	loc_199F2
-		move.b	$20(a1),d0
+		move.b	collision_flags(a1),d0
 		andi.b	#$3F,d0	; '?'
 		cmpi.b	#6,d0
 		beq.s	loc_198FA
@@ -34794,14 +34817,14 @@ loc_1993A:				; CODE XREF: TouchResponse+E0j
 
 loc_19952:				; CODE XREF: TouchResponse+156j
 					; TouchResponse+15Ej
-		tst.b	$21(a1)
+		tst.b	collision_property(a1)
 		beq.s	Touch_KillEnemy
 		neg.w	x_vel(a0)
 		neg.w	y_vel(a0)
 		asr	x_vel(a0)
 		asr	y_vel(a0)
-		move.b	#0,$20(a1)
-		subq.b	#1,$21(a1)
+		move.b	#0,collision_flags(a1)
+		subq.b	#1,collision_property(a1)
 		bne.s	locret_1997A
 		bset	#7,status(a1)
 
@@ -34861,12 +34884,11 @@ loc_199F2:				; CODE XREF: TouchResponse+EEj
 		beq.s	Touch_Hurt
 
 loc_199F8:				; CODE XREF: TouchResponse+21Aj
-		moveq	#$FFFFFFFF,d0
+		moveq	#-1,d0
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-Touch_Hurt:				; CODE XREF: TouchResponse+20Ej
-		nop
+Touch_Hurt:	
 		tst.w	invulnerable_time(a0)
 		bne.s	loc_199F8
 		movea.l	a1,a2
@@ -38003,8 +38025,9 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 ; Morning Mill Zone primary
 ; --------------------------------------------------------------------------------------
 	PLC_Start	MMZ
-	PLC_Entry	0,	Nem_CPZ
+	PLC_Entry	0,	Nem_MMZ
 	PLC_Entry	($400*$20),	Nem_CPZ_FloatingPlatform
+	PLC_Entry	$8300,	Nem_Monitors
 	PLC_End		MMZ
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -38064,7 +38087,7 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 ;	PLC_Entry	($300*$20),	Nem_Crocobot
 ;	PLC_Entry	($32C*$20),	Nem_Buzzer
 ;	PLC_Entry	($3C4*$20),	Nem_Triceratops
-;	PLC_Entry	($530*$20),	Nem_HPZ_Piranha
+	PLC_Entry	($530*$20),	Nem_HPZ_Piranha
 	PLC_End		HPZ2
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -39402,6 +39425,8 @@ Nem_GHZ:	incbin	"art/nemesis/GHZ primary.bin"
 Nem_GHZ2:	incbin	"art/nemesis/GHZ secondary.bin"
 		even
 Nem_CPZ:	incbin	"art/nemesis/CPZ primary.bin"
+		even
+Nem_MMZ:	incbin	"art/nemesis/MMZ primary.bin"
 		even
 Nem_EHZ:	incbin	"art/nemesis/EHZ primary.bin"
 		even
