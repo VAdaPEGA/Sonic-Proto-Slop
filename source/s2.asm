@@ -16,7 +16,7 @@
 
 Lockon = 0
 Devmode = 1
-convertGHZ = 0
+DevHitboxes = 1
 ; This converts Green Hill's data to be compatible with the regular Nick Arcade
 ; level format, allowing it to be edited in SonLVL
 
@@ -3868,13 +3868,20 @@ loc_3270:				; CODE XREF: ROM:00003272j
 VRAMLevSelTextArt	=	$C860
 		locVRAMtemp	VRAMLevSelTextArt,_VDPcommand
 		move.l	#_VDPcommand,4(a6)
-		lea	(Artunc_LevelSelect).l,a5
-		move.w	#(ArtSize_LevelSelect/2)-1,d1
+		lea	(ArtUnc_LevelSelect).l,a5
+		move.w	#(ArtSize_LevelSelect/4)-1,d1
+	@LoadLevelSelectText:			
+		move.l	(a5)+,(a6)
+		dbf	d1,@LoadLevelSelectText
 
-loc_32C4:				; CODE XREF: ROM:000032C6j
-		move.w	(a5)+,(a6)
-		dbf	d1,loc_32C4
-		nop
+		locVRAMtemp	$FF80,_VDPcommand
+		move.l	#_VDPcommand,4(a6)
+		lea	(ArtUnc_HitboxViewer).l,a5
+		move.w	#(ArtSize_HitboxViewer/4)-1,d1
+	@LoadHitboxViewer:			
+		move.l	(a5)+,(a6)
+		dbf	d1,@LoadHitboxViewer
+
 		move.b	#0,($FFFFFE30).w
 		move.w	#0,(Debug_placement_mode).w
 		move.w	#0,(Demo_Mode_Flag).w
@@ -9466,7 +9473,7 @@ locret_75CA:
 		rts
 ; ===========================================================================
 
-DynResize_GHZ2:				; DATA XREF: ROM:DynResize_GHZ_Indexo
+DynResize_GHZ2:	
 		move.w	#$300,(Camera_Max_Y_pos).w
 		cmpi.w	#$ED0,(Camera_X_pos).w
 		bcs.s	locret_75FC
@@ -9478,23 +9485,21 @@ DynResize_GHZ2:				; DATA XREF: ROM:DynResize_GHZ_Indexo
 		bcs.s	locret_75FC
 		move.w	#$300,(Camera_Max_Y_pos).w
 
-locret_75FC:				; CODE XREF: ROM:000075D8j
-					; ROM:000075E6j ...
+locret_75FC:	
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-DynResize_GHZ3:				; DATA XREF: ROM:DynResize_GHZ_Indexo
+DynResize_GHZ3:	
 		moveq	#0,d0
 		move.b	($FFFFEEDF).w,d0
 		move.w	DynResize_GHZ3_Index(pc,d0.w),d0
 		jmp	DynResize_GHZ3_Index(pc,d0.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_GHZ3_Index:dc.w DynResize_GHZ3_Main-DynResize_GHZ3_Index; 0
-					; DATA XREF: ROM:DynResize_GHZ3_Indexo
-					; ROM:DynResize_GHZ3_Index+2o ...
-		dc.w DynResize_GHZ3_Boss-DynResize_GHZ3_Index; 1
-		dc.w DynResize_GHZ3_End-DynResize_GHZ3_Index; 2
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+DynResize_GHZ3_Index:
+		dc.w DynResize_GHZ3_Main-DynResize_GHZ3_Index
+		dc.w DynResize_GHZ3_Boss-DynResize_GHZ3_Index
+		dc.w DynResize_GHZ3_End-DynResize_GHZ3_Index
+; ===========================================================================
 
 DynResize_GHZ3_Main:			; DATA XREF: ROM:DynResize_GHZ3_Indexo
 		move.w	#$300,(Camera_Max_Y_pos).w
@@ -9566,9 +9571,8 @@ DynResize_MMZ:				; DATA XREF: ROM:DynResize_Indexo
 		move.w	DynResize_MMZ_Index(pc,d0.w),d0
 		jmp	DynResize_MMZ_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_MMZ_Index:dc.w	DynResize_MMZ_Null-DynResize_MMZ_Index; 0
-					; DATA XREF: ROM:DynResize_MMZ_Indexo
-					; ROM:DynResize_MMZ_Index+2o ...
+DynResize_MMZ_Index:
+		dc.w DynResize_MMZ_Null-DynResize_MMZ_Index; 0
 		dc.w DynResize_MMZ_Null-DynResize_MMZ_Index; 1
 		dc.w DynResize_MMZ3-DynResize_MMZ_Index; 2
 		dc.w DynResize_MMZ4-DynResize_MMZ_Index; 3
@@ -10180,43 +10184,41 @@ DynResize_CNZ:			; DATA XREF: ROM:DynResize_Indexo
 
 Obj11:					; DATA XREF: ROM:Obj_Indexo
 		btst	#6,render_flags(a0)
-		bne.w	loc_7BB8
+		bne.w	@DisplaySprites
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	Obj11_Index(pc,d0.w),d1
 		jmp	Obj11_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_7BB8:				; CODE XREF: ROM:00007BA6j
-		moveq	#3,d0
-		bra.w	DisplaySprite3
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj11_Index:	dc.w loc_7BC6-Obj11_Index ; DATA XREF: ROM:Obj11_Indexo
-					; ROM:00007BC0o ...
+	@DisplaySprites:	
+		move.w	#(3<<7)&$380,d0
+		bra.w	DisplaySpriteSub
+; ===========================================================================
+Obj11_Index:	dc.w loc_7BC6-Obj11_Index
 		dc.w loc_7CC8-Obj11_Index
 		dc.w loc_7D5A-Obj11_Index
 		dc.w loc_7D5E-Obj11_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_7BC6:				; DATA XREF: ROM:Obj11_Indexo
+loc_7BC6:	
 		addq.b	#2,routine(a0)
 		move.l	#Map_obj11_GHZ,mappings(a0)
 		move.w	#$44C6,art_tile(a0)
-		move.b	#3,priority(a0)
-		cmpi.b	#3,(Current_Zone).w
-		bne.s	loc_7BFA
+
+		cmpi.b	#ZoneID_EHZ,(Current_Zone).w
+		bne.s	@NotEHZorHPZBridge
+
 		move.l	#Map_obj11,mappings(a0)
 		move.w	#$43C6,art_tile(a0)
-		move.b	#3,priority(a0)
 
-loc_7BFA:				; CODE XREF: ROM:00007BE4j
-		cmpi.b	#4,(Current_Zone).w
-		bne.s	loc_7C14
+		cmpi.b	#ZoneID_HPZ,(Current_Zone).w
+		bne.s	@NotEHZorHPZBridge
 		addq.b	#4,routine(a0)
 		move.l	#Map_obj11_HPZ,mappings(a0)
 		move.w	#$6300,art_tile(a0)
 
-loc_7C14:				; CODE XREF: ROM:00007C00j
+@NotEHZorHPZBridge:	
 		bsr.w	Adjust2PArtPointer
 		move.b	#4,render_flags(a0)
 		move.b	#$80,width_pixels(a0)
@@ -16404,6 +16406,7 @@ loc_CB74:
 ; This array contains the pointers to all the objects used in the game.
 ; ---------------------------------------------------------------------------
 Obj_Index:
+c	=	1
 	ObjPointer	Obj01		; Sonic
 	ObjPointer	Obj02		; Tails
 	ObjPointer	Obj03		; Collision plane/layer switcher
@@ -16544,7 +16547,36 @@ Obj_Index:
 	ObjPointer	ObjNull
 	ObjPointer	Obj8A		; (S1) "SONIC TEAM PRESENTS" screen and credits
 	ObjPointer	ObjNull
-	ObjPointer	ObjNull
+
+	ObjPointer	ObjDisplayHitbox,	DisplayHitbox	; FF
+	ObjPointer	jmp_DeleteObject,	DeleteObject
+
+; ===========================================================================
+ObjDisplayHitbox:
+	if	(devHitboxes)
+		move.l	#hitboxmap,mappings(a0)
+		move.b	#%01000100,render_flags(a0)
+		move.b	#3,mainspr_childsprites(a0)
+		move.b	#2,sub4_mapframe(a0)
+		move.b	#1,sub3_mapframe(a0)
+		btst.b	#0,(Vint_runcount+3)
+		beq.s	@ignore
+		bset	#5,art_tile(a0)
+		@ignore:
+		move.b	#id_DeleteObject,(a0)
+		moveq	#0,d0			; d0 = (priority<<7)&$380
+		jmp	DisplaySpriteSub
+hitboxmap:	dc.w	@hitboxmap1-hitboxmap
+		dc.w	@hitboxmap2-hitboxmap
+		dc.w	@hitboxmap3-hitboxmap
+	@hitboxmap1: 	dc.w 1
+	MAP_Entry	0,0,0,($FF80/$20),1,0,0,0
+	@hitboxmap2: 	dc.w 1
+	MAP_Entry	-8,-8,0,($FF80/$20),1,0,1,1
+	@hitboxmap3: 	dc.w 1
+	MAP_Entry	-3,-3,0,($FF80/$20+2),1,0,0,0
+	endif
+
 ; ===========================================================================
 ; Blank object, allocates its array; this pointer existed in Sonic 1 as well,
 ; but there it lacked any branch and instead fell into ObjectMoveAndFall
@@ -16554,7 +16586,7 @@ ObjNull:
 		moveq	#$16,d0
 		TRAP	#0
 		move.l	(sp)+,d0
-; jmp_DeleteObject:
+jmp_DeleteObject:
 		bra.w	DeleteObject
 
 ; ---------------------------------------------------------------------------
@@ -16656,26 +16688,24 @@ locret_CE3E:
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to display a sprite/object, when a0 is the object RAM
-; and d0 is already (priority/2)&$380
+; Used by Objects that use the Subsprite System, where Priority is set via d0
+; 
+; input : d0 = (priority<<7)&$380
 ; ---------------------------------------------------------------------------
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
 ; DisplaySprite_Param:
-DisplaySprite3:
+DisplaySpriteSub:
 		lea	(Sprite_Input_Table).w,a1
-		lsr.w	#1,d0
-		andi.w	#$380,d0
 		adda.w	d0,a1
 		cmpi.w	#$7E,(a1)
-		bcc.s	locret_CE58
+		bhs.s	@DoNothing
 		addq.w	#2,(a1)
 		adda.w	(a1),a1
 		move.w	a0,(a1)
 
-locret_CE58:
+	@DoNothing:
 		rts
-; End of function DisplaySprite3
+; End of function DisplaySpriteSub
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -19078,7 +19108,7 @@ locret_E180:				; CODE XREF: sub_E122+20j sub_E122+28j
 
 ; loc_E182: SingleObjectLoad:
 SingleObjLoad:
-		lea	(Object_Space+$800).w,a1	; a1=object
+		lea	(Level_Object_Space).w,a1	; a1=object
 		move.w	#$5F,d0			; search to end of table
 
 loc_E18A:
@@ -19102,7 +19132,7 @@ locret_E196:
 ; loc_E198: S1SingleObjectLoad2:
 SingleObjLoad2:
 		movea.l	a0,a1
-		move.w	#$D000,d0
+		move.w	#(Object_Space_End&$FFFF),d0 
 		sub.w	a0,d0	; subtract current object location
 		lsr.w	#6,d0	; divide by $40
 		subq.w	#1,d0	; keep from going over the object zone
@@ -19111,7 +19141,7 @@ SingleObjLoad2:
 loc_E1A6:
 		tst.b	(a1)		; is object RAM slot empty?
 		beq.s	locret_E1B2	; if yes, branch
-		lea	$40(a1),a1	; load obj address ; goto next object RAM slot
+		lea	Object_RAM(a1),a1	; load obj address ; goto next object RAM slot
 		dbf	d0,loc_E1A6	; repeat until end
 
 locret_E1B2:
@@ -19175,11 +19205,10 @@ Obj41_Index:	dc.w Obj41_Init-Obj41_Index		; 0
 ; loc_E204:
 Obj41_Init:
 		addq.b	#2,routine(a0)
-		move.l	#Map_obj41_GHZ,mappings(a0)
+		move.l	#Map_obj41,mappings(a0)
 		move.w	#$4A8,art_tile(a0)
 		tst.b	(Current_Zone).w
 		beq.s	loc_E22A
-		move.l	#Map_obj41,mappings(a0)
 		move.w	#$45C,art_tile(a0)
 
 loc_E22A:
@@ -21796,23 +21825,28 @@ locret_FEF6:
 
 
 Sonic_WallRecoil:
+		move.b	#$A3,d2
 		move.b	#4,routine(a0)
 		bsr.w	Sonic_ResetOnFloor
 		bset	#1,status(a0)
 		move.w	#-$200,d0
 		tst.w	x_vel(a0)
-		bpl.s	Sonic_WallRecoil_Right
+		bpl.s	@Right
 		neg.w	d0
-
-Sonic_WallRecoil_Right:
+	@Right:
+		move.b	(Vint_runcount+3),d1
+		and.b	#%00001001,d1
+		bne.s	@NoSuperBonk
+		asl.w	#2,d0
+		move.b	#SndID_SuperBonk,d2
+	@NoSuperBonk:
 		move.w	d0,x_vel(a0)
 		move.w	#-$400,y_vel(a0)
 		move.w	#0,ground_speed(a0)
 		move.b	#$A,anim(a0)
 		move.b	#1,routine_secondary(a0)
-		move.w	#$A3,d0
-		jsr	(PlaySound_Special).l
-		rts
+		move.w	d2,d0
+		jmp	(PlaySound_Special).l
 ; End of function Sonic_Move
 
 
@@ -23292,7 +23326,6 @@ JmpTo_KillSonic:	; JmpTo
 ; ===========================================================================
 Player_CheckChunk:
 		rts	; to be continued
-		align 4
 
 ; ===========================================================================
 ;----------------------------------------------------------------------------
@@ -34565,22 +34598,12 @@ word_197D4:	dc.w 1			; DATA XREF: ROM:0001973Eo
 		dc.w $F007,$206D,$2036,$FFF8; 0
 unk_197DE:	dc.b   0		; DATA XREF: ROM:00019740o
 		dc.b   0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-j_Adjust2PArtPointer_6:		; CODE XREF: ROM:0001953Ep
+; ===========================================================================
+j_Adjust2PArtPointer_6:
 		jmp	Adjust2PArtPointer
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		align 4
+; ===========================================================================
+TouchResponse:				; a.k.a ReactToItem in S1 disassemblies
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-TouchResponse:				; CODE XREF: ROM:0000FB08p
-					; ROM:00010CF6p
-
-; FUNCTION CHUNK AT 00019B02 SIZE 00000070 BYTES
-
-		nop
 		bsr.w	loc_19B7A
 		move.w	x_pos(a0),d2
 		move.w	y_pos(a0),d3
@@ -34597,66 +34620,88 @@ TouchResponse:				; CODE XREF: ROM:0000FB08p
 loc_19812:				; CODE XREF: TouchResponse+22j
 		move.w	#$10,d4
 		add.w	d5,d5
-		lea	(Object_Space+$800).w,a1
-		move.w	#$5F,d6	; '_'
+		lea	(Level_Object_Space).w,a1
+		move.w	#128-32-1,d6	; 
 
-loc_19820:				; CODE XREF: TouchResponse+42j
-		move.b	$20(a1),d0
+loc_19820:				
+		move.b	collision_flags(a1),d0
 		bne.s	Touch_Height
 
-loc_19826:				; CODE XREF: TouchResponse+B0j
-					; TouchResponse+B6j ...
-		lea	$40(a1),a1
+loc_19826:				
+		lea	Object_RAM(a1),a1
 		dbf	d6,loc_19820
 		moveq	#0,d0
-
-locret_19830:
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Touch_Sizes:	dc.b $14,$14		; 0 ; DATA XREF: TouchResponse+98t
-		dc.b  $C,$14		; 2
-		dc.b $14, $C		; 4
-		dc.b   4,$10		; 6
-		dc.b  $C,$12		; 8
-		dc.b $10,$10		; 10
-		dc.b   6,  6		; 12
-		dc.b $18, $C		; 14
-		dc.b  $C,$10		; 16
-		dc.b $10, $C		; 18
-		dc.b   8,  8		; 20
-		dc.b $14,$10		; 22
-		dc.b $14,  8		; 24
-		dc.b  $E, $E		; 26
-		dc.b $18,$18		; 28
-		dc.b $28,$10		; 30
-		dc.b $10,$18		; 32
-		dc.b   8,$10		; 34
-		dc.b $20,$70		; 36
-		dc.b $40,$20		; 38
-		dc.b $80,$20		; 40
-		dc.b $20,$20		; 42
-		dc.b   8,  8		; 44
-		dc.b   4,  4		; 46
-		dc.b $20,  8		; 48
-		dc.b  $C, $C		; 50
-		dc.b   8,  4		; 52
-		dc.b $18,  4		; 54
-		dc.b $28,  4		; 56
-		dc.b   4,  8		; 58
-		dc.b   4,$18		; 60
-		dc.b   4,$28		; 62
-		dc.b   4,$20		; 64
-		dc.b $18,$18		; 66
-		dc.b  $C,$18		; 68
-		dc.b $48,  8		; 70
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+Touch_Sizes:	;	width 	height	; Badn	Powerup	Hurt	Special
+		dc.b	$14,	$14	; $01	$41	$81 	$C1
+		dc.b	 $C,	$14	; $02	$42	$82 	$C2
+		dc.b	$14,	 $C	; $03	$43	$83 	$C3
+		dc.b	  4,	$10	; $04	$44	$84 	$C4
+		dc.b	 $C,	$12	; $05	$45	$85 	$C5
+		dc.b	$10,	$10	; $06	$46	$86 	$C6
+		dc.b	  6,	  6	; $07	$47	$87 	$C7
+		dc.b	$18,	 $C	; $08	$48	$88 	$C8
+		dc.b	 $C,	$10	; $09	$49	$89 	$C9
+		dc.b	$10,	 $C	; $0A	$4A	$8A 	$CA
+		dc.b	  8,	  8	; $0B	$4B	$8B 	$CB
+		dc.b	$14,	$10	; $0C	$4C	$8C 	$CC
+		dc.b	$14,	  8	; $0D	$4D	$8D 	$CD
+		dc.b	 $E,	 $E	; $0E	$4E	$8E 	$CE
+		dc.b	$18,	$18	; $0F	$4F	$8F 	$CF
+		dc.b	$28,	$10	; $10	$50	$90 	$D0
+		dc.b	$10,	$18	; $11	$51	$91 	$D1
+		dc.b	  8,	$10	; $12	$52	$92 	$D2
+		dc.b	$20,	$70	; $13	$53	$93 	$D3
+		dc.b	$40,	$20	; $14	$54	$94 	$D4
+		dc.b	$80,	$20	; $15	$55	$95 	$D5
+		dc.b	$20,	$20	; $16	$56	$96 	$D6
+		dc.b	  8,	  8	; $17	$57	$97 	$D7
+		dc.b	  4,	  4	; $18	$58	$98 	$D8
+		dc.b	$20,	  8	; $19	$59	$99 	$D9
+		dc.b	 $C,	 $C	; $1A	$5A	$9A 	$DA
+		dc.b	  8,	  4	; $1B	$5B	$9B 	$DB
+		dc.b	$18,	  4	; $1C	$5C	$9C 	$DC
+		dc.b	$28,	  4	; $1D	$5D	$9D 	$DD
+		dc.b	  4,	  8	; $1E	$5E	$9E 	$DE
+		dc.b	  4,	$18	; $1F	$5F	$9F 	$DF
+		dc.b	  4,	$28	; $20	$60	$A0 	$E0
+		dc.b	  4,	$20	; $21	$61	$A1 	$E1
+		dc.b	$18,	$18	; $22	$62	$A2 	$E2
+		dc.b	 $C,	$18	; $23	$63	$A3 	$E3
+		dc.b	$48,	  8	; $24	$64	$A4 	$E4
+; ===========================================================================
 
-Touch_Height:				; CODE XREF: TouchResponse+3Cj
-		andi.w	#$3F,d0	; '?'
+Touch_Height:	
+		andi.w	#$3F,d0
 		add.w	d0,d0
 		lea	Touch_Sizes-2(pc,d0.w),a2
 		moveq	#0,d1
 		move.b	(a2)+,d1
+
+	if	(DevHitboxes)
+		movem.l	a0-a1,-(sp)
+		move.l	a1,a0
+		jsr	SingleObjLoad2
+		bne.s	@Devfailsafe2
+		move.b	#id_DisplayHitbox,(a1)
+		move.w	x_pos(a0),x_pos(a1)
+		move.w	y_pos(a0),y_pos(a1)
+		move.w	x_pos(a1),sub2_x_pos(a1)
+		move.w	y_pos(a1),sub2_y_pos(a1)
+		move.w	x_pos(a1),sub3_x_pos(a1)
+		move.w	y_pos(a1),sub3_y_pos(a1)
+		move.w	x_pos(a0),sub4_x_pos(a1)
+		move.w	y_pos(a0),sub4_y_pos(a1)
+		move.b	(a2),d0
+		sub.w	d1,sub2_x_pos(a1)
+		sub.w	d0,sub2_y_pos(a1)
+		add.w	d1,sub3_x_pos(a1)
+		add.w	d0,sub3_y_pos(a1)
+		@Devfailsafe2:
+		movem.l	(sp)+,a0-a1
+	endif	
+
 		move.w	x_pos(a1),d0
 		sub.w	d1,d0
 		sub.w	d2,d0
@@ -37921,8 +37966,8 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 	PLC_Entry	0,	Nem_GHZ
 	PLC_Entry	($470*$20),	Nem_GHZ_Piranha
 	PLC_Entry	($4A0*$20),	Nem_VSpikes
-	PLC_Entry	($4A8*$20),	Nem_VSpring
-	PLC_Entry	($4B8*$20),	Nem_HSpring
+	PLC_Entry	($4A8*$20),	ArtNem_VSpring
+	PLC_Entry	($4B8*$20),	ArtNem_HSpring
 	PLC_Entry	($4C6*$20),	Nem_GHZ_Bridge
 	PLC_Entry	($4D0*$20),	Nem_SwingPlatform
 	PLC_End		GHZ
@@ -37949,9 +37994,9 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 ; --------------------------------------------------------------------------------------
 	PLC_Start	CPZ2
 	PLC_Entry	($434*$20),	Nem_VSpikes
-	PLC_Entry	($43C*$20),	Nem_DSpring
-	PLC_Entry	($45C*$20),	Nem_VSpring2
-	PLC_Entry	($470*$20),	Nem_HSpring2
+	PLC_Entry	($43C*$20),	ArtNem_DSpring
+	PLC_Entry	($45C*$20),	ArtNem_VSpring
+	PLC_Entry	($470*$20),	ArtNem_HSpring
 	PLC_End		CPZ2
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -37967,9 +38012,9 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 ; --------------------------------------------------------------------------------------
 	PLC_Start	MMZ2
 	PLC_Entry	($434*$20),	Nem_VSpikes
-	PLC_Entry	($43C*$20),	Nem_DSpring
-	PLC_Entry	($45C*$20),	Nem_VSpring2
-	PLC_Entry	($470*$20),	Nem_HSpring2
+	PLC_Entry	($43C*$20),	ArtNem_DSpring
+	PLC_Entry	($45C*$20),	ArtNem_VSpring
+	PLC_Entry	($470*$20),	ArtNem_HSpring
 	PLC_End		MMZ2
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -37982,9 +38027,9 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 	PLC_Entry	($3C6*$20),	Nem_EHZ_Bridge
 	PLC_Entry	($3CE*$20),	Nem_HTZ_Seesaw
 	PLC_Entry	($434*$20),	Nem_VSpikes
-	PLC_Entry	($43C*$20),	Nem_DSpring
-	PLC_Entry	($45C*$20),	Nem_VSpring2
-	PLC_Entry	($470*$20),	Nem_HSpring2
+	PLC_Entry	($43C*$20),	ArtNem_DSpring
+	PLC_Entry	($45C*$20),	ArtNem_VSpring
+	PLC_Entry	($470*$20),	ArtNem_HSpring
 	PLC_End		EHZ
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -38035,7 +38080,7 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 	PLC_Entry	($3C6*$20), 	Nem_EHZ_Bridge
 	PLC_Entry	($3CE*$20), 	Nem_HTZ_Seesaw
 	PLC_Entry	($434*$20), 	Nem_VSpikes
-	PLC_Entry	($43C*$20), 	Nem_DSpring
+	PLC_Entry	($43C*$20), 	ArtNem_DSpring
 	PLC_End		HTZ
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -38043,8 +38088,8 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 ; --------------------------------------------------------------------------------------
 	PLC_Start	HTZ2
 	PLC_Entry	($3E6*$20),	Nem_HTZ_Lift
-	PLC_Entry	($45C*$20),	Nem_VSpring2
-	PLC_Entry	($470*$20),	Nem_HSpring2
+	PLC_Entry	($45C*$20),	ArtNem_VSpring
+	PLC_Entry	($470*$20),	ArtNem_HSpring
 	;PLC_Entry	($3E6*$20),	Nem_Buzzer
 	;PLC_Entry	($402*$20),	Nem_Snail
 	;PLC_Entry	($41C*$20),	Nem_Masher
@@ -38064,9 +38109,9 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 ; --------------------------------------------------------------------------------------
 	PLC_Start	CNZ2
 	PLC_Entry	($434*$20),	Nem_VSpikes
-	PLC_Entry	($43C*$20),	Nem_DSpring
-	PLC_Entry	($45C*$20),	Nem_VSpring2
-	PLC_Entry	($470*$20),	Nem_HSpring2
+	PLC_Entry	($43C*$20),	ArtNem_DSpring
+	PLC_Entry	($45C*$20),	ArtNem_VSpring
+	PLC_Entry	($470*$20),	ArtNem_HSpring
 	PLC_End		CNZ2
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -38684,12 +38729,11 @@ Nem_Button:	dc.b $80,$10,$80,  3,  2,$24, $A,$34, $C,$72,  0,$81,  4, $D,$13,  3
 		dc.b $E8,  0, $F,$B6,$B7,$2D,$3C,$B4,$F2,$D3,$CB,$4F,$2D,$3C,$DE,$7F,$9F,$F8,$9F,$F4,$57,$BF,$CC,$FE,$58,$5F,$98,$D5,$6C,  3,$B9,$CE,$FF,$43,$53,$C6,$AF,$1A,$BC,$6A,$F1,$AB,$C6,$BF,$BF,$CE,$FF,$A3,$F1,$3F,$96,$FC,$CF,$B2,$9D,$AD,$FC,$C0,  2,$DF,$C8,$47,$EE,$F6; 64
 		dc.b $71,$E4,$4E,$A2,$75,$13,$A8,$9D,$44,$EB,$86,$B6,$BA,  0,  0,  0,  3,$EB,$E7,$7E,$BC,$E2,$6D,$D3,$52,$9A,$94,$D4,$A6,$A5,$35,$2B,$53,$E3,$A0,  0,$3E,$DA,$DC,$B4,$F2,$D3,$CB,$4F,$2D,$3C,$B4,$F3,$79,$FE,$7F,$40,  0,$7D,$E6,$A7,$8D,$5E,$35,$78,$D5,$E3,$57,$8D; 128
 		dc.b $7F,$7F,$9D,$E8,  0, $F,$5D,$FC,$FA,$BD,$9C,$79,$13,$A8,$9D,$44,$EA,$27,$51,$3A,$E1,$AD,$A0,  0; 192
-Nem_VSpring2:	incbin	"art/nemesis/Vertical spring.bin"
-		even
-Nem_HSpring2:	incbin	"art/nemesis/Horizontal spring.bin"
-		even
-Nem_DSpring:	incbin	"art/nemesis/Diagonal spring.bin"
-		even
+
+	Nem_Add VSpring,	art\nemesis\,	Spring_Vertical
+	Nem_Add HSpring,	art\nemesis\,	Spring_Horizontal
+	Nem_Add DSpring,	art\nemesis\,	Spring_Diagonal
+
 Nem_HUD:	incbin	"art/nemesis/HUD.bin"
 		even
 Nem_Lives:	incbin	"art/nemesis/Sonic lives counter.bin"
@@ -39241,17 +39285,6 @@ Nem_GameOver:	dc.b $80,$22,$80,  5,$1B,$14,  7,$24,  6,$35,$17,$46,$3A,$55,$16,$
 		dc.b  $E,$8F,$48,$D9, $C,$97,$52,$54,$9D,$75,$E2,$CB,$67,$A8,$B4,$36,$AE,$BC,$87,$44,  0,$19,$3A,$2C,$59,$16,$4C,$B3,$B2,$A4,$F7,$6E,$6B,$25,$FC,$75,  6,$51,$7E,$D9,$1D,$F1,$49,$4E,$8B,$10,  4,$C3,$A2,$F1,$D6,$59,$1E,$91,$BF,$65,$BB,$E5,$F9,$F0,$67,$E8,$DA,$19; 256
 		dc.b $17,$A6,$30,$DF,$4C,$5A,$2E,$5E,$AF,$12,$41,$98,$92, $C,$C4,$90,$AF,$F0,$D4,$D0,$D1,$34,$FE,$6E,$9A,$1A,$26,$9F,$9B,$FA,$A6,$87,$CD,$BF,$26,$FC,$B4, $B,$72,$D0,$2F,$AE,$B1,$AF,$8C,$49,$A9,$C6,$AF,$FB,$20,  0,  0,  0,  6,$BD,$FA,$FD,$93,$50,$C1,$7F,$DA,$62; 320
 		dc.b $FF,$C2,  0,  0,  0,  0,$3A,$F6,$40,$65,$24,  0,  0,  0,  1,$AB,$80,  0; 384
-Nem_VSpring:	dc.b   0,$10,$80,  6,$3A,$13,  1,$26,$2C,$45,$11,$58,$FB,$65,$14,$73,  0,$81,$76,$2D,$86,  5, $A,$15,$17,$25,$13,$87,  4,  4,$16,$36,$25,$1A,$36,$38,$88,  4,  6,$15,$19,$25,$12,$89,  5,$10,$16,$3B,$26,$30,$8C,  5, $E,$16,$3C,$26,$31,$35, $B,$8D,  5,$15,$15, $F; 0
-					; DATA XREF: ROM:0001C0F4o
-		dc.b $26,$3D,$37,$7C,$48,$FA,$8E,$26,$37,$36,$39,$FF,$2B,$53,$8B,$D6,$5F,$8A,$8B,$D6,$5F,$8A,$8B,$D6,$5F,$8A,$8B,$D7,$FD,$67,$7E,$D9,$CA,$5C,$D7,$37,$29,$73,$5C,$DC,$A5,$CD,$73,$72,$BF,$D9,$57,$55,$7F,$5E,$55,$DF,$31,$FA,$F2,$AE,$F9,$8F,$D7,$95,$77,$CC,$7F,$BA; 64
-		dc.b $EA,$EE,$5F,$C9,$F7,$72,$FE,$4F,$BB,$97,$F2,$7D,$DC,$BF,$90,  0,  2,$92,$8C,$BB,$FE,$C5,$B0,$6D,$BF,$6D,$6C,$1B,$53,$B7,$57,$D6,$78,$FD,$C7,$F6,$6D,$E3,$3D,$DB,$C3,$61,$6F,$FA,$21,$2F,$E4,$80,  0,$18,$47,  0,$65,$66,$62,$DF,$69,$44,$B3,$30,$3B,$34,$61,$B7; 128
-		dc.b $EC,$21,$62,$2B,$A6,$FB,$52,$51,  2,$59,$23,$B3,$46,$1D,$27,$EC,$21,$62,$5D,$A8,$C0, $A,$7E,$E4,$76,$C1,$A8,$CA,$FE,$B8,$1D,$7E,$E4,$60,$1A,$89,$7F,$E3,$80,  0,$1F,$72,$8C,$90,$20,$41,$71,$74,$1A,$BE,$B3,$C6,$40,  0,$6A,$3F,$E8,$84,$BF,$92,  0,  0,$61,$1C; 192
-		dc.b $22,  0		; 256
-Nem_HSpring:	dc.b $80, $E,$80,  2,  0,$14,  8,$25,$19,$37,$7D,$45,$1A,$56,$3C,$65,$1B,$73,  2,$81,  3,  3,$83,  5,$1C,$86,  4,  9,$87,  6,$3A,$15,$18,$88,  6,$3D,$16,$3B,$89,  5,$17,$17,$7C,$8C,  4, $A,$8F,  5,$16,$FF,$49,$25,$DA,$5B,$B3,$BB,$BB,$BE,$58,$E2,$D1,$62,$C3,$1A; 0
-					; DATA XREF: ROM:0001C0FAo
-		dc.b $CB,$CB,$1F,$DB,$25,$61,$8D,$23,$F2,$2A,$2C,$5B,$4D, $F,$2D,$3B,$BB,$BB,$A5,$F1,$24,$92,$F3,$FD,$B5,$FE,$19,$DC,$EF,$F2,$C4,$92,$4D,$12,$49,$27,$E7, $A,$28,$FC,$E1,$45,$14,$94,$51,$45,$15,$14,$51,$4A,$24,$92,$49,$A2,$49,$25,$24,$4E,$E7,$72,$31,$8E,$3F,$C3; 64
-		dc.b  $C,$63,$1E,$DE,$DF, $E,$1C,$39,$1C,$38,$70,$E2,$FF,$F2,$F7,$AD,$75,$E6,$2D,$F7,$10,$E2,$7A,$59,$67,$E5,$B3,$65, $F,$56,$C2,$5F,$59,$D2,$4B,$C7,$E3,$BE,$71,$DD,$E3,$F4,$FE,$9F,$31,$AB,$EF,$AB,$6B,$1D,$FD,$6B,$5F,$A6,$86,$A3,$F2,$29,$47,$C4,$B3,$8F,$6F,$9E; 128
-		dc.b $8E,$BD,$3A,$F6,$2F,$18,$EC,$F9,$88,$EC,$FC,$76,$9C,$5B,$58,$EF,$37,$7B,$98,$69,$25,$E7,$C5,$E3,$D7,$EA,$34,  0; 192
 Nem_BigFlash:	dc.b $80,$54,$80,  5,$1B,$16,$3C,$26,$3D,$36,$3B,$46,$3A,$55,$1C,$64, $B,$71,  0,$86,  3,  4,$18,$F8,$78,$FA,$8B,  4, $C,$8C,  5,$1A,$8D,  4, $A,$18,$F9,$FF,$FE,$B5,$6E,$67,$79,$37,$5F,$19,$75,$32,$EA, $E,$A5,$C0,  3,$73,$92,$E2,  0,$1F,$15,$79,$F0,$F8,$DE,$72; 0
 					; DATA XREF: ROM:0001C2BCo
 		dc.b $56,$5D,$4C,$BA,$CB,$A8,$89,$ED,$5E,$75,$53,$72,$BD,$A9,$B9,$5D,$65,$D0,$EE,$5C,  7,$92,$E0,  7,$71,$2A,$F2,$22,$23,$E1,$97,$48,$CB,$A4,$EE,$5C,$F7,$2E,$8C,$BA,$19,$74,$F6,$5C,  0, $E,$E2,$2A,$F1,  8,$42,$AF,  5,$5E,  3,$EB,$9F,$3C,$F9,  1,$E5,$5D,  0,$1B; 64
@@ -39433,6 +39466,7 @@ LevelSelectText:
 	dc.b "   Sound Select \       "
 LevelSelectMax		equ	23
 
+	Artunc_Add none, HitboxViewer,	Logo\Art\, HitboxViewer	; Hitbox Viewer
 	Artunc_Add none, DebugTXT,	Routines\, DebugTXT	; Text used in Debug Mode and Error Handler
 	Artunc_Add none, LevelSelect,	Routines\, DebugASCII	; Text used in Level Select
 

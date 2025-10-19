@@ -235,6 +235,8 @@ MusID_Boss:			equ ((MusPtr_Boss-MusicIndex)/4)+MusID__First		; $8C
 
 ;		inform	0, " Music : \#MusicCount\"
 
+
+SndID_SuperBonk	=	$A3
 ;	IncludeSound	$81, Jump,		Player/Jump.asm,	"TOOFSCARADE", "JUMP"
 ;	IncludeSound	$81, JumpSon,		Player/Jump_Son.asm,	"TOMYLOBO", "JUMP"
 ;	IncludeSound	$81, JumpS,		Player/Jump_S.asm,	"FORGOR", "JUMP"

@@ -245,6 +245,7 @@ MAP_Entry:	macro 	x,y,size,vram,priority,pal,flipx,flipy
 		dc.b	y	; Y position
 		dc.b	size	; Sprite size 
 		dc.w	((priority<<15)+(pal<<13)++(flipy<<12)+(flipx<<11)+vram)
+		dc.w	((priority<<15)+(pal<<13)++(flipy<<12)+(flipx<<11)+(vram>>1))
 		dc.w	x	; X position
 		endm
 
