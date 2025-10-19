@@ -9264,14 +9264,14 @@ MainLevelLoadBlock:
 		moveq	#0,d1
 		move.b	(Current_Act).w,d1
 		lsl.b	#5,d1
-		move.b	d1,d2
-		add.b	d1,d1
-		add.b	d2,d1
+		move.w	d1,d2
+		add.w	d1,d1
+		add.w	d2,d1
 		add.l	d1,a1
 
 		tst.b	d0
 		beq	@NoWater
-			add.b	d2,d1
+			add.w	d2,d1
 			add.l	d1,a1
 			lea	Underwater_target_palette,a0
 			lea	Underwater_palette,a3
@@ -16354,7 +16354,7 @@ word_CAF0:	dc.w 8			; DATA XREF: ROM:0000CA6Ao
 ; ObjectsLoad:
 RunObjects:
 		lea	(MainCharacter).w,a0
-		moveq	#$7F,d7			; run the first $80 objects out of levels
+		moveq	#128-1,d7	; run through the object list
 		moveq	#0,d0
 		cmpi.b	#6,(MainCharacter+routine).w	; is Sonic dead?
 		bcc.s	RunObjectsWhenPlayerIsDead	; if yes, branch
@@ -16362,34 +16362,27 @@ RunObjects:
 ; ---------------------------------------------------------------------------
 ; This is THE place where each individual object's code gets called from
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-; sub_CB44:
 RunObject:
 		move.b	(a0),d0		; get the object's ID
-		beq.s	loc_CB54	; if it's obj00, skip it
+		beq.s	@EmptySlot	; if it's obj00, skip it
 		add.w	d0,d0
-		add.w	d0,d0	; d0 = object ID * 4
+		add.w	d0,d0		; d0 = object ID * 4
 		movea.l	Obj_Index-4(pc,d0.w),a1	; load the address of the object's code
-		jsr	(a1)	; dynamic call! to one of the the entries in Obj_Index
+		jsr	(a1)		; dynamic call! to one of the the entries in Obj_Index
 		moveq	#0,d0
 
-loc_CB54:
-		lea	$40(a0),a0	; load obj address
+	@EmptySlot:
+		lea	Object_RAM(a0),a0	; load obj address
 		dbf	d7,RunObject
 		rts
 ; ---------------------------------------------------------------------------
 ; this skips certain objects to make enemies and things pause when Sonic dies
 ; loc_CB5E:
 RunObjectsWhenPlayerIsDead:
-		moveq	#$1F,d7
+		moveq	#32-1,d7
 		bsr.s	RunObject
-		moveq	#$5F,d7
+		moveq	#128-32-1,d7
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-; loc_CB64:
 RunObjectsDisplayOnly:
 		moveq	#0,d0
 		move.b	(a0),d0		; get the object's ID
@@ -16399,7 +16392,7 @@ RunObjectsDisplayOnly:
 		bsr.w	DisplaySprite
 
 loc_CB74:
-		lea	$40(a0),a0	; load obj address
+		lea	Object_RAM(a0),a0	; load obj address
 		dbf	d7,RunObjectsDisplayOnly
 		rts
 ; End of function RunObjects
@@ -16411,146 +16404,147 @@ loc_CB74:
 ; This array contains the pointers to all the objects used in the game.
 ; ---------------------------------------------------------------------------
 Obj_Index:
-		dc.l Obj01		; Sonic
-		dc.l Obj02		; Tails
-		dc.l Obj03		; Collision plane/layer switcher
-		dc.l Obj04		; Surface of the water
-		dc.l Obj05		; Tails' tails
-		dc.l Obj06		; Twisting spiral pathway in EHZ
-		dc.l ObjNull
-		dc.l Obj08		; Water splash in HPZ
-		dc.l Obj09		; (S1) Sonic in the Speical Stage
-		dc.l Obj0A		; Small bubbles from Sonic's face while underwater
-		dc.l Obj0B		; (S1) Pole that breaks in LZ
-		dc.l Obj0C		; Strange floating/falling platform object from CPZ
-		dc.l Obj0D		; End of level signpost
-		dc.l Obj0E		; Sonic and Tails from the title screen
-		dc.l Obj0F		; Mappings test?
-		dc.l Obj10		; (S1) Animation test in prototype, now blank
-		dc.l Obj11		; Bridges in GHZ, EHZ and HPZ
-		dc.l Obj12		; Emerald from Hidden Palace Zone
-		dc.l Obj13		; Waterfall from Hidden Palace Zone
-		dc.l Obj14		; Seesaw from Hill Top Zone
-		dc.l Obj15		; Swinging platforms in GHZ, CPZ and EHZ
-		dc.l Obj16		; Diagonally moving lift from HTZ
-		dc.l Obj17		; (S1) GHZ rotating log helix spikes
-		dc.l Obj18		; Stationary/moving platforms from GHZ and EHZ
-		dc.l Obj19		; Platform from CPZ
-		dc.l Obj1A		; Collapsing platform from GHZ and HPZ
-		dc.l ObjNull
-		dc.l Obj1C		; Stage decorations in GHZ, EHZ, HTZ and HPZ
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l Obj1F		; (S1) Crabmeat from GHZ
-		dc.l ObjNull
-		dc.l Obj21		; Score/Rings/Time display (HUD)
-		dc.l Obj22		; (S1) Buzz Bomber from GHZ
-		dc.l Obj23		; (S1) Buzz Bomber/Newtron missile
-		dc.l Obj24		; (S1) Unused Buzz Bomber missile explosion
-		dc.l Obj25		; A ring
-		dc.l Obj26		; Monitor
-		dc.l Obj27		; An explosion, giving off an animal and 100 points
-		dc.l Obj28		; Animal and the 100 points from a badnik
-		dc.l Obj29		; "100 points" text
-		dc.l Obj2A		; (S1) Small door from SBZ
-		dc.l Obj2B		; (S1) Chopper from GHZ
-		dc.l Obj2C		; (S1) Jaws from LZ
-		dc.l ObjNull
-		dc.l Obj2E		; Monitor contents (code for power-up behavior and rising image)
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l Obj34		; (S1) Level title card
-		dc.l ObjNull
-		dc.l Obj36		; Vertical spikes
-		dc.l Obj37		; Scattering rings (generated when Sonic or Tails are hurt and has rings)
-		dc.l Obj38		; Shield
-		dc.l Obj39		; Game Over/Time Over text
-		dc.l Obj3A		; (S1) End of level results screen
-		dc.l Obj3B		; (S1) Purple rock from GHZ
-		dc.l Obj3C		; (S1) Breakable wall
-		dc.l Obj3D		; (S1) GHZ boss
-		dc.l Obj3E		; Egg prison
-		dc.l Obj3F		; Boss explosion
-		dc.l Obj40		; (S1) Motobug from GHZ
-		dc.l Obj41		; Spring
-		dc.l Obj42		; (S1) Newtron from GHZ
-		dc.l ObjNull
-		dc.l Obj44		; (S1) Unbreakable wall
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l Obj48		; (S1) Eggman's wrecking ball
-		dc.l Obj49		; Waterfall sound effect
-		dc.l Obj4A		; Octus from HPZ
-		dc.l Obj4B		; Buzzer from EHZ
-		dc.l Obj4C		; BBat from HPZ
-		dc.l Obj4D		; Stego/Stegway from HPZ
-		dc.l Obj4E		; Gator from HPZ
-		dc.l Obj4F		; Redz (dinosaur badnik) from HPZ
-		dc.l Obj50		; Seahorse/Aquis from HPZ
-		dc.l Obj51		; Skyhorse from HPZ
-		dc.l Obj52		; BFish from HPZ
-		dc.l Obj53		; Masher from EHZ
-		dc.l Obj54		; Snail badnik from EHZ
-		dc.l Obj55		; EHZ boss
-		dc.l Obj56		; EHZ boss part 2
-		dc.l Obj57		; EHZ boss part 3
-		dc.l Obj58		; EHZ boss part 4
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l Obj79		; Checkpoint
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l Obj7D		; (S1) Hidden points at end of stage
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l ObjNull
-		dc.l Obj8A		; (S1) "SONIC TEAM PRESENTS" screen and credits
-		dc.l ObjNull
-		dc.l ObjNull
+	ObjPointer	Obj01		; Sonic
+	ObjPointer	Obj02		; Tails
+	ObjPointer	Obj03		; Collision plane/layer switcher
+	ObjPointer	Obj04		; Surface of the water
+	ObjPointer	Obj05		; Tails' tails
+	ObjPointer	Obj06		; Twisting spiral pathway in EHZ
+	ObjPointer	ObjNull
+	ObjPointer	Obj08		; Water splash in HPZ
+	ObjPointer	Obj09		; (S1) Sonic in the Speical Stage
+	ObjPointer	Obj0A		; Small bubbles from Sonic's face while underwater
+	ObjPointer	Obj0B		; (S1) Pole that breaks in LZ
+	ObjPointer	Obj0C		; Strange floating/falling platform object from CPZ
+	ObjPointer	Obj0D		; End of level signpost
+	ObjPointer	Obj0E		; Sonic and Tails from the title screen
+	ObjPointer	Obj0F		; Mappings test?
+	ObjPointer	Obj10		; (S1) Animation test in prototype, now blank
+	ObjPointer	Obj11		; Bridges in GHZ, EHZ and HPZ
+	ObjPointer	Obj12		; Emerald from Hidden Palace Zone
+	ObjPointer	Obj13		; Waterfall from Hidden Palace Zone
+	ObjPointer	Obj14		; Seesaw from Hill Top Zone
+	ObjPointer	Obj15		; Swinging platforms in GHZ, CPZ and EHZ
+	ObjPointer	Obj16		; Diagonally moving lift from HTZ
+	ObjPointer	Obj17		; (S1) GHZ rotating log helix spikes
+	ObjPointer	Obj18		; Stationary/moving platforms from GHZ and EHZ
+	ObjPointer	Obj19		; Platform from CPZ
+	ObjPointer	Obj1A		; Collapsing platform from GHZ and HPZ
+	ObjPointer	ObjNull
+	ObjPointer	Obj1C		; Stage decorations in GHZ, EHZ, HTZ and HPZ
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	Obj1F		; (S1) Crabmeat from GHZ
+	ObjPointer	ObjNull
+	ObjPointer	Obj21		; Score/Rings/Time display (HUD)
+	ObjPointer	Obj22		; (S1) Buzz Bomber from GHZ
+	ObjPointer	Obj23		; (S1) Buzz Bomber/Newtron missile
+	ObjPointer	Obj24		; (S1) Unused Buzz Bomber missile explosion
+	ObjPointer	Obj25		; A ring
+	ObjPointer	Obj26		; Monitor
+	ObjPointer	Obj27		; An explosion, giving off an animal and 100 points
+	ObjPointer	Obj28		; Animal and the 100 points from a badnik
+	ObjPointer	Obj29		; "100 points" text
+	ObjPointer	Obj2A		; (S1) Small door from SBZ
+	ObjPointer	Obj2B		; (S1) Chopper from GHZ
+	ObjPointer	Obj2C		; (S1) Jaws from LZ
+	ObjPointer	ObjNull
+	ObjPointer	Obj2E		; Monitor contents (code for power-up behavior and rising image)
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	Obj34		; (S1) Level title card
+	ObjPointer	ObjNull
+	ObjPointer	Obj36		; Vertical spikes
+	ObjPointer	Obj37		; Scattering rings (generated when Sonic or Tails are hurt and has rings)
+	ObjPointer	Obj38		; Shield
+	ObjPointer	Obj39		; Game Over/Time Over text
+	ObjPointer	Obj3A		; (S1) End of level results screen
+	ObjPointer	Obj3B		; (S1) Purple rock from GHZ
+	ObjPointer	Obj3C		; (S1) Breakable wall
+	ObjPointer	Obj3D		; (S1) GHZ boss
+	ObjPointer	Obj3E		; Egg prison
+	ObjPointer	Obj3F		; Boss explosion
+	ObjPointer	Obj40		; (S1) Motobug from GHZ
+	ObjPointer	Obj41		; Spring
+	ObjPointer	Obj42		; (S1) Newtron from GHZ
+	ObjPointer	ObjNull
+	ObjPointer	Obj44		; (S1) Unbreakable wall
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	Obj48		; (S1) Eggman's wrecking ball
+	ObjPointer	Obj49		; Waterfall sound effect
+	ObjPointer	Obj4A		; Octus from HPZ
+	ObjPointer	Obj4B		; Buzzer from EHZ
+	ObjPointer	Obj4C		; BBat from HPZ
+	ObjPointer	Obj4D		; Stego/Stegway from HPZ
+	ObjPointer	Obj4E		; Gator from HPZ
+	ObjPointer	Obj4F		; Redz (dinosaur badnik) from HPZ
+	ObjPointer	Obj50		; Seahorse/Aquis from HPZ
+	ObjPointer	Obj51		; Skyhorse from HPZ
+	ObjPointer	Obj52		; BFish from HPZ
+	ObjPointer	Obj53		; Masher from EHZ
+	ObjPointer	Obj54		; Snail badnik from EHZ
+	ObjPointer	Obj55		; EHZ boss
+	ObjPointer	Obj56		; EHZ boss part 2
+	ObjPointer	Obj57		; EHZ boss part 3
+	ObjPointer	Obj58		; EHZ boss part 4
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	Obj79		; Checkpoint
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	Obj7D		; (S1) Hidden points at end of stage
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+		
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
+	ObjPointer	Obj8A		; (S1) "SONIC TEAM PRESENTS" screen and credits
+	ObjPointer	ObjNull
+	ObjPointer	ObjNull
 ; ===========================================================================
 ; Blank object, allocates its array; this pointer existed in Sonic 1 as well,
 ; but there it lacked any branch and instead fell into ObjectMoveAndFall
