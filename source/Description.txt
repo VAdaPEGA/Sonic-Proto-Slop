@@ -51,17 +51,17 @@ Template
 Template 
 Template 
 Template 
-Template 
-Template 
-Template 
-Template 
-Template 
-Template 
-Template 
-Template 
-Template 
-Template 
-Template 
+---
+ Credits
+--- 
+Directing : VAdaPEGA
+Palettes : StaticJ3ff, VAdaPEGA
+Level Design : StaticJ3ff
+Programming : VAdaPEGA
+Sprites : Beta, ChrisFurry, VAdaPEGA
+Critter Naming Ideas : Luminator, RoundCritterGang
+Special Thanks : Arrietty, 
+---  
 Template 
 Template 
 Template 
