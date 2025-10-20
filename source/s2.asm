@@ -701,53 +701,46 @@ VDP_Loop:
 		move.w	d0,(a1)
 		move.w	d0,(a1)
 		locCRAM	0
-		move.w	#$3F,d7
-
+		move.w	#$40-1,d7
 VDP_ClrCRAM:
 		move.w	d0,(a1)
 		dbf	d7,VDP_ClrCRAM
 		clr.l	(Vscroll_Factor).w
 		clr.l	($FFFFF61A).w
 		move.l	d1,-(sp)
-		lea	(VDP_control_port).l,a5
-		move.w	#$8F01,(a5)
-		move.l	#$94FF93FF,(a5)
-		move.w	#$9780,(a5)
-		move.l	#$40000080,(a5)
-		move.w	#0,(VDP_data_port).l
+		fillVRAM	0,$FFFF,0
 
 VDP_WaitDMA:
 		move.w	(a5),d1
 		btst	#1,d1
 		bne.s	VDP_WaitDMA
 
-loc_12FE:
 		move.w	#$8F02,(a5)
 		move.l	(sp)+,d1
 		rts
 ; End of function VDPSetupGame
 
 ; ===========================================================================
-VDPSetupArray:	dc.w $8004
-		dc.w $8134	; 
-		dc.w $8230
-		dc.w $8328
-		dc.w $8407
-		dc.w $857C
-		dc.w $8600
-		dc.w $8700
-		dc.w $8800
-		dc.w $8900
-		dc.w $8A00
-		dc.w $8B00
-		dc.w $8C81
-		dc.w $8D3F
-		dc.w $8E00
-		dc.w $8F02
-		dc.w $9001
-		dc.w $9100
-		dc.w $9200
-
+VDPSetupArray:	dc.w $8004			; 8-colour mode
+		dc.w $8134			; enable V.interrupts, enable DMA
+		dc.w $8200+(VRAM_FG>>10)	; set foreground nametable address
+		dc.w $8300+(VRAM_FG2P>>10)	; set window nametable address
+		dc.w $8400+(VRAM_BG>>13)	; set background nametable address
+		dc.w $8500+(VRAM_Sprites>>9)	; set sprite table address
+		dc.w $8600			; unused
+		dc.w $8700			; set background colour (palette entry 0)
+		dc.w $8800			; unused
+		dc.w $8900			; unused
+		dc.w $8A00			; default H.interrupt register
+		dc.w $8B00			; full-screen vertical scrolling
+		dc.w $8C81			; 40-cell display mode
+		dc.w $8D00+(vram_HScroll>>10)	; set background hscroll address
+		dc.w $8E00			; unused
+		dc.w $8F02			; set VDP increment size
+		dc.w $9001			; 64-cell hscroll size
+		dc.w $9100			; window horizontal position
+		dc.w $9200			; window vertical position
+; ===========================================================================
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 
@@ -858,7 +851,6 @@ PlaySound_Unk:
 
 
 PauseGame:
-		nop
 		tst.b	(Life_count).w
 		beq.s	Unpause
 		tst.w	(Game_paused).w
