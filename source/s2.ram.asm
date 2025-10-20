@@ -179,6 +179,8 @@ VDP_Command_Buffer_Slot:	equ $FFFFDCFC
 
 Sprite_Table_2P:		equ $FFFFDD00
 
+Horiz_Scroll_Buf:		equ $FFFFE000
+
 Sonic_Stat_Record_Buf:		equ $FFFFE400
 Sonic_Pos_Record_Buf:		equ $FFFFE500
 Tails_Pos_Record_Buf:		equ $FFFFE600
@@ -286,6 +288,13 @@ Game_paused:			equ $FFFFF63A
 
 DMA_data_thunk:			equ $FFFFF640	; Used as a RAM holder for the final DMA command word. Data will NOT be preserved across V-INTs, so consider this space reserved.
 Hint_flag:			equ $FFFFF644
+
+Water_Level_1:			equ $FFFFF646
+Water_Level_2:			equ $FFFFF648
+Water_Level_3:			equ $FFFFF64A
+
+Water_routine:			equ $FFFFF64C
+
 Water_fullscreen_flag:		equ $FFFFF64E
 Do_Updates_in_H_int:		equ $FFFFF64F
 
@@ -344,29 +353,42 @@ TailsTails_LastLoadedDPLC:	equ $FFFFF7DF
 
 Anim_Counters:			equ $FFFFF7F0
 
-Sprite_Table:			equ $FFFFF800
+Sprite_Table:			equ $FFFFF800	; This will start overwriting stuff right after $FFFFFA00, good luck~
 
-Underwater_target_palette:		equ $FFFFFA00     ; This is used by the screen-fading subroutines.
-Underwater_target_palette_line2:	equ $FFFFFA20     ; While Underwater_palette contains the blacked-out palette caused by the fading,
-Underwater_target_palette_line3:	equ $FFFFFA40     ; Underwater_target_palette will contain the palette the screen will ultimately fade in to.
-Underwater_target_palette_line4:	equ $FFFFFA60             
+				rsset	$FFFFFA00
 
-Underwater_palette:		equ $FFFFFA80	; main palette for underwater parts of the screen
-Underwater_palette_line2:	equ $FFFFFAA0
-Underwater_palette_line3:	equ $FFFFFAC0
-Underwater_palette_line4:	equ $FFFFFAE0
-               
-Normal_palette:			equ $FFFFFB00	; main palette for non-underwater parts of the screen
-Normal_palette_line2:		equ $FFFFFB20
-Normal_palette_line3:		equ $FFFFFB40
-Normal_palette_line4:		equ $FFFFFB60
-Normal_palette_End:		equ Normal_palette+$80
+Target_palette:			rs.b 32*4		; This is used by the screen-fading subroutines.
+Target_palette_line2:		equ Target_palette+32	; While Normal_palette contains the blacked-out palette caused by the fading,
+Target_palette_line3:		equ Target_palette+32*2	; Target_palette will contain the palette the screen will ultimately fade in to.
+Target_palette_line4:		equ Target_palette+32*3
+Target_palette_End:		equ __rs
 
-Target_palette:			equ $FFFFFB80	; This is used by the screen-fading subroutines.
-Target_palette_line2:		equ $FFFFFBA0	; While Normal_palette contains the blacked-out palette caused by the fading,
-Target_palette_line3:		equ $FFFFFBC0	; Target_palette will contain the palette the screen will ultimately fade in to.
-Target_palette_line4:		equ $FFFFFBE0
-Target_palette_End:		equ Target_palette+$80
+Water_target_palette:		rs.b 32*4	; This is used by the screen-fading subroutines.
+Water_target_palette_line2:	equ Water_target_palette+32	; While Underwater_palette contains the blacked-out palette caused by the fading,
+Water_target_palette_line3:	equ Water_target_palette+32*2	; Underwater_target_palette will contain the palette the screen will ultimately fade in to.
+Water_target_palette_line4:	equ Water_target_palette+32*3        
+Water_target_palette_End:	equ __rs
+
+Normal_palette:			rs.b 32*4	; main palette for non-underwater parts of the screen
+Normal_palette_line2:		equ Normal_palette+32	
+Normal_palette_line3:		equ Normal_palette+32*2
+Normal_palette_line4:		equ Normal_palette+32*3
+Normal_palette_End:		equ __rs
+
+Water_palette:			rs.b 32*4	; main palette for underwater parts of the screen
+Water_palette_line2:		equ Water_palette+32
+Water_palette_line3:		equ Water_palette+32*2
+Water_palette_line4:		equ Water_palette+32*3
+Water_palette_End:		equ __rs
+
+
+
+Object_Respawn_Table:		equ $FFFFFC00
+				rsset	Object_Respawn_Table
+Obj_respawn_index:		rs.b	2	; respawn table indices of the next objects when moving left or right for the first player
+Obj_respawn_data:		rs.b	$100-2	; Maximum possible number of respawn entries that S2 can handle; for stock S2, $80 is enough
+Obj_respawn_data_End:		equ __rs
+
 
 Error_Registers:		equ $FFFFFC00	; stores registers d0-a7 during an error event ($40 bytes)
 Error_Stack_Pointer:		equ $FFFFFC40	; stores most recent sp address (4 bytes)

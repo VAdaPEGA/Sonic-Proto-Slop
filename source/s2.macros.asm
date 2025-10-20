@@ -46,12 +46,12 @@ _getyear	=	_year-100
 ; ---------------------------------------------------------------------------
 LagOn	macro
 	if	(lagometer)
-	move.w	#$9193,(vdp_control_port).l
+	move.w	#$9193,(VDP_Control_Port).l
 	endif
 	endm
 LagOff	macro
 	if	(lagometer)
-	move.w	#$9100,(vdp_control_port).l
+	move.w	#$9100,(VDP_Control_Port).l
 	endif
 	endm
 ; ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ LagOff	macro
 
 locVRAM:	macro loc,controlport
 		if (narg=1)
-		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(vdp_control_port).l
+		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(VDP_Control_Port).l
 		else
 		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
 		endc
@@ -81,7 +81,7 @@ _VDPcommand	=	($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14))
 
 locCRAM:	macro loc,controlport
 		if (narg=1)
-		move.l	#($C0000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(vdp_control_port).l
+		move.l	#($C0000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(VDP_Control_Port).l
 		else
 		move.l	#($C0000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
 		endc
@@ -94,7 +94,7 @@ locCRAM:	macro loc,controlport
 
 locVSRAM:	macro loc,controlport
 		if (narg=1)
-		move.l	#($40000010+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(vdp_control_port).l
+		move.l	#($40000010+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(VDP_Control_Port).l
 		else
 		move.l	#($40000010+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
 		endc
@@ -107,14 +107,14 @@ locVSRAM:	macro loc,controlport
 
 writeVRAM:	macro
 		if (narg<4)
-		lea	(vdp_control_port).l,a5
+		lea	(VDP_Control_Port).l,a5
 		endif
 		move.l	#$94000000+(((\2>>1)&$FF00)<<8)+$9300+((\2>>1)&$FF),(a5)
 		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
 		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
 		move.w	#$4000+(\3&$3FFF),(a5)
-		move.w	#$80+((\3&$C000)>>14),(v_vdp_buffer2).w
-		move.w	(v_vdp_buffer2).w,(a5)
+		move.w	#$80+((\3&$C000)>>14),(DMA_data_thunk).w
+		move.w	(DMA_data_thunk).w,(a5)
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -124,14 +124,14 @@ writeVRAM:	macro
 
 writeCRAM:	macro
 		if (narg<4)
-		lea	(vdp_control_port).l,a5
+		lea	(VDP_Control_Port).l,a5
 		endif
 		move.l	#$94000000+(((\2>>1)&$FF00)<<8)+$9300+((\2>>1)&$FF),(a5)
 		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
 		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
 		move.w	#$C000+(\3&$3FFF),(a5)
-		move.w	#$80+((\3&$C000)>>14),(v_vdp_buffer2).w
-		move.w	(v_vdp_buffer2).w,(a5)
+		move.w	#$80+((\3&$C000)>>14),(DMA_data_thunk).w
+		move.w	(DMA_data_thunk).w,(a5)
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -141,14 +141,14 @@ writeCRAM:	macro
 
 writeVSRAM:	macro
 		if (narg<4)
-		lea	(vdp_control_port).l,a5
+		lea	(VDP_Control_Port).l,a5
 		endif
 		move.l	#$94000000+(((\2>>1)&$FF00)<<8)+$9300+((\2>>1)&$FF),(a5)
 		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
 		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
 		move.w	#$4000+(\3&$3FFF),(a5)
-		move.w	#$90+((\3&$C000)>>14),(v_vdp_buffer2).w
-		move.w	(v_vdp_buffer2).w,(a5)
+		move.w	#$90+((\3&$C000)>>14),(DMA_data_thunk).w
+		move.w	(DMA_data_thunk).w,(a5)
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -158,12 +158,12 @@ writeVSRAM:	macro
 
 preparewriteVSRAM:	macro
 		if (narg<4)
-		lea	(vdp_control_port).l,a5
+		lea	(VDP_Control_Port).l,a5
 		endif
 		move.l	#$94000000+(((\2>>1)&$FF00)<<8)+$9300+((\2>>1)&$FF),(a5)
 		move.l	#$96000000+(((\1>>1)&$FF00)<<8)+$9500+((\1>>1)&$FF),(a5)
 		move.w	#$9700+((((\1>>1)&$FF0000)>>16)&$7F),(a5)
-		move.w	#$90+((\3&$C000)>>14),(v_vdp_buffer2).w
+		move.w	#$90+((\3&$C000)>>14),(DMA_data_thunk).w
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -172,7 +172,7 @@ preparewriteVSRAM:	macro
 ; ---------------------------------------------------------------------------
 
 fillVRAM:	macro value,length,loc
-		lea	(vdp_control_port).l,a5
+		lea	(VDP_Control_Port).l,a5
 		move.w	#$8F01,(a5)
 		move.l	#$94000000+((length&$FF00)<<8)+$9300+(length&$FF),(a5)
 		move.w	#$9780,(a5)

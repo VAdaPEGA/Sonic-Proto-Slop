@@ -372,37 +372,15 @@ loc_BA0:
 		tst.b	(Water_flag).w
 		beq.w	Vint0_noWater
 		move.w	(VDP_control_port).l,d0
-		btst	#6,($FFFFFFF8).w	; Check Pal
-		beq.s	@NotPAL
-		move.w	#$700,d0		; Waste Cycles
-	@PALStall:
-		dbf	d0,@PALStall
-
-	@NotPAL:
 		move.w	#1,(Hint_flag).w
 		stopZ80
 		tst.b	(Water_fullscreen_flag).w
-		bne.s	loc_C02
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9580,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		bra.s	loc_C26
-; ---------------------------------------------------------------------------
-
-loc_C02:
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9540,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-
-loc_C26:
+		bne.s	@ScreenIsUnderWater
+		writeCRAM	Normal_Palette, (32*4), 0
+		bra.s	@ScreenIsAboveWater
+	@ScreenIsUnderWater:
+		writeCRAM	Water_Palette, (32*4), 0
+	@ScreenIsAboveWater:
 		move.w	(Hint_counter_reserve).w,(a5)
 		move.w	#$8230,(VDP_control_port).l
 		startZ80
@@ -413,24 +391,11 @@ Vint0_noWater:
 		move.w	(VDP_control_port).l,d0
 		locVSRAM	0
 		move.l	(Vscroll_Factor).w,(VDP_data_port).l
-		btst	#6,($FFFFFFF8).w	; PAL CHECK
-		beq.s	@NotPAL
-		move.w	#$700,d0		; WASTE CYCLES
-	@PALStall:
-		dbf	d0,@PALStall
-
-	@NotPAL:
 		move.w	#1,(Hint_flag).w
 		move.w	(Hint_counter_reserve).w,(VDP_control_port).l
 		move.w	#$8230,(VDP_control_port).l
 		move.l	($FFFFF61E).w,($FFFFEEF0).w	; prepare screen for 2nd Player
-		lea	(VDP_control_port).l,a5
-		move.l	#$94019340,(a5)
-		move.l	#$96FC9500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7800,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
+		writeVRAM	Sprite_Table,$280,VRAM_Sprites
 		bra.w	Vint_SoundDriver
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; loc_CAA: VintSub2:
@@ -472,44 +437,16 @@ Vint_Level:
 		stopZ80
 		bsr.w	ReadJoypads
 		tst.b	(Water_fullscreen_flag).w
-		bne.s	loc_D24
-
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9580,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		bra.s	loc_D48
-; ---------------------------------------------------------------------------
-
-loc_D24:
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9540,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-
-loc_D48:
+		bne.s	@ScreenIsUnderWater
+		writeCRAM	Normal_Palette, (32*4), 0
+		bra.s	@ScreenIsAboveWater
+	@ScreenIsUnderWater:
+		writeCRAM	Water_Palette, (32*4), 0
+	@ScreenIsAboveWater:
 		move.w	(Hint_counter_reserve).w,(a5)
 		move.w	#$8230,(VDP_control_port).l
-		lea	(VDP_control_port).l,a5
-		move.l	#$940193C0,(a5)
-		move.l	#$96F09500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7C00,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$94019340,(a5)
-		move.l	#$96FC9500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7800,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
+		writeVRAM	Horiz_Scroll_Buf,(224*4),VRAM_HScroll
+		writeVRAM	Sprite_Table,$280,VRAM_Sprites
 		bsr.w	ProcessDMAQueue
 		startZ80
 		movem.l	(Camera_RAM).w,d0-d7
@@ -549,28 +486,9 @@ Do_Updates_End:
 Vint_S1SS:
 		stopZ80
 		bsr.w	ReadJoypads
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9580,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$94019340,(a5)
-		move.l	#$96FC9500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7800,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$940193C0,(a5)
-		move.l	#$96F09500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7C00,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		bsr.w	ProcessDMAQueue
+		writeCRAM	Normal_Palette, (32*4), 0
+		writeVRAM	Horiz_Scroll_Buf,(224*4),VRAM_HScroll
+		writeVRAM	Sprite_Table,$280,VRAM_Sprites
 		startZ80
 		bsr.w	PalCycle_S1SS
 		tst.w	(Demo_Time_left).w
@@ -585,42 +503,15 @@ Vint_TitleCard:
 		stopZ80
 		bsr.w	ReadJoypads
 		tst.b	(Water_fullscreen_flag).w
-		bne.s	loc_EE4
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9580,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		bra.s	loc_F08
-; ---------------------------------------------------------------------------
-
-loc_EE4:
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9540,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-
-loc_F08:
+		bne.s	@ScreenIsUnderWater
+		writeCRAM	Normal_Palette, (32*4), 0
+		bra.s	@ScreenIsAboveWater
+	@ScreenIsUnderWater:
+		writeCRAM	Water_Palette, (32*4), 0
+	@ScreenIsAboveWater:
 		move.w	(Hint_counter_reserve).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$940193C0,(a5)
-		move.l	#$96F09500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7C00,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$94019340,(a5)
-		move.l	#$96FC9500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7800,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
+		writeVRAM	Horiz_Scroll_Buf,(224*4),VRAM_HScroll
+		writeVRAM	Sprite_Table,$280,VRAM_Sprites
 		bsr.w	ProcessDMAQueue
 		startZ80
 		movem.l	(Camera_RAM).w,d0-d7
@@ -649,27 +540,9 @@ Vint_Fade:
 Vint_SSResults:
 		stopZ80
 		bsr.w	ReadJoypads
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9580,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$94019340,(a5)
-		move.l	#$96FC9500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7800,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$940193C0,(a5)
-		move.l	#$96F09500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7C00,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
+		writeCRAM	Normal_Palette, (32*4), 0
+		writeVRAM	Horiz_Scroll_Buf,(224*4),VRAM_HScroll
+		writeVRAM	Sprite_Table,$280,VRAM_Sprites
 		startZ80
 		tst.w	(Demo_Time_left).w
 		beq.w	locret_103A
@@ -683,47 +556,45 @@ locret_103A:
 ; sub_103C:
 Do_ControllerPal:
 		stopZ80
-		bsr.w	ReadJoypads
 		tst.b	(Water_fullscreen_flag).w
-		bne.s	loc_107E
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9580,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		bra.s	loc_10A2
+		bne.s	@ScreenIsUnderWater
+		writeCRAM	Normal_Palette, (32*4), 0
+		bra.s	@ScreenIsAboveWater
 ; ---------------------------------------------------------------------------
-
-loc_107E:
-		lea	(VDP_control_port).l,a5
-		move.l	#$94009340,(a5)
-		move.l	#$96FD9540,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$C000,(a5)
-		move.w	#$80,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-
-loc_10A2:
-		lea	(VDP_control_port).l,a5
-		move.l	#$94019340,(a5)
-		move.l	#$96FC9500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7800,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
-		lea	(VDP_control_port).l,a5
-		move.l	#$940193C0,(a5)
-		move.l	#$96F09500,(a5)
-		move.w	#$977F,(a5)
-		move.w	#$7C00,(a5)
-		move.w	#$83,(DMA_data_thunk).w
-		move.w	(DMA_data_thunk).w,(a5)
+	@ScreenIsUnderWater:
+		writeCRAM	Water_Palette, (32*4), 0
+	@ScreenIsAboveWater:
+		writeVRAM	Horiz_Scroll_Buf,(224*4),VRAM_HScroll
+		writeVRAM	Sprite_Table,$280,VRAM_Sprites
 		startZ80
-		rts
-; End of function Do_ControllerPal
+; ---------------------------------------------------------------------------
+ReadJoypads:
+		lea	($FFFFF604).w,a0	; address where joypad states are written
+		lea	(HW_Port_1_Data).l,a1	; first joypad port
+		bsr.s	Joypad_Read		; do the first joypad
+		addq.w	#2,a1			; do the second joypad
 
+Joypad_Read:
+		move.b	#0,(a1)
+		nop
+		nop
+		move.b	(a1),d0
+		lsl.b	#2,d0
+		andi.b	#$C0,d0
+		move.b	#$40,(a1)
+		nop
+		nop
+		move.b	(a1),d1
+		andi.b	#$3F,d1
+		or.b	d1,d0
+		not.b	d0
+		move.b	(a0),d1
+		eor.b	d0,d1
+		move.b	d0,(a0)+
+		and.b	d0,d1
+		move.b	d1,(a0)+
+		rts
+; ---------------------------------------------------------------------------
 ; ||||||||||||||| E N D   O F   V - I N T |||||||||||||||||||||||||||||||||||
 
 ; ===========================================================================
@@ -775,7 +646,7 @@ PalToCRAM:
 		move.w	#0,(Hint_flag).w
 		movem.l	a0-a1,-(sp)
 		lea	(VDP_data_port).l,a1
-		lea	($FFFFFA80).w,a0	; load palette from RAM
+		lea	(Water_palette).w,a0	; load palette from RAM
 		move.l	#$C0000000,4(a1)	; set VDP to write to CRAM address $00
 	rept 32
 		move.l	(a0)+,(a1)		; move palette to CRAM (all 64 colors at once)
@@ -800,10 +671,6 @@ Hint_SoundDriver:
 ; ---------------------------------------------------------------------------
 ; Subroutine to initialize joypads
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-
 JoypadInit:
 		stopZ80
 		moveq	#$40,d0
@@ -812,47 +679,7 @@ JoypadInit:
 		move.b	d0,(HW_Expansion_Control).l
 		startZ80
 		rts
-; End of function JoypadInit
-
 ; ---------------------------------------------------------------------------
-; Subroutine to read joypad input, and send it to the RAM
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-
-ReadJoypads:
-		lea	($FFFFF604).w,a0	; address where joypad states are written
-		lea	(HW_Port_1_Data).l,a1	; first joypad port
-		bsr.s	Joypad_Read		; do the first joypad
-		addq.w	#2,a1			; do the second joypad
-
-Joypad_Read:
-		move.b	#0,(a1)
-		nop
-		nop
-		move.b	(a1),d0
-		lsl.b	#2,d0
-		andi.b	#$C0,d0
-		move.b	#$40,(a1)
-		nop
-		nop
-		move.b	(a1),d1
-		andi.b	#$3F,d1
-		or.b	d1,d0
-		not.b	d0
-		move.b	(a0),d1
-		eor.b	d0,d1
-		move.b	d0,(a0)+
-		and.b	d0,d1
-		move.b	d1,(a0)+
-		rts
-; End of function ReadJoypads
-
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-
 VDPSetupGame:
 		lea	(VDP_control_port).l,a0
 		lea	(VDP_data_port).l,a1
@@ -863,6 +690,10 @@ VDP_Loop:
 		move.w	(a2)+,(a0)
 		dbf	d7,VDP_Loop
 		move.w	(VDPSetupArray+2).l,d0
+		btst	#6,($FFFFFFF8).w	; Check Pal
+		beq.s	@NotPAL
+		bset	#3,d0	; PAL extra resolution, but let's not account for it elsewhere~
+	@NotPAL:
 		move.w	d0,(VDP_Reg1_val).w
 		move.w	#$8ADF,(Hint_counter_reserve).w
 		moveq	#0,d0
@@ -2916,7 +2747,7 @@ locret_1FB8:
 
 ; Pal_FadeTo:
 Pal_FadeFromBlack:
-		move.w	#$3F,($FFFFF626).w
+		move.w	#(32*2)-1,($FFFFF626).w
 ; Pal_FadeTo2:
 Pal_FadeFromBlack2:
 		moveq	#0,d0
@@ -2925,11 +2756,10 @@ Pal_FadeFromBlack2:
 		adda.w	d0,a0
 		moveq	#0,d1
 		move.b	($FFFFF627).w,d0
-
 loc_2162:
 		move.w	d1,(a0)+
 		dbf	d0,loc_2162		; fill palette with $000 (black)
-		move.w	#$15,d4
+		move.w	#$16-1,d4
 
 loc_216C:
 		move.b	#VintID_Fade,(Vint_routine).w
@@ -2950,7 +2780,7 @@ loc_216C:
 Pal_FadeIn:
 		moveq	#0,d0
 		lea	(Normal_palette).w,a0
-		lea	($FFFFFB80).w,a1
+		lea	(Target_palette).w,a1
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
@@ -2962,8 +2792,8 @@ loc_2198:
 		tst.b	(Water_flag).w
 		beq.s	locret_21C0
 		moveq	#0,d0
-		lea	($FFFFFA80).w,a0
-		lea	($FFFFFA00).w,a1
+		lea	(Water_palette).w,a0
+		lea	(Water_target_palette).w,a1
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
@@ -3055,7 +2885,7 @@ loc_221E:
 		bsr.s	Pal_DecColor
 		dbf	d0,loc_221E
 		moveq	#0,d0
-		lea	($FFFFFA80).w,a0
+		lea	(Water_palette).w,a0
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		move.b	($FFFFF627).w,d0
@@ -3139,7 +2969,7 @@ loc_2290:				; CODE XREF: Pal_MakeWhite+34j
 Pal_WhiteToBlack:			; CODE XREF: Pal_MakeWhite+2Ep
 		moveq	#0,d0
 		lea	(Normal_palette).w,a0
-		lea	($FFFFFB80).w,a1
+		lea	(Target_palette).w,a1
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
@@ -3151,8 +2981,8 @@ loc_22BC:				; CODE XREF: Pal_WhiteToBlack+18j
 		tst.b	(Water_flag).w
 		beq.s	locret_22E4
 		moveq	#0,d0
-		lea	($FFFFFA80).w,a0
-		lea	($FFFFFA00).w,a1
+		lea	(Water_palette).w,a0
+		lea	(Water_target_palette).w,a1
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		adda.w	d0,a1
@@ -3243,7 +3073,7 @@ loc_2346:				; CODE XREF: Pal_ToWhite+12j
 		moveq	#0,d0
 
 loc_234E:
-		lea	($FFFFFA80).w,a0
+		lea	(Water_palette).w,a0
 		move.b	($FFFFF626).w,d0
 		adda.w	d0,a0
 		move.b	($FFFFF627).w,d0
@@ -3395,67 +3225,8 @@ loc_2456:				; CODE XREF: PalCycle_Sega+64j
 Pal_Sega1:	dc.w  $EEE, $EEA, $EE4,	$EC0, $EE4, $EEA; 0 ; DATA XREF: PalCycle_Sega
 Pal_Sega2:	dc.w  $EEC, $EEA, $EEA,	$EEA, $EEA, $EEA, $EEC,	$EEA, $EE4, $EC0, $EC0,	$EC0, $EEC, $EEA, $EE4,	$EC0
 		dc.w  $EA0, $E60, $EEA,	$EE4, $EC0, $EA0, $E80,	$E00
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-PalLoad1:
-		lea	(PalPointers).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2
-		movea.w	(a1)+,a3
-		adda.w	#$80,a3
-		move.w	(a1)+,d7
-
-loc_24AA:
-		move.l	(a2)+,(a3)+
-		dbf	d7,loc_24AA
-		rts
-; End of function PalLoad1
-
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-PalLoad2:
-		lea	(PalPointers).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2
-		movea.w	(a1)+,a3
-		move.w	(a1)+,d7
-
-loc_24C2:
-		move.l	(a2)+,(a3)+
-		dbf	d7,loc_24C2
-		rts
-; End of function PalLoad2
-
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-PalLoad3_Water:
-		lea	(PalPointers).l,a1
-		lsl.w	#3,d0
-		adda.w	d0,a1
-		movea.l	(a1)+,a2
-		movea.w	(a1)+,a3
-		suba.w	#$80,a3
-		move.w	(a1)+,d7
-
-loc_24DE:
-		move.l	(a2)+,(a3)+
-		dbf	d7,loc_24DE
-		rts
-; End of function PalLoad3_Water
-
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-PalLoad4_Water:
+; ===========================================================================
+PalLoadFade:	; Load Palette for fading
 		lea	(PalPointers).l,a1
 		lsl.w	#3,d0
 		adda.w	d0,a1
@@ -3463,13 +3234,22 @@ PalLoad4_Water:
 		movea.w	(a1)+,a3
 		suba.w	#$100,a3
 		move.w	(a1)+,d7
-
-loc_24FA:
+	@Loop:
 		move.l	(a2)+,(a3)+
-		dbf	d7,loc_24FA
+		dbf	d7,@Loop
 		rts
-; End of function PalLoad4_Water
-
+; ---------------------------------------------------------------------------
+PalLoadNormal:	; Load Palette
+		lea	(PalPointers).l,a1
+		lsl.w	#3,d0
+		adda.w	d0,a1
+		movea.l	(a1)+,a2
+		movea.w	(a1)+,a3
+		move.w	(a1)+,d7
+	@Loop:
+		move.l	(a2)+,(a3)+
+		dbf	d7,@Loop
+		rts
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Palette pointers
@@ -3484,12 +3264,12 @@ palptr	macro	ptr,ram,size
 	endm
 
 PalPointers:
-		palptr	@SegaBG,	$FB00,64
-		palptr	@Title,		$FB00,64
-		palptr	@LevelSelect,	$FB00,64
-		palptr	@Main,		$FB00,16
-		palptr	@S1Special,	$FB00,64
-		palptr	@S1SpeResults,	$FB00,64
+		palptr	@SegaBG,	Normal_palette&$FFFF,64
+		palptr	@Title,		Normal_palette&$FFFF,64
+		palptr	@LevelSelect,	Normal_palette&$FFFF,64
+		palptr	@Main,		Normal_palette&$FFFF,16
+		palptr	@S1Special,	Normal_palette&$FFFF,64
+		palptr	@S1SpeResults,	Normal_palette&$FFFF,64
 ; ---------------------------------------------------------------------------
 	@SegaBG:	incbin	"art/palettes/Sega screen background.bin"
 	@Title:		incbin	"art/palettes/Title screen.bin"
@@ -3765,7 +3545,7 @@ SegaScreen:
 
 loc_316A:
 		moveq	#0,d0
-		bsr.w	PalLoad2
+		bsr.w	PalLoadNormal
 		move.w	#-$A,(PalCycle_Frame).w
 		move.w	#0,(PalCycle_Timer).w
 		move.w	#0,($FFFFF662).w
@@ -3847,7 +3627,7 @@ loc_3250:				; CODE XREF: ROM:00003252j
 loc_3260:				; CODE XREF: ROM:00003262j
 		move.l	d0,(a1)+
 		dbf	d1,loc_3260
-		lea	($FFFFFB80).w,a1
+		lea	(Target_palette).w,a1
 		moveq	#0,d0
 		move.w	#$1F,d1
 
@@ -3855,7 +3635,7 @@ loc_3270:				; CODE XREF: ROM:00003272j
 		move.l	d0,(a1)+
 		dbf	d1,loc_3270
 		moveq	#3,d0
-		bsr.w	PalLoad1
+		bsr.w	PalLoadFade
 		bsr.w	Pal_FadeFromBlack
 		move	#$2700,sr
 		locVRAM		0
@@ -3920,7 +3700,7 @@ loc_3330:
 		moveq	#$1B,d2
 		bsr.w	PlaneMapToVRAM_H40
 		moveq	#1,d0
-		bsr.w	PalLoad1
+		bsr.w	PalLoadFade
 		move.b	#MusID_Title,d0
 		bsr.w	PlaySound_Special
 		move.b	#0,(Debug_mode_flag).w
@@ -4021,7 +3801,7 @@ Title_CheckLvlSel:			; CODE XREF: ROM:0000365Cj
 		tst.b	($FFFFFFE0).w
 		beq.w	PlayLevel
 		moveq	#2,d0
-		bsr.w	PalLoad2
+		bsr.w	PalLoadNormal
 		lea	($FFFFE000).w,a1
 		moveq	#0,d0
 		move.w	#$DF,d1
@@ -4503,7 +4283,7 @@ Level:
 	@1PlayerGame:
 		move.w	#$1E,($FFFFFE14).w
 		moveq	#3,d0
-		bsr.w	PalLoad2
+		bsr.w	PalLoadNormal
 
 		tst.w	(Demo_Mode_Flag).w
 		bmi.s	loc_3D2A	; skip if credits is on
@@ -4516,7 +4296,7 @@ Level:
 
 loc_3D2A:
 		moveq	#3,d0
-		bsr.w	PalLoad1
+		bsr.w	PalLoadFade
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformBGLayer
 		bset	#2,(Scroll_flags).w
@@ -4635,7 +4415,7 @@ loc_3ECC:
 		move.b	#VintID_Level,(Vint_routine).w
 		bsr.w	WaitForVint
 		dbf	d1,loc_3ECC
-		move.w	#$202F,($FFFFF626).w
+		move.w	#(1*$2000)+(3*$10)-1,($FFFFF626).w	; Fade 3 lines past 1st line
 		bsr.w	Pal_FadeFromBlack2
 		tst.w	(Demo_Mode_Flag).w
 		bmi.s	Level_ClrTitleCard
@@ -4780,9 +4560,9 @@ WaterEffects:				; CODE XREF: ROM:00003D56p
 		moveq	#0,d0
 		move.b	($FFFFFE60).w,d0
 		lsr.w	#1,d0
-		add.w	($FFFFF648).w,d0
-		move.w	d0,($FFFFF646).w
-		move.w	($FFFFF646).w,d0
+		add.w	(Water_Level_2).w,d0
+		move.w	d0,(Water_Level_1).w
+		move.w	(Water_Level_1).w,d0
 		sub.w	(Camera_Y_pos).w,d0
 		bcc.s	@loc_4086
 		tst.w	d0
@@ -4820,18 +4600,17 @@ DynamicWaterHeight:
 		add.b	d1,d0
 		move.w	DynWater_Index(pc,d0.w),d0
 		jsr	DynWater_Index(pc,d0.w)
-		moveq	#0,d1
-		move.b	($FFFFF64C).w,d1
-		move.w	($FFFFF64A).w,d0
-		sub.w	($FFFFF648).w,d0
+		moveq	#1,d1
+		move.w	(Water_Level_3).w,d0
+		sub.w	(Water_Level_2).w,d0
 		beq.s	locret_40C6
 		bcc.s	loc_40C2
 		neg.w	d1
 
-loc_40C2:				; CODE XREF: DynamicWaterHeight+20j
-		add.w	d1,($FFFFF648).w
+loc_40C2:	
+		add.w	d1,(Water_Level_2).w
 
-locret_40C6:				; CODE XREF: DynamicWaterHeight+1Ej
+locret_40C6:	
 		rts
 ; End of function DynamicWaterHeight
 
@@ -4869,16 +4648,16 @@ DynWater_HPZ1:
 		; the water level using the up/down buttons
 		btst	#0,(Ctrl_2_Held).w	; is up being held?
 		beq.s	loc_40E2		; if not, branch
-		tst.w	($FFFFF64A).w
+		tst.w	(Water_Level_3).w
 		beq.s	loc_40E2		; stop increasing water level if we've hit the limit
-		subq.w	#1,($FFFFF64A).w	; increase water level
+		subq.w	#1,(Water_Level_3).w	; increase water level
 
 loc_40E2:
 		btst	#1,(Ctrl_2_Held).w	; is down being held?
 		beq.s	DynWater_NoChanges		; if not, branch
-		cmpi.w	#$700,($FFFFF64A).w
+		cmpi.w	#$700,(Water_Level_3).w
 		beq.s	DynWater_NoChanges		; stop decreasing water level if we've hit the limit
-		addq.w	#1,($FFFFF64A).w	; decrease water level
+		addq.w	#1,(Water_Level_3).w	; decrease water level
 
 DynWater_NoChanges:
 		rts
@@ -4886,7 +4665,7 @@ DynWater_NoChanges:
 
 S1DynWater_LZ1:				; leftover from	Sonic 1
 		move.w	(Camera_X_pos).w,d0
-		move.b	($FFFFF64D).w,d2
+		move.w	(Water_routine).w,d2
 		bne.s	loc_4164
 		move.w	#$B8,d1	; '¸'
 		cmpi.w	#$600,d0
@@ -4904,13 +4683,13 @@ S1DynWater_LZ1:				; leftover from	Sonic 1
 		cmpi.w	#$1380,d0
 		bcs.s	loc_4148
 		move.w	#$3A8,d1
-		cmp.w	($FFFFF648).w,d1
+		cmp.w	(Water_Level_2).w,d1
 		bne.s	loc_4148
-		move.b	#1,($FFFFF64D).w
+		move.w	#1,(Water_routine).w
 
 loc_4148:				; CODE XREF: ROM:0000410Aj
 					; ROM:0000411Cj ...
-		move.w	d1,($FFFFF64A).w
+		move.w	d1,(Water_Level_3).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -4933,10 +4712,10 @@ loc_4164:				; CODE XREF: ROM:00004100j
 		cmpi.w	#$1300,d0
 		bcs.s	loc_4184
 		move.w	#$108,d1
-		move.b	#2,($FFFFF64D).w
+		move.w	#2,(Water_routine).w
 
 loc_4184:				; CODE XREF: ROM:00004178j
-		move.w	d1,($FFFFF64A).w
+		move.w	d1,(Water_Level_3).w
 
 locret_4188:				; CODE XREF: ROM:00004166j
 					; ROM:0000416Ej
@@ -4955,13 +4734,13 @@ DynWater_HPZ2:				; DATA XREF: ROM:DynWater_Indexo
 
 loc_41A6:				; CODE XREF: ROM:00004196j
 					; ROM:000041A0j
-		move.w	d1,($FFFFF64A).w
+		move.w	d1,(Water_Level_3).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 DynWater_HPZ3:				; DATA XREF: ROM:DynWater_Indexo
 		move.w	(Camera_X_pos).w,d0 ; in fact, this is a leftover from Sonic 1's LZ3
-		move.b	($FFFFF64D).w,d2
+		move.w	(Water_routine).w,d2
 		bne.s	loc_41F2
 		move.w	#$900,d1
 		cmpi.w	#$600,d0
@@ -4972,14 +4751,14 @@ DynWater_HPZ3:				; DATA XREF: ROM:DynWater_Indexo
 		bcc.s	loc_41E8
 		move.w	#$4C8,d1
 		move.b	#$4B,(Level_Layout+$206).w ; 'K'
-		move.b	#1,($FFFFF64D).w
+		move.w	#1,(Water_routine).w
 		move.w	#$B7,d0	; '·'
 		bsr.w	PlaySound_Special
 
 loc_41E8:				; CODE XREF: ROM:000041BEj
 					; ROM:000041C6j ...
-		move.w	d1,($FFFFF64A).w
-		move.w	d1,($FFFFF648).w
+		move.w	d1,(Water_Level_3).w
+		move.w	d1,(Water_Level_2).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -4992,7 +4771,7 @@ loc_41F2:				; CODE XREF: ROM:000041B4j
 		move.w	#$308,d1
 		cmpi.w	#$1400,d0
 		bcs.s	loc_4236
-		cmpi.w	#$508,($FFFFF64A).w
+		cmpi.w	#$508,(Water_Level_3).w
 		beq.s	loc_4222
 		cmpi.w	#$600,(MainCharacter+y_pos).w
 		bcc.s	loc_4222
@@ -5002,14 +4781,14 @@ loc_41F2:				; CODE XREF: ROM:000041B4j
 loc_4222:				; CODE XREF: ROM:00004210j
 					; ROM:00004218j
 		move.w	#$508,d1
-		move.w	d1,($FFFFF648).w
+		move.w	d1,(Water_Level_2).w
 		cmpi.w	#$1770,d0
 		bcs.s	loc_4236
-		move.b	#2,($FFFFF64D).w
+		move.w	#2,(Water_routine).w
 
 loc_4236:				; CODE XREF: ROM:000041FEj
 					; ROM:00004208j ...
-		move.w	d1,($FFFFF64A).w
+		move.w	d1,(Water_Level_3).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -5022,15 +4801,15 @@ loc_423C:				; CODE XREF: ROM:000041F4j
 		move.w	#$188,d1
 		cmpi.w	#$1AF0,d0
 		bcc.s	loc_425A
-		cmp.w	($FFFFF648).w,d1
+		cmp.w	(Water_Level_2).w,d1
 		bne.s	loc_4260
 
 loc_425A:				; CODE XREF: ROM:00004252j
-		move.b	#3,($FFFFF64D).w
+		move.w	#3,(Water_routine).w
 
 loc_4260:				; CODE XREF: ROM:00004248j
 					; ROM:00004258j
-		move.w	d1,($FFFFF64A).w
+		move.w	d1,(Water_Level_3).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -5043,24 +4822,24 @@ loc_4266:				; CODE XREF: ROM:0000423Ej
 		move.w	#$900,d1
 		cmpi.w	#$1BC0,d0
 		bcs.s	loc_4298
-		move.b	#4,($FFFFF64D).w
-		move.w	#$608,($FFFFF64A).w
-		move.w	#$7C0,($FFFFF648).w
+		move.w	#4,(Water_routine).w
+		move.w	#$608,(Water_Level_3).w
+		move.w	#$7C0,(Water_Level_2).w
 		move.b	#1,($FFFFF7E8).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_4298:				; CODE XREF: ROM:00004272j
 					; ROM:0000427Cj
-		move.w	d1,($FFFFF64A).w
-		move.w	d1,($FFFFF648).w
+		move.w	d1,(Water_Level_3).w
+		move.w	d1,(Water_Level_2).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_42A2:				; CODE XREF: ROM:00004268j
 		cmpi.w	#$1E00,d0
 		bcs.s	locret_42AE
-		move.w	#$128,($FFFFF64A).w
+		move.w	#$128,(Water_Level_3).w
 
 locret_42AE:				; CODE XREF: ROM:000042A6j
 		rts
@@ -5073,7 +4852,7 @@ DynWater_HPZ4:				; DATA XREF: ROM:DynWater_Indexo
 		move.w	#$4C8,d1
 
 loc_42C0:				; CODE XREF: ROM:000042BAj
-		move.w	d1,($FFFFF64A).w
+		move.w	d1,(Water_Level_3).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -5810,7 +5589,7 @@ loc_50CC:
 		clr.b	(Water_fullscreen_flag).w
 		clr.w	($FFFFFE02).w
 		moveq	#4,d0
-		bsr.w	PalLoad1
+		bsr.w	PalLoadFade
 		jsr	(S1SS_Load).l
 		move.l	#0,(Camera_X_pos).w
 		move.l	#0,(Camera_Y_pos).w
@@ -5901,7 +5680,7 @@ loc_5214:
 		jsr	(HUD_Base).l
 		move	#$2300,sr
 		moveq	#5,d0
-		bsr.w	PalLoad2
+		bsr.w	PalLoadNormal
 		moveq	#PLCID_Main,d0
 		bsr.w	LoadPLC2
 		moveq	#PLCID_S1TitleCard,d0
@@ -6892,7 +6671,7 @@ Deform_LZ:				; DATA XREF: ROM:Deform_Indexo
 		swap	d0
 		move.w	(Camera_BG_X_pos).w,d0
 		neg.w	d0
-		move.w	($FFFFF646).w,d4
+		move.w	(Water_Level_1).w,d4
 		move.w	(Camera_Y_pos).w,d5
 
 loc_5EC6:				; CODE XREF: ROM:00005ED2j
@@ -9280,14 +9059,14 @@ MainLevelLoadBlock:
 		beq	@NoWater
 			add.w	d2,d1
 			add.l	d1,a1
-			lea	Underwater_target_palette,a0
-			lea	Underwater_palette,a3
-			moveq	#(16/2)-1,d0
+			lea	Water_target_palette,a0
+			lea	Water_palette,a3
+			moveq	#(Water_palette_line2-Water_palette)/4-1,d0
 			@WPaletteLoad:
 				move.l	(a1),(a3)+
 				move.l	(a1)+,(a0)+
 				dbf	d0,@WPaletteLoad
-			moveq	#(48/2)-1,d0
+			moveq	#(Water_palette_End-Water_palette_line2)/4-1,d0
 			@WPaletteLoad2:
 				move.l	(a1)+,(a0)+
 				dbf	d0,@WPaletteLoad2
@@ -9306,18 +9085,17 @@ MainLevelLoadBlock:
 			lea	(WaterHeight).l,a0
 			move.w	(a0,d0.w),d0
 
-			move.w	d0,($FFFFF646).w
-			move.w	d0,($FFFFF648).w
-			move.w	d0,($FFFFF64A).w
-			clr.b	($FFFFF64D).w
+			move.w	d0,(Water_Level_1).w
+			move.w	d0,(Water_Level_2).w
+			move.w	d0,(Water_Level_3).w
+			clr.w	(Water_routine).w
 			clr.b	(Water_fullscreen_flag).w
-			move.b	#1,($FFFFF64C).w
 			tst.b	($FFFFFE30).w	; checkpoint
 			beq.s	@NoWater
 			move.b	($FFFFFE53).w,(Water_fullscreen_flag).w
 	@NoWater:
 		lea	Target_palette_line2,a0
-		moveq	#(48/2)-1,d0
+		moveq	#(Normal_palette_End-Normal_palette_line2)/4-1,d0
 		@PaletteLoad:
 			move.l	(a1)+,(a0)+
 			dbf	d0,@PaletteLoad
@@ -10226,7 +10004,7 @@ loc_7BC6:
 		move.w	y_pos(a0),d2
 		move.w	d2,$3C(a0)
 		move.w	x_pos(a0),d3
-		lea	$28(a0),a2
+		lea	subtype(a0),a2
 		moveq	#0,d1
 		move.b	(a2),d1
 		move.w	d1,d0
@@ -10236,15 +10014,21 @@ loc_7BC6:
 		swap	d1
 		move.w	#8,d1
 		bsr.s	sub_7C76
-		move.w	$28(a1),d0
+		beq.s	@Child1Spawned
+		subq.b	#2,routine(a0)
+		rts
+		@Child1Spawned:
+		move.w	subtype(a1),d0
 		subq.w	#8,d0
 		move.w	d0,x_pos(a1)
 		move.l	a1,$30(a0)
 		swap	d1
 		subq.w	#8,d1
-		bls.s	loc_7C74
+		bls.s	@AllSegmentsDone
 		move.w	d1,d4
 		bsr.s	sub_7C76
+		bne.s	@Child2Failed
+
 		move.l	a1,$34(a0)
 		move.w	d4,d0
 		add.w	d0,d0
@@ -10253,43 +10037,42 @@ loc_7BC6:
 		subq.w	#8,d0
 		move.w	d0,x_pos(a1)
 
-loc_7C74:				; CODE XREF: ROM:00007C5Aj
+	@AllSegmentsDone:	
 		bra.s	loc_7CC8
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-sub_7C76:				; CODE XREF: ROM:00007C46p
-					; ROM:00007C5Ep
+;-----------------------------------------------------------------------------
+@Child2Failed:
+		subq.b	#2,routine(a0)	; return as safety precaution
+		movea.l	$30(a0),a1	; DELETE CHILD 1
+		bra.w	DeleteObject2
+;-----------------------------------------------------------------------------
+sub_7C76:	
 		bsr.w	SingleObjLoad2
-		bne.s	locret_7CC6
+		bne.s	@FailedSpawn
 		move.b	id(a0),id(a1)
 		move.w	x_pos(a0),x_pos(a1)
 		move.w	y_pos(a0),y_pos(a1)
 		move.l	mappings(a0),mappings(a1)
 		move.w	art_tile(a0),art_tile(a1)
 		move.b	render_flags(a0),render_flags(a1)
-		bset	#6,render_flags(a1)
-		move.b	#$40,$E(a1) ; '@'
-		move.b	d1,$F(a1)
+		bset	#6,render_flags(a1)	; Render Subprites
+		move.b	#$40,mainspr_width(a1)
+		move.b	d1,mainspr_childsprites(a1)
 		subq.b	#1,d1
 		lea	$10(a1),a2
-
-loc_7CB6:				; CODE XREF: sub_7C76+4Cj
-		move.w	d3,(a2)+
-		move.w	d2,(a2)+
-		move.w	#0,(a2)+
-		addi.w	#$10,d3
-		dbf	d1,loc_7CB6
-
-locret_7CC6:				; CODE XREF: sub_7C76+4j
+	@PositionSegments:	
+		move.w	d3,(a2)+	; Horizontal Position
+		move.w	d2,(a2)+	; Vertical Position
+		move.w	#0,(a2)+	; Frame
+		addi.w	#16,d3		; Offset by 16 pixels
+		dbf	d1,@PositionSegments
+		moveq	#0,d0	; make sure it's seen as zero when completed
+	@FailedSpawn:
 		rts
 ; End of function sub_7C76
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+;-----------------------------------------------------------------------------
 
-loc_7CC8:				; CODE XREF: ROM:loc_7C74j
-					; DATA XREF: ROM:00007BC0o
+loc_7CC8:	
 		move.b	status(a0),d0
 		andi.b	#$18,d0
 		bne.s	loc_7CDE
@@ -10349,15 +10132,15 @@ loc_7D2A:				; CODE XREF: ROM:00007D26j
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_7D3E:				; CODE XREF: ROM:00007D3Aj
-		movea.l	$30(a0),a1
+loc_7D3E:	
+		movea.l	$30(a0),a1	; DELETE CHILD
 		bsr.w	DeleteObject2
 		cmpi.b	#8,$28(a0)
 		bls.s	loc_7D56
 		movea.l	$34(a0),a1
 		bsr.w	DeleteObject2
 
-loc_7D56:				; CODE XREF: ROM:00007D4Cj
+loc_7D56:	
 		bra.w	DeleteObject
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -13776,7 +13559,7 @@ loc_A8A6:				; DATA XREF: ROM:0000A7F6o
 		move.b	#0,$20(a0)
 		move.b	#1,priority(a0)
 		bsr.w	sub_A8DE
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		move.b	$34(a0),d1
@@ -14217,7 +14000,7 @@ Object26_Init:				; DATA XREF: ROM:Obj26_Indexo
 		move.b	#4,render_flags(a0)
 		move.b	#3,priority(a0)
 		move.b	#$F,width_pixels(a0)
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	respawn_index(a0),d0
 		bclr	#7,2(a2,d0.w)
@@ -14346,7 +14129,7 @@ Object26_BreakOpen:
 		move.w	y_pos(a0),y_pos(a1)
 
 	@FailExplosionSpawn:
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	respawn_index(a0),d0
 		bset	#0,2(a2,d0.w)
@@ -16356,10 +16139,10 @@ word_CAF0:	dc.w 8			; DATA XREF: ROM:0000CA6Ao
 
 ; ObjectsLoad:
 RunObjects:
-		lea	(MainCharacter).w,a0
+		lea	(Object_Space).w,a0
 		moveq	#128-1,d7	; run through the object list
 		moveq	#0,d0
-		cmpi.b	#6,(MainCharacter+routine).w	; is Sonic dead?
+		cmpi.b	#6,routine(a0)	; is Player 1 dead?
 		bcc.s	RunObjectsWhenPlayerIsDead	; if yes, branch
 
 ; ---------------------------------------------------------------------------
@@ -16730,7 +16513,7 @@ loc_CE64:
 ; ---------------------------------------------------------------------------
 
 loc_CE7C:
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		beq.s	loc_CE8E
@@ -16757,66 +16540,62 @@ loc_CE9A:
 ; ---------------------------------------------------------------------------
 
 loc_CEB0:
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
-		move.b	$23(a0),d0
+		move.b	respawn_index(a0),d0
 		beq.s	loc_CEC2
 		bclr	#7,2(a2,d0.w)
 
 loc_CEC2:
 		bra.w	DeleteObject
 ; ===========================================================================
-; first player in two player mode
+; Check offscreen Remember state object
 ; loc_CEC6:
 MarkObjGone_P1:
 		tst.w	(Two_player_mode).w
 		bne.s	MarkObjGone_P2
-		move.w	x_pos(a0),d0
-		andi.w	#$FF80,d0
-		sub.w	(Camera_X_pos_coarse).w,d0
-		cmpi.w	#$280,d0
-		bhi.w	loc_CEE4
+		out_of_range	loc_CEE4
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
 loc_CEE4:
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
-		move.b	$23(a0),d0
+		move.b	respawn_index(a0),d0
 		beq.s	loc_CEF6
 		bclr	#7,2(a2,d0.w)
 
 loc_CEF6:
 		bra.w	DeleteObject
 ; ===========================================================================
-; second player in two player mode
+; Check offscreen Remember state object in two player mode
 ; loc_CEFA:
 MarkObjGone_P2:
 		move.w	x_pos(a0),d0
 		andi.w	#$FF80,d0
 		move.w	d0,d1
 		sub.w	(Camera_X_pos_coarse).w,d0
-		cmpi.w	#$280,d0
+		cmpi.w	#320/2,d0
 		bhi.w	loc_CF14
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
 loc_CF14:
-		sub.w	($FFFFF7DC).w,d1
-		cmpi.w	#$280,d1
+		sub.w	(Camera_X_pos_coarse_P2).w,d1
+		cmpi.w	#320/2,d1
 		bhi.w	loc_CF24
 		bra.w	DisplaySprite
 ; ---------------------------------------------------------------------------
 
 loc_CF24:
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		beq.s	loc_CF36
 		bclr	#7,2(a2,d0.w)
 
 loc_CF36:
-		bra.w	DeleteObject	; useless branch...
+	;	bra.w	DeleteObject	; useless branch...
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to delete an object
@@ -18473,20 +18252,19 @@ ObjectsManager_Init:
 		move.l	a0,(Obj_load_addr_left).w
 		move.l	a0,(Obj_load_addr_2).w
 		move.l	a0,(Obj_load_addr_3).w
-		lea	($FFFFFC00).w,a2
-		move.w	#$101,(a2)+
-		move.w	#$5E,d0
-
-loc_DC9C:
+		lea	(Obj_respawn_index).w,a2
+		move.w	#$101,(a2)+	; set initial values
+		move.w	#(Obj_respawn_data_End-Obj_respawn_data)/4-1,d0
+	@ClearRespawnRAM:
 		clr.l	(a2)+
-		dbf	d0,loc_DC9C
-		lea	($FFFFFC00).w,a2
+		dbf	d0,@ClearRespawnRAM
+
+		lea	(Obj_respawn_index).w,a2
 		moveq	#0,d2
 		move.w	(Camera_X_pos).w,d6
 		subi.w	#$80,d6
 		bcc.s	loc_DCB4
 		moveq	#0,d6
-
 loc_DCB4:
 		andi.w	#$FF80,d6
 		movea.l	(Obj_load_addr_right).w,a0
@@ -18539,7 +18317,7 @@ ObjectsManager_Main:
 		subi.w	#$80,d1
 		andi.w	#$FF80,d1
 		move.w	d1,(Camera_X_pos_coarse).w
-		lea	($FFFFFC00).w,a2
+		lea	(Obj_respawn_index).w,a2
 		moveq	#0,d2
 		move.w	(Camera_X_pos).w,d6
 		andi.w	#$FF80,d6
@@ -18647,10 +18425,10 @@ loc_DDE0:
 		move.l	d0,(Camera_X_pos_last_P2).w
 		move.w	#0,(Camera_X_pos_last).w
 		move.w	#0,(Camera_X_pos_last_P2).w
-		lea	($FFFFFC00).w,a2
+		lea	(Obj_respawn_index).w,a2
 		move.w	(a2),($FFFFF78E).w
 		moveq	#0,d2
-		lea	($FFFFFC00).w,a5
+		lea	(Obj_respawn_index).w,a5
 		lea	(Obj_load_addr_right).w,a4
 		lea	($FFFFF786).w,a1
 		lea	($FFFFF789).w,a6
@@ -18681,14 +18459,14 @@ loc_DE5C:
 		move.w	d1,(Camera_X_pos_coarse).w
 		move.w	(Camera_X_pos_P2).w,d1
 		andi.w	#$FF00,d1
-		move.w	d1,($FFFFF7DC).w
+		move.w	d1,(Camera_X_pos_coarse_P2).w
 		move.b	(Camera_X_pos).w,d6
 		andi.w	#$FF,d6
 		move.w	(Camera_X_pos_last).w,d0
 		cmp.w	(Camera_X_pos_last).w,d6
 		beq.s	loc_DE9C
 		move.w	d6,(Camera_X_pos_last).w
-		lea	($FFFFFC00).w,a5
+		lea	(Obj_respawn_index).w,a5
 		lea	(Obj_load_addr_right).w,a4
 		lea	($FFFFF786).w,a1
 		lea	($FFFFF789).w,a6
@@ -18708,13 +18486,13 @@ loc_DE9C:
 		bsr.s	sub_DED2
 
 loc_DEC4:
-		move.w	($FFFFFC00).w,($FFFFFFEC).w
+		move.w	(Obj_respawn_index).w,($FFFFFFEC).w
 		move.w	($FFFFF78E).w,($FFFFFFEE).w
 		rts
 ; ===========================================================================
 
 sub_DED2:
-		lea	($FFFFFC00).w,a2
+		lea	(Obj_respawn_index).w,a2
 		moveq	#0,d2
 		cmp.w	d0,d6
 		beq.w	locret_DDDE
@@ -19110,15 +18888,13 @@ locret_E180:				; CODE XREF: sub_E122+20j sub_E122+28j
 ; loc_E182: SingleObjectLoad:
 SingleObjLoad:
 		lea	(Level_Object_Space).w,a1	; a1=object
-		move.w	#$5F,d0			; search to end of table
-
-loc_E18A:
+		move.w	#$60-1,d0			; search to end of table
+	@Loop:
 		tst.b	(a1)		; is object RAM slot empty?
-		beq.s	locret_E196	; if yes, branch
-		lea	$40(a1),a1	; load obj address ; goto next object RAM slot
-		dbf	d0,loc_E18A	; repeat until end
-
-locret_E196:
+		beq.s	@DoNothing	; if yes, branch
+		lea	Object_RAM(a1),a1	; load obj address ; goto next object RAM slot
+		dbf	d0,@Loop	; repeat until end
+	@DoNothing:
 		rts
 ; End of function SingleObjLoad
 
@@ -19136,16 +18912,14 @@ SingleObjLoad2:
 		move.w	#(Object_Space_End&$FFFF),d0 
 		sub.w	a0,d0	; subtract current object location
 		lsr.w	#6,d0	; divide by $40
-		subq.w	#1,d0	; keep from going over the object zone
-		bcs.s	locret_E1B2
-
-loc_E1A6:
+		subq.w	#1,d0	; (a0-Object_Space_End)-1
+		bcs.s	@DoNothing	; keep from going past Object Space RAM
+	@Loop:
 		tst.b	(a1)		; is object RAM slot empty?
-		beq.s	locret_E1B2	; if yes, branch
+		beq.s	@DoNothing	; if yes, branch
 		lea	Object_RAM(a1),a1	; load obj address ; goto next object RAM slot
-		dbf	d0,loc_E1A6	; repeat until end
-
-locret_E1B2:
+		dbf	d0,@Loop	; repeat until end
+	@DoNothing:
 		rts
 ; End of function SingleObjLoad2
 
@@ -21505,7 +21279,7 @@ locret_FC0A:
 ; ---------------------------------------------------------------------------
 ; loc_FC0E: Obj01_InLevelWithWater:
 Obj01_InWater:
-		move.w	($FFFFF646).w,d0
+		move.w	(Water_Level_1).w,d0
 		cmp.w	y_pos(a0),d0	; is Sonic above water?
 		bge.s	Obj01_OutWater	; if yes, branch
 
@@ -25370,7 +25144,7 @@ Obj0A_Animate:				; DATA XREF: ROM:00011E74o
 		jsr	(AnimateSprite).l
 
 Obj0A_ChkWater:				; DATA XREF: ROM:00011E76o
-		move.w	($FFFFF646).w,d0
+		move.w	(Water_Level_1).w,d0
 		cmp.w	y_pos(a0),d0
 		bcs.s	loc_11F0A
 		move.b	#6,routine(a0)
@@ -25902,7 +25676,7 @@ Obj08_Init:
 		move.w	(MainCharacter+x_pos).w,x_pos(a0)
 
 Obj08_Display:
-		move.w	($FFFFF646).w,y_pos(a0)
+		move.w	(Water_Level_1).w,y_pos(a0)
 		lea	(Ani_obj08).l,a1
 		jsr	(AnimateSprite).l
 		jmp	(DisplaySprite).l
@@ -27154,7 +26928,7 @@ Obj79_Init:				; DATA XREF: ROM:Obj79_Indexo
 		move.b	#4,render_flags(a0)
 		move.b	#8,width_pixels(a0)
 		move.b	#5,priority(a0)
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		bclr	#7,2(a2,d0.w)
@@ -27185,7 +26959,7 @@ Obj79_Main:				; CODE XREF: ROM:00013534j
 		andi.b	#$7F,d2	; ''
 		cmp.b	d2,d1
 		bcs.s	Obj79_HitLamp
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		bset	#0,2(a2,d0.w)
@@ -27208,7 +26982,7 @@ Obj79_HitLamp:				; CODE XREF: ROM:00013566j
 		jsr	(PlaySound_Special).l
 		addq.b	#2,routine(a0)
 		bsr.w	Lamppost_StoreInfo
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		bset	#0,2(a2,d0.w)
@@ -27247,8 +27021,8 @@ Lamppost_StoreInfo:			; CODE XREF: ROM:000135B6p
 		move.w	(Camera_BG2_Y_pos).w,($FFFFFE4A).w
 		move.w	(Camera_BG3_X_pos).w,($FFFFFE4C).w
 		move.w	(Camera_BG3_Y_pos).w,($FFFFFE4E).w
-		move.w	($FFFFF648).w,($FFFFFE50).w
-		move.b	($FFFFF64D).w,($FFFFFE52).w
+		move.w	(Water_Level_2).w,($FFFFFE50).w
+		move.b	(Water_routine+1).w,($FFFFFE52).w
 		move.b	(Water_fullscreen_flag).w,($FFFFFE53).w
 		rts
 ; End of function Lamppost_StoreInfo
@@ -27269,7 +27043,7 @@ Lamppost_LoadInfo:			; CODE XREF: LevelSizeLoad+180p
 		move.b	#$3B,($FFFFFE25).w ; ';'
 		subq.b	#1,(Timer_second).w
 		move.b	($FFFFFE3C).w,($FFFFEEDF).w
-		move.b	($FFFFFE52).w,($FFFFF64D).w
+		move.b	($FFFFFE52).w,(Water_routine+1).w
 		move.w	($FFFFFE3E).w,(Camera_Max_Y_pos_now).w
 		move.w	($FFFFFE3E).w,(Camera_Max_Y_pos).w
 		move.w	($FFFFFE40).w,(Camera_X_pos).w
@@ -27280,10 +27054,7 @@ Lamppost_LoadInfo:			; CODE XREF: LevelSizeLoad+180p
 		move.w	($FFFFFE4A).w,(Camera_BG2_Y_pos).w
 		move.w	($FFFFFE4C).w,(Camera_BG3_X_pos).w
 		move.w	($FFFFFE4E).w,(Camera_BG3_Y_pos).w
-		cmpi.b	#1,(Current_Zone).w
-		bne.s	loc_136F0
-		move.w	($FFFFFE50).w,($FFFFF648).w
-		move.b	($FFFFFE52).w,($FFFFF64D).w
+		move.w	($FFFFFE50).w,(Water_Level_2).w
 		move.b	($FFFFFE53).w,(Water_fullscreen_flag).w
 
 loc_136F0:				; CODE XREF: Lamppost_LoadInfo+84j
@@ -27461,7 +27232,7 @@ S1Obj47_Bump:				; CODE XREF: ROM:000138C8p
 		move.b	#1,anim(a0)
 		move.w	#$B4,d0	; '´'
 		jsr	(PlaySound_Special).l
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		beq.s	loc_1394E
@@ -27562,7 +27333,7 @@ S1Obj64_Animate:			; DATA XREF: ROM:000139E0o
 
 S1Obj64_ChkWater:			; CODE XREF: ROM:00013A5Ej
 					; DATA XREF: ROM:000139E2o
-		move.w	($FFFFF646).w,d0
+		move.w	(Water_Level_1).w,d0
 		cmp.w	y_pos(a0),d0
 		bcs.s	loc_13A7E
 
@@ -27640,7 +27411,7 @@ S1Obj64_BblMaker:			; CODE XREF: ROM:00013A2Ej
 					; DATA XREF: ROM:000139E8o
 		tst.w	$36(a0)
 		bne.s	loc_13BA4
-		move.w	($FFFFF646).w,d0
+		move.w	(Water_Level_1).w,d0
 		cmp.w	y_pos(a0),d0
 		bcc.w	loc_13C50
 		tst.b	render_flags(a0)
@@ -27728,7 +27499,7 @@ loc_13C50:				; CODE XREF: ROM:00013B50j
 		sub.w	(Camera_X_pos_coarse).w,d0
 		cmpi.w	#$280,d0
 		bhi.w	DeleteObject
-		move.w	($FFFFF646).w,d0
+		move.w	(Water_Level_1).w,d0
 		cmp.w	y_pos(a0),d0
 		bcs.w	DisplaySprite
 		rts
@@ -28384,96 +28155,102 @@ Smab_Points:	; Routine 4
 Smab_Speeds:	dc.w -$200, -$200	; x-speed, y-speed
 		dc.w $200, -$200
 ; ===========================================================================
-Map_Obj12:	dc.w word_14444-Map_Obj12 ; DATA XREF: ROM:000143F2o
-					; ROM:Map_Obj12o
-word_14444:	dc.w 2			; DATA XREF: ROM:Map_Obj12o
+Map_Obj12:	dc.w word_14444-Map_Obj12
+word_14444:	dc.w 2
 		dc.w $F00F,    0,    0,$FFE0; 0
 		dc.w $F00F,  $10,    8,	   0; 4
 ; ===========================================================================
 ;----------------------------------------------------
 ; Object 13 - HPZ waterfall
 ;----------------------------------------------------
-
-Obj13:					; DATA XREF: ROM:Obj_Indexo
+	inform 1, "Holy Clucky, please reprogram this to use the subsprite system"
+Obj13:
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	Obj13_Index(pc,d0.w),d1
 		jmp	Obj13_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj13_Index:	dc.w loc_1446C-Obj13_Index ; DATA XREF:	ROM:Obj13_Indexo
-					; ROM:00014468o ...
+; ===========================================================================
+Obj13_Index:	dc.w @Init-Obj13_Index
 		dc.w loc_14532-Obj13_Index
 		dc.w loc_145BC-Obj13_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_1446C:				; DATA XREF: ROM:Obj13_Indexo
+; ===========================================================================
+	@Init:	
 		addq.b	#2,routine(a0)
 		move.l	#Map_Obj13,mappings(a0)
-		move.w	#$E315,art_tile(a0)
+		move.w	#$E000+$315,art_tile(a0)
 		bsr.w	Adjust2PArtPointer
 		move.b	#4,render_flags(a0)
 		move.b	#$10,width_pixels(a0)
 		move.b	#1,priority(a0)
 		move.b	#$12,mapping_frame(a0)
 		bsr.s	sub_144D4
+		beq.s	@Child1Spawned
+		subq.b	#2,routine(a0)
+		rts
+
+		@Child1Spawned:
 		move.b	#$A0,y_radius(a1)
 		bset	#4,render_flags(a1)
 		move.l	a1,$38(a0)
 		move.w	y_pos(a0),$34(a0)
 		move.w	y_pos(a0),$36(a0)
-		cmpi.b	#$10,$28(a0)
-		bcs.s	loc_14518
+		cmpi.b	#$10,subtype(a0)
+		blo.s	loc_14518
+
 		bsr.s	sub_144D4
+		bne.s	@Child2Failed
+
 		move.l	a1,$3C(a0)
 		move.w	y_pos(a0),y_pos(a1)
-		addi.w	#$98,y_pos(a1) ; '˜'
+		addi.w	#$98,y_pos(a1)
 		bra.s	loc_14518
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+;-----------------------------------------------------------------------------
+@Child2Failed:
+		subq.b	#2,routine(a0)	; return as safety precaution
+		movea.l	$38(a0),a1	; DELETE CHILD 1
+		bra.w	DeleteObject2
+;-----------------------------------------------------------------------------		
 
-
-sub_144D4:				; CODE XREF: ROM:0001449Ap
-					; ROM:000144C0p
+	sub_144D4:	
 		jsr	(SingleObjLoad2).l
-		bne.s	locret_14516
+		bne.s	@ObjectSpawnFail
 		move.b	#$13,id(a1)
 		addq.b	#4,routine(a1)
 		move.w	x_pos(a0),x_pos(a1)
 		move.w	y_pos(a0),y_pos(a1)
-		move.l	#Map_Obj13,mappings(a1)
-		move.w	#$E315,art_tile(a1)
-		bsr.w	Adjust2PArtPointer2
-		move.b	#4,render_flags(a1)
-		move.b	#$10,width_pixels(a1)
-		move.b	#1,priority(a1)
-
-locret_14516:				; CODE XREF: sub_144D4+6j
+		move.l	mappings(a0),mappings(a1)
+		move.w	art_tile(a0),art_tile(a1)
+		move.b	render_flags(a0),render_flags(a1)
+		move.b	width_pixels(a0),width_pixels(a1)
+		move.b	priority(a0),priority(a1)
+		moveq	#0,d0
+	@ObjectSpawnFail:	
 		rts
 ; End of function sub_144D4
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_14518:				; CODE XREF: ROM:000144BEj
-					; ROM:000144D2j
+loc_14518:	
 		moveq	#0,d1
-		move.b	$28(a0),d1
+		move.b	subtype(a0),d1
 		move.w	$34(a0),d0
-		subi.w	#$78,d0	; 'x'
+		subi.w	#$78,d0
 		lsl.w	#4,d1
 		add.w	d1,d0
 		move.w	d0,y_pos(a0)
 		move.w	d0,$34(a0)
 
-loc_14532:				; DATA XREF: ROM:00014468o
+loc_14532:	; Mess with Child
 		movea.l	$38(a0),a1
 		move.b	#$12,mapping_frame(a0)
 		move.w	$34(a0),d0
-		move.w	($FFFFF646).w,d1
+		move.w	(Water_Level_1).w,d1
 		cmp.w	d0,d1
 		bcc.s	loc_1454A
 		move.w	d1,d0
 
-loc_1454A:				; CODE XREF: ROM:00014546j
+loc_1454A:	
 		move.w	d0,y_pos(a0)
 		sub.w	$36(a0),d0
 		addi.w	#$80,d0	; '€'
@@ -28484,29 +28261,30 @@ loc_1454A:				; CODE XREF: ROM:00014546j
 		bcs.s	loc_14564
 		moveq	#$F,d0
 
-loc_14564:				; CODE XREF: ROM:00014560j
+loc_14564:	
 		move.b	d0,mapping_frame(a1)
-		cmpi.b	#$10,$28(a0)
-		bcs.s	loc_14584
+		cmpi.b	#$10,subtype(a0)
+		blo.s	loc_14584
+		; mess with other child
 		movea.l	$3C(a0),a1
 		subi.w	#$F,d1
 		bcc.s	loc_1457C
 		moveq	#0,d1
 
-loc_1457C:				; CODE XREF: ROM:00014578j
+loc_1457C:	
 		addi.w	#$13,d1
 		move.b	d1,mapping_frame(a1)
 
-loc_14584:				; CODE XREF: ROM:0001456Ej
+loc_14584:	
 		move.w	x_pos(a0),d0
 		andi.w	#$FF80,d0
 		sub.w	(Camera_X_pos_coarse).w,d0
 		cmpi.w	#$280,d0
 		bhi.w	DeleteObject
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_1459C:				; CODE XREF: ROM:00014556j
+loc_1459C:	
 		moveq	#$13,d0
 		move.b	d0,mapping_frame(a0)
 		move.b	d0,mapping_frame(a1)
@@ -28516,18 +28294,17 @@ loc_1459C:				; CODE XREF: ROM:00014556j
 		cmpi.w	#$280,d0
 		bhi.w	DeleteObject
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_145BC:				; DATA XREF: ROM:0001446Ao
+loc_145BC:	
 		move.w	x_pos(a0),d0
 		andi.w	#$FF80,d0
 		sub.w	(Camera_X_pos_coarse).w,d0
 		cmpi.w	#$280,d0
 		bhi.w	DeleteObject
 		bra.w	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Map_Obj13:	dc.w word_1460E-Map_Obj13 ; DATA XREF: ROM:00014470o
-					; sub_144D4+1Eo ...
+; ===========================================================================
+Map_Obj13:	dc.w word_1460E-Map_Obj13 
 		dc.w word_14618-Map_Obj13
 		dc.w word_1462A-Map_Obj13
 		dc.w word_1463C-Map_Obj13
@@ -29649,7 +29426,7 @@ Obj04_Init:				; DATA XREF: ROM:Obj04_Indexo
 		move.w	x_pos(a0),$30(a0)
 
 Obj04_Main:				; DATA XREF: ROM:000154E4o
-		move.w	($FFFFF646).w,d1
+		move.w	(Water_Level_1).w,d1
 		move.w	d1,y_pos(a0)
 		tst.b	$32(a0)
 		bne.s	loc_15530
@@ -30141,7 +29918,7 @@ loc_15C06:				; CODE XREF: ROM:00015BE8j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_15C48:				; DATA XREF: ROM:00015B5Eo
-		move.w	#$390,($FFFFF646).w
+		move.w	#$390,(Water_Level_1).w
 		lea	(Ani_Obj52).l,a1
 		bsr.w	j_AnimateSprite_1
 		move.w	$3E(a0),d0
@@ -30150,7 +29927,7 @@ loc_15C48:				; DATA XREF: ROM:00015B5Eo
 		tst.l	$36(a0)
 		bpl.s	loc_15CA0
 		move.w	y_pos(a0),d0
-		cmp.w	($FFFFF646).w,d0
+		cmp.w	(Water_Level_1).w,d0
 		bgt.w	loc_15D90
 		move.b	#3,anim(a0)
 		bclr	#6,status(a0)
@@ -30166,7 +29943,7 @@ loc_15C48:				; DATA XREF: ROM:00015B5Eo
 
 loc_15CA0:				; CODE XREF: ROM:00015C68j
 		move.w	y_pos(a0),d0
-		cmp.w	($FFFFF646).w,d0
+		cmp.w	(Water_Level_1).w,d0
 		bgt.s	loc_15CB4
 		move.b	#1,anim(a0)
 		bra.w	loc_15D90
@@ -30317,7 +30094,7 @@ Obj4F_Main:
 ; ---------------------------------------------------------------------------
 
 loc_15E3E:
-		lea	($FFFFFC00).w,a2
+		lea	(Object_Respawn_Table).w,a2
 		moveq	#0,d0
 		move.b	$23(a0),d0
 		beq.s	loc_15E50
@@ -30459,7 +30236,7 @@ loc_15FDA:				; CODE XREF: ROM:00015F80j
 					; DATA XREF: ROM:00015F18o
 		lea	(Ani_Obj50).l,a1
 		bsr.w	j_AnimateSprite_3
-		move.w	#$39C,($FFFFF646).w
+		move.w	#$39C,(Water_Level_1).w
 		moveq	#0,d0
 		move.b	routine_secondary(a0),d0
 		move.w	Obj50_SubIndex(pc,d0.w),d1
@@ -30566,7 +30343,7 @@ locret_160F2:				; CODE XREF: sub_16078+16j
 
 sub_160F4:				; CODE XREF: ROM:00016072p
 		move.w	y_pos(a0),d0
-		cmp.w	($FFFFF646).w,d0
+		cmp.w	(Water_Level_1).w,d0
 		blt.s	locret_1611A
 		move.b	#2,routine_secondary(a0)
 		move.b	#0,anim(a0)
@@ -30653,7 +30430,7 @@ sub_161A6:				; CODE XREF: ROM:00016060p
 		move.w	y_pos(a0),d0
 		tst.b	$2C(a0)
 		bne.s	loc_161C4
-		cmp.w	($FFFFF646).w,d0
+		cmp.w	(Water_Level_1).w,d0
 		bgt.s	locret_161C2
 		subq.b	#2,routine_secondary(a0)
 		st	$2C(a0)
@@ -30970,7 +30747,7 @@ loc_1653E:				; DATA XREF: ROM:off_16532o
 loc_1659C:				; DATA XREF: ROM:00016534o
 		lea	Ani_Obj50(pc),a1
 		bsr.w	j_AnimateSprite_3
-		move.w	#$39C,($FFFFF646).w
+		move.w	#$39C,(Water_Level_1).w
 		moveq	#0,d0
 		move.b	routine_secondary(a0),d0
 		move.w	off_165BC(pc,d0.w),d1
