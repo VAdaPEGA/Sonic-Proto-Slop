@@ -168,18 +168,6 @@ VintID_PCM:			equ (Vint_PCM_ptr-Vint_SwitchTbl)		; $14
 VintID_SSResults:		equ (Vint_SSResults_ptr-Vint_SwitchTbl)		; $16
 VintID_TitleCard2:		equ (Vint_TitleCard2_ptr-Vint_SwitchTbl)	; $18
 
-; Game modes
-GameModeID_SegaScreen:		equ (GameMode_SegaScreen-GameModeArray)		; 0
-GameModeID_TitleScreen:		equ (GameMode_TitleScreen-GameModeArray)	; 4
-GameModeID_Demo:		equ (GameMode_Demo-GameModeArray)		; 8
-GameModeID_Level:		equ (GameMode_Level-GameModeArray)		; $C
-GameModeID_SpecialStage:	equ (GameMode_SpecialStage-GameModeArray)	; $10
-GameModeID_ContinueScreen:	equ $14						; $14 ; referenced despite it not existing
-GameModeID_S1Ending:		equ $18						; $18 ; referenced despite it not existing
-GameModeID_S1Credits:		equ $1C						; $1C ; referenced despite it not existing
-GameModeFlag_TitleCard:		equ 7 ; flag bit
-GameModeID_TitleCard:		equ 1<<GameModeFlag_TitleCard			; $80 ; flag mask
-
 ; Music IDs
 MusID__First			equ $81
 MusID_GHZ:			equ ((MusPtr_GHZ-MusicIndex)/4)+MusID__First		; $81
@@ -199,13 +187,16 @@ MusID_Boss:			equ ((MusPtr_Boss-MusicIndex)/4)+MusID__First		; $8C
 id_roll	=	2
 
 ; Game modes
-;	IncludeGameMode	Logo,		GM_Logo,	"Logo intro"
-;	IncludeGameMode	Title,		GM_Title,	"Title"
-;	IncludeGameMode	Level,		GM_Level,	"Level"
-;	IncludeGameMode	Special,	GM_Special,	"Special Stage"
-;	IncludeGameMode	Credits,	GM_Logo,	"Credits"
-;
-;	inform	0, " Game Modes : \#GamemodeCount\"
+	IncludeGameMode	Logo,		Logo,		"Logo intro"
+	IncludeGameMode	TitleScreen,	TitleScreen,	"Title"
+	IncludeGameMode	Demo,		Level,		"Demo"
+	IncludeGameMode	Level,		Level,		"Level"
+	IncludeGameMode	SpecialStage,	SpecialStage,	"Special Stage"
+	IncludeGameMode	Credits,	Logo,		"Credits"
+	inform	0, " Game Modes : \#GamemodeCount\"
+
+GameModeFlag_TitleCard:		equ 7 ; flag bit
+GameModeID_TitleCard:		equ 1<<GameModeFlag_TitleCard			; $80 ; flag mask
 
 ; 	Levels		folder,	water,	debug
 	IncludeZone	GHZ,	0,	"Green Hill but Broken"

@@ -290,22 +290,24 @@ GameClrRAM:
 		bsr.w	VDPSetupGame
 		bsr.w	SoundDriverLoad
 		bsr.w	JoypadInit
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
-
+		move.b	#GameModeID_Logo,(Game_Mode).w
 MainGameLoop:
-		move.b	(Game_Mode).w,d0
-		andi.w	#$1C,d0
-		jsr	GameModeArray(pc,d0.w)
+		move.b	(Game_Mode).w,d0		; load Game Mode
+		andi.w	#$1E,d0				; Mask out bytes and clean d0
+		move.w	@GameModeArray(pc,d0.w),a0	; get value from table
+		add.l	a0,a0				; multiply by 2
+		jsr	GameModesStart(a0)	; Jump to Game Mode
 		bra.s	MainGameLoop
 ; ===========================================================================
-; loc_3A8:
-GameModeArray:
-GameMode_SegaScreen:	bra.w	SegaScreen	; SEGA screen mode
-GameMode_TitleScreen:	bra.w	TitleScreen	; Title screen mode
-GameMode_Demo:		bra.w	Level		; Demo mode
-GameMode_Level:		bra.w	Level		; Zone play mode
-GameMode_SpecialStage:	bra.w	SpecialStage	; Special Stage play mode
+@GameModeArray:
+c	=	0
+		rept	GameModeCount
+		dc.w	((_GameMode\#c)-GameModesStart)/2
+c	=	c+1
+		endr
+		rts
 ; ===========================================================================
+
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; vertical and horizontal interrupt handlers
 ; VERTICAL INTERRUPT HANDLER:
@@ -3485,12 +3487,11 @@ AngleData:	dc.b   0,  0,  0,  0,  1,  1,  1,  1; 0
 		dc.b $1F,$1F,$20,$20,$20,$20,$20,$20; 248
 		dc.b $20,  0		; 256
 ; ===========================================================================
-		nop
-; ===========================================================================
+GameModesStart:
 ; ---------------------------------------------------------------------------
 ; Sega logo, exact same as Sonic 1's
 ; ---------------------------------------------------------------------------
-
+Logo:
 SegaScreen:
 		move.b	#$E4,d0
 		bsr.w	PlaySound_Special
@@ -3856,13 +3857,13 @@ LevelSelect_PlaySound:
 ; ===========================================================================
 ; loc_354C:
 LevelSelect_PlayEnding:
-		move.b	#GameModeID_S1Ending,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		move.w	#$600,(Current_ZoneAndAct).w
 		rts
 ; ===========================================================================
 ; loc_355A:
 LevelSelect_PlayCredits:
-		move.b	#GameModeID_S1Credits,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		move.b	#$91,d0
 		bsr.w	PlaySound_Special
 		move.w	#0,($FFFFFFF4).w
@@ -3964,7 +3965,7 @@ loc_3630:
 		move.w	d0,(MainCharacter+x_pos).w
 		cmpi.w	#$1C00,d0
 		bcs.s	RunDemo
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -4477,17 +4478,17 @@ loc_3F96:				; CODE XREF: ROM:00003F88j
 		beq.s	loc_3FB4
 		cmpi.b	#GameModeID_Demo,(Game_Mode).w
 		beq.w	Level_MainLoop
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_3FB4:
 		cmpi.b	#GameModeID_Demo,(Game_Mode).w
 		bne.s	loc_3FCE
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		tst.w	(Demo_Mode_Flag).w
 		bpl.s	loc_3FCE
-		move.b	#GameModeID_S1Credits,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 
 loc_3FCE:
 		move.w	#$3C,(Demo_Time_left).w
@@ -5712,7 +5713,7 @@ loc_529C:
 
 loc_52D4:				; CODE XREF: ROM:000051A2j
 					; ROM:000052E2j
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -9644,7 +9645,7 @@ locret_796E:				; CODE XREF: ROM:00007962j
 DynResize_EHZ2_03:			; DATA XREF: ROM:0000790Ao
 		tst.b	($FFFFF7A7).w
 		beq.s	DynResize_EHZ3
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 
 DynResize_EHZ3:				; CODE XREF: ROM:00007974j
 		rts
@@ -14956,10 +14957,10 @@ loc_BB1E:				; CODE XREF: ROM:0000BB06j
 					; ROM:0000BB14j
 		tst.b	($FFFFFE1A).w
 		bne.s	loc_BB38
-		move.b	#GameModeID_ContinueScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w	; Normally Continue Screen
 		tst.b	($FFFFFE18).w
 		bne.s	loc_BB42
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		bra.s	loc_BB42
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -15117,7 +15118,7 @@ Obj3A_NextLevel:
 		move.w	d0,(Current_ZoneAndAct).w
 		tst.w	d0
 		bne.s	Obj3A_ChkSS
-		move.b	#GameModeID_SegaScreen,(Game_Mode).w
+		move.b	#GameModeID_Logo,(Game_Mode).w
 		bra.s	locret_BCC2
 ; ===========================================================================
 ; loc_BCAA:
