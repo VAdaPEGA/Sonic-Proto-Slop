@@ -1,7 +1,8 @@
 ; ---------------------------------------------------------------------------
 ; Main RAM
 ; ---------------------------------------------------------------------------
-		rsset $FF0000|$FF000000
+			rsset $FF0000|$FF000000
+RAM_Start:		equ __rs
 ; ---------------------------------------------------------------------------
 ; LEVEL LAYOUTS
 Chunk_Table:			rs.b $8000
@@ -259,15 +260,15 @@ Sonic_Pos_Record_Index:		equ $FFFFEED2
 
 Game_Mode:			equ $FFFFF600
 
-Ctrl_1_Logical:		
-Ctrl_1_Held_Logical:		equ $FFFFF602
-Ctrl_1_Press_Logical:		equ $FFFFF603
-Ctrl_1:			
-Ctrl_1_Held:			equ $FFFFF604
-Ctrl_1_Press:			equ $FFFFF605
-Ctrl_2:			
-Ctrl_2_Held:			equ $FFFFF606
-Ctrl_2_Press:			equ $FFFFF607
+Ctrl_1_Logical:			equ $FFFFF602
+Ctrl_1_Held_Logical:		equ Ctrl_1_Logical
+Ctrl_1_Press_Logical:		equ Ctrl_1_Logical+1
+Ctrl_1:				equ $FFFFF604
+Ctrl_1_Held:			equ Ctrl_1
+Ctrl_1_Press:			equ Ctrl_1+1
+Ctrl_2:				equ $FFFFF606
+Ctrl_2_Held:			equ Ctrl_2
+Ctrl_2_Press:			equ Ctrl_2+1
 
 
 VDP_Reg1_val:			equ $FFFFF60C
@@ -394,6 +395,8 @@ Error_Registers:		equ $FFFFFC00	; stores registers d0-a7 during an error event (
 Error_Stack_Pointer:		equ $FFFFFC40	; stores most recent sp address (4 bytes)
 Error_Type:			equ $FFFFFC44	; error type
 
+System_Stack			equ $FFFFFE00
+
 Debug_object:			equ $FFFFFE06
 Debug_placement_mode:		equ $FFFFFE08
 Debug_Accel_Timer:		equ $FFFFFE0A
@@ -430,3 +433,5 @@ Two_player_mode:		equ $FFFFFFE8
 Demo_Mode_Flag:			equ $FFFFFFF0
 
 Debug_mode_flag:		equ $FFFFFFFA
+
+Checksum_Init:		equ $FFFFFFFC
