@@ -10058,7 +10058,9 @@ sub_7C76:
 		addi.w	#16,d3		; Offset by 16 pixels
 		dbf	d1,@PositionSegments
 		moveq	#0,d0	; make sure it's seen as zero when completed
+		rts
 	@FailedSpawn:
+		moveq	#-1,d0
 		rts
 ; End of function sub_7C76
 
@@ -10304,8 +10306,8 @@ byte_7E9F:	dc.b   2,  1,  2,  1,  2,  1,  2,  0,  1,  0,  0,  0,  0,  0,  1; 0
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_7EAE:				; CODE XREF: sub_7E60+3Cj
-		moveq	#$FFFFFFFE,d3
-		moveq	#$FFFFFFFE,d4
+		moveq	#-2,d3
+		moveq	#-2,d4
 		move.b	status(a0),d0
 		andi.b	#8,d0
 		beq.s	loc_7EC0
@@ -10476,7 +10478,6 @@ Obj11_BendData:	dc.b   2,  4,  6,  8,  8,  6,  4,  2,  0,  0,  0,  0,  0,  0,  0
 		dc.b   2,  4,  6,  8, $A, $C, $E,$10, $E, $C, $A,  8,  6,  4,  2,  0; 112
 		dc.b   2,  4,  6,  8, $A, $C, $E,$10,$10, $E, $C, $A,  8,  6,  4,  2; 128
 Obj11_BendData2:dc.b $FF,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0; 0
-					; DATA XREF: sub_7F36+Ao
 		dc.b $B5,$FF,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0; 16
 		dc.b $7E,$DB,$FF,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0; 32
 		dc.b $61,$B5,$EC,$FF,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0; 48
@@ -12243,15 +12244,13 @@ loc_97F4:				; CODE XREF: ROM:000097E6j
 ; Object 24 - explosion	from a hit monitor
 ;----------------------------------------------------
 
-Obj24:					; CODE XREF: ROM:0000A62Cj
-					; DATA XREF: ROM:Obj_Indexo
+Obj24:	
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	Obj24_Index(pc,d0.w),d1
 		jmp	Obj24_Index(pc,d1.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj24_Index:	dc.w loc_981A-Obj24_Index ; DATA XREF: ROM:Obj24_Indexo
-					; ROM:00009818o
+Obj24_Index:	dc.w loc_981A-Obj24_Index
 		dc.w loc_985E-Obj24_Index
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -14008,17 +14007,17 @@ Object26_Init:				; DATA XREF: ROM:Obj26_Indexo
 		move.b	subtype(a0),anim(a0)
 
 Object26_Solid:	; Routine 2
-		move.b	routine_secondary(a0),d0
-		beq.s	@Normal
-		subq.b	#2,d0
-		bne.s	@Fall
+		move.b	routine_secondary(a0),d0	; Is player on top of Platform
+		beq.s	@Normal				; If not, branch
+		subq.b	#2,d0				; Check if it should fall
+		bne.s	@Fall				; Make monitor fall
 
 		; 2nd Routine 2
 		moveq	#0,d1
 		move.b	width_pixels(a0),d1
-		addi.w	#$B,d1
-		bsr.w	sub_F9C8
-		btst	#3,status(a1)
+		addi.w	#22/2,d1
+		bsr.w	MonitorPlatformTopCheckPlayer	; check if player has left the monitor
+		btst	#PlayerStatusBitOnObject,status(a1)
 		bne.w	@OnTop
 		clr.b	routine_secondary(a0)
 		bra.w	Object26_Animate
@@ -14043,20 +14042,25 @@ Object26_Solid:	; Routine 2
 ;----------------------------------------------------
 
 @Normal:		; 2nd Routine 0		; CODE XREF: ROM:0000AEDAj
-		move.w	#$1A,d1
-		move.w	#$F,d2
+		move.w	#26,d1
+		move.w	#30/2,d2
 		bsr.w	Obj26_SolidSides
 		beq.w	loc_AFA0
 		tst.w	y_vel(a1)	; check if player's moving up
 		bmi.s	@MovingUpward
-		cmpi.b	#2,anim(a1)
+		cmpi.b	#2,anim(a1)	; rolling
 		beq.s	loc_AFA0
 
 @MovingUpward:	
 		tst.w	d1
 		bpl.s	loc_AF64
 		sub.w	d3,y_pos(a1)
-		bsr.w	RideObject_SetRide
+		; WARNING : Monitor never sets d6 prior to this point, meaning the "P1 standing on object" bit never gets set correctly
+		; because of it, if you land on a monitor without rolling, you can corrupt the status bitfield with a random value at d6
+		; most notably, causing the monitor to flip horizontally / vertically.
+		; This was fixed in the final
+		bsr.w	RideObject_SetRide	
+		; lmao we're not fixing it tho
 		move.b	#2,routine_secondary(a0)
 		bra.w	Object26_Animate
 ;----------------------------------------------------
@@ -14085,13 +14089,13 @@ loc_AF8A:
 		bra.s	Object26_Animate
 ;----------------------------------------------------
 loc_AFA0:	
-		btst	#5,status(a0)
+		btst	#StatusBitP1Push,status(a0)
 		beq.s	Object26_Animate
-		move.w	#1,anim(a1)
+		move.w	#1,anim(a1)	; set player animation to walking
 
 loc_AFAE:
-		bclr	#5,status(a0)
-		bclr	#5,status(a1)
+		bclr	#StatusBitP1Push,status(a0)
+		bclr	#PlayerStatusBitPush,status(a1)
 ;----------------------------------------------------
 Object26_Animate:
 		lea	(Ani_obj26).l,a1
@@ -14312,23 +14316,20 @@ Obj26_SolidSides:			; CODE XREF: ROM:0000AF38p
 		add.w	d1,d1
 		sub.w	d1,d0
 
-loc_B204:				; CODE XREF: Obj26_SolidSides+48j
-		cmpi.w	#$10,d3
+loc_B204:	
+		cmpi.w	#16,d3
 		bcs.s	loc_B212
 
-loc_B20A:				; CODE XREF: Obj26_SolidSides+70j
-					; Obj26_SolidSides+74j
+loc_B20A:	
 		moveq	#1,d1
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_B20E:				; CODE XREF: Obj26_SolidSides+Ej
-					; Obj26_SolidSides+16j	...
+; ===========================================================================
+loc_B20E:	
 		moveq	#0,d1
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_B212:				; CODE XREF: Obj26_SolidSides+52j
+loc_B212:	
 		moveq	#0,d1
 		move.b	width_pixels(a0),d1
 		addq.w	#4,d1
@@ -20922,14 +20923,14 @@ loc_F8C2:				; CODE XREF: sub_F7F2+1AAj
 		move.w	d2,y_pos(a1)
 ; sub_F8F8:
 RideObject_SetRide:
-		btst	#3,status(a1)
+		btst	#StatusBitP1Stand,status(a1)
 		beq.s	loc_F916
 		moveq	#0,d0
 		move.b	interact(a1),d0
 		lsl.w	#6,d0
 		addi.l	#Object_Space,d0
 		movea.l	d0,a3
-		bclr	#3,status(a3)
+		bclr	#StatusBitP1Stand,status(a3)
 
 loc_F916:
 		move.w	a0,d0
@@ -20940,7 +20941,7 @@ loc_F916:
 		move.b	#0,angle(a1)
 		move.w	#0,y_vel(a1)
 		move.w	x_vel(a1),ground_speed(a1)
-		btst	#1,status(a1)
+		btst	#PlayerStatusBitAir,status(a1)
 		beq.s	loc_F95C
 		move.l	a0,-(sp)
 		movea.l	a1,a0
@@ -20958,7 +20959,7 @@ loc_F95A:
 		movea.l	(sp)+,a0
 
 loc_F95C:
-		bset	#3,status(a1)
+		bset	#PlayerStatusBitOnObject,status(a1)
 		bset	d6,status(a0)
 
 locret_F966:
@@ -21006,31 +21007,27 @@ loc_F9A0:				; CODE XREF: sub_F844+4j
 		bra.w	loc_F8C2
 ; END OF FUNCTION CHUNK	FOR sub_F844
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-sub_F9C8:				; CODE XREF: ROM:0000AEEAp
+; ===========================================================================
+; This routine is only used by the monitor object
+; d1 : Object width / 2
+MonitorPlatformTopCheckPlayer:	; giving it the least intuitive name in the world
 		move.w	d1,d2
 		add.w	d2,d2
-		lea	(MainCharacter).w,a1
-		btst	#1,status(a1)
-		bne.s	loc_F9E8
+		lea	(MainCharacter).w,a1	; Only checks for one player
+		btst	#PlayerStatusBitAir,status(a1)
+		bne.s	@GetOffObject
 		move.w	x_pos(a1),d0
 		sub.w	x_pos(a0),d0
 		add.w	d1,d0
-		bmi.s	loc_F9E8
+		bmi.s	@GetOffObject
 		cmp.w	d2,d0
-		bcs.s	locret_F9FA
-
-loc_F9E8:				; CODE XREF: sub_F9C8+Ej sub_F9C8+1Aj
-		bclr	#3,status(a1)
+		bcs.s	@DoNothing
+	@GetOffObject:
+		bclr	#PlayerStatusBitOnObject,status(a1)
 		move.b	#2,routine(a0)
-		bclr	#3,status(a0)
-
-locret_F9FA:				; CODE XREF: sub_F9C8+1Ej
+		bclr	#StatusBitP1Stand,status(a0)
+	@DoNothing:
 		rts
-; End of function sub_F9C8
-
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Object 01 - Sonic
@@ -22073,7 +22070,7 @@ Sonic_Jump:
 		add.w	d0,y_vel(a0)
 		bset	#PlayerStatusBitAir,status(a0)
 		bclr	#PlayerStatusBitPush,status(a0)
-		addq.l	#4,sp
+		move.l	#ObjectMove,(sp)
 		move.b	#1,jumping(a0)
 		clr.b	stick_to_convex(a0)
 		move.w	#$A0,d0
@@ -37592,7 +37589,6 @@ Debug_HPZ:	dc.w $F			; DATA XREF: ROM:0001BCF4o
 j_Adjust2PArtPointer_1:		; CODE XREF: Debug_ShowItem+1Ap
 		jmp	Adjust2PArtPointer
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		align 4
 ; ---------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LISTS
 ;
