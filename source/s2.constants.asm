@@ -150,24 +150,6 @@ af2ndRoutine:	equ -6	; $FA increment 2nd routine counter
 ; These constants will be replaced by an automated system for ease of modification
 ; see macros
 
-; ---------------------------------------------------------------------------
-; some variables and functions to help define those constants (redefined before a new set of IDs)
-; V-Int routines
-
-VintID_Lag:			equ (Vint_Lag_ptr-Vint_SwitchTbl)		; 0
-VintID_SEGA:			equ (Vint_SEGA_ptr-Vint_SwitchTbl)		; 2
-VintID_Title:			equ (Vint_Title_ptr-Vint_SwitchTbl)		; 4
-VintID_Unused6:			equ (Vint_Unused6_ptr-Vint_SwitchTbl)		; 6
-VintID_Level:			equ (Vint_Level_ptr-Vint_SwitchTbl)		; 8
-VintID_S1SS:			equ (Vint_S1SS_ptr-Vint_SwitchTbl)		; $A
-VintID_TitleCard:		equ (Vint_TitleCard_ptr-Vint_SwitchTbl)		; $C
-VintID_UnusedE:			equ (Vint_UnusedE_ptr-Vint_SwitchTbl)		; $E
-VintID_Pause:			equ (Vint_Pause_ptr-Vint_SwitchTbl)		; $10
-VintID_Fade:			equ (Vint_Fade_ptr-Vint_SwitchTbl)		; $12
-VintID_PCM:			equ (Vint_PCM_ptr-Vint_SwitchTbl)		; $14
-VintID_SSResults:		equ (Vint_SSResults_ptr-Vint_SwitchTbl)		; $16
-VintID_TitleCard2:		equ (Vint_TitleCard2_ptr-Vint_SwitchTbl)	; $18
-
 ; Music IDs
 MusID__First			equ $81
 MusID_GHZ:			equ ((MusPtr_GHZ-MusicIndex)/4)+MusID__First		; $81

@@ -347,20 +347,20 @@ VintRet:
 		rte
 ; ===========================================================================
 ; off_B6C:
-Vint_SwitchTbl:
-Vint_Lag_ptr:		dc.w Vint_Lag-Vint_SwitchTbl		; 0
-Vint_SEGA_ptr:		dc.w Vint_SEGA-Vint_SwitchTbl		; 2
-Vint_Title_ptr:		dc.w Vint_Title-Vint_SwitchTbl		; 4
-Vint_Unused6_ptr:	dc.w Vint_Unused6-Vint_SwitchTbl	; 6
-Vint_Level_ptr:		dc.w Vint_Level-Vint_SwitchTbl		; 8
-Vint_S1SS_ptr:		dc.w Vint_S1SS-Vint_SwitchTbl		; $A
-Vint_TitleCard_ptr:	dc.w Vint_TitleCard-Vint_SwitchTbl	; $C
-Vint_UnusedE_ptr:	dc.w Vint_UnusedE-Vint_SwitchTbl	; $E
-Vint_Pause_ptr:		dc.w Vint_Pause-Vint_SwitchTbl		; $10
-Vint_Fade_ptr:		dc.w Vint_Fade-Vint_SwitchTbl		; $12
-Vint_PCM_ptr:		dc.w Vint_PCM-Vint_SwitchTbl		; $14
-Vint_SSResults_ptr:	dc.w Vint_SSResults-Vint_SwitchTbl	; $16
-Vint_TitleCard2_ptr:	dc.w Vint_TitleCard-Vint_SwitchTbl	; $18
+	IndexStart	Vint_SwitchTbl
+	GenerateIndexID	2, Vint, Lag
+	GenerateIndexID	2, Vint, SEGA
+	GenerateIndexID	2, Vint, Title
+	GenerateIndexID	2, Vint, Unused6
+	GenerateIndexID	2, Vint, Level
+	GenerateIndexID	2, Vint, S1SS
+	GenerateIndexID	2, Vint, TitleCard
+	GenerateIndexID	2, Vint, UnusedE
+	GenerateIndexID	2, Vint, Pause
+	GenerateIndexID	2, Vint, Fade
+	GenerateIndexID	2, Vint, PCM
+	GenerateIndexID	2, Vint, SSResults
+	GenerateIndex	2, Vint, TitleCard
 ; ===========================================================================
 ; loc_B86: VintSub0:
 Vint_Lag:
@@ -21044,14 +21044,15 @@ Obj01:
 Obj01_Normal:
 		moveq	#0,d0
 		move.b	routine(a0),d0
-		move.w	Obj01_Index(pc,d0.w),d1
-		jmp	Obj01_Index(pc,d1.w)
+		move.w	@Index(pc,d0.w),d1
+		jmp	@Index(pc,d1.w)
 ; ===========================================================================
-Obj01_Index:	dc.w Obj01_Init-Obj01_Index		; 0
-		dc.w Obj01_Control-Obj01_Index		; 2
-		dc.w Obj01_Hurt-Obj01_Index		; 4
-		dc.w Obj01_Dead-Obj01_Index		; 6
-		dc.w Obj01_ResetLevel-Obj01_Index	; 8
+	IndexStart	
+	GenerateIndex	2, Obj01, Init
+	GenerateIndex	2, Obj01, Control
+	GenerateIndex	2, Obj01, Hurt
+	GenerateIndex	2, Obj01, Dead
+	GenerateIndex	2, Obj01, ResetLevel
 ; ===========================================================================
 ; Obj01_Main:
 Obj01_Init:
@@ -21072,7 +21073,7 @@ Obj01_Init:
 		move.b	#0,flips_remaining(a0)
 		move.b	#4,flip_speed(a0)
 		move.w	#0,(Sonic_Pos_Record_Index).w
-		move.w	#$3F,d2
+		move.w	#$40-1,d2
 
 loc_FA88:
 		bsr.w	Sonic_RecordPos
@@ -21134,12 +21135,14 @@ loc_FB0E:
 		bra.w	LoadSonicDynPLC
 ; ===========================================================================
 ; secondary states under state Obj01_Control
-Obj01_Modes:	dc.w Obj01_MdNormal-Obj01_Modes
-		dc.w Obj01_MdAir-Obj01_Modes
-		dc.w Obj01_MdRoll-Obj01_Modes
-		dc.w Obj01_MdJump-Obj01_Modes
-
-MusicList_Sonic:dc.b MusID_GHZ
+	IndexStart	Obj01_Modes
+	GenerateIndex	2, Obj01, MdNormal
+	GenerateIndex	2, Obj01, MdAir
+	GenerateIndex	2, Obj01, MdRoll
+	GenerateIndex	2, Obj01, MdJump
+; ===========================================================================
+MusicList_Sonic:
+		dc.b MusID_GHZ
 		dc.b MusID_LZ
 		dc.b MusID_CPZ
 		dc.b MusID_EHZ
@@ -22020,7 +22023,7 @@ Obj01_NoRoll:
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1023A:
-		btst	#2,status(a0)
+		btst	#PlayerStatusBitSpin,status(a0)
 		beq.s	Obj01_DoRoll
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
@@ -23087,7 +23090,7 @@ JmpTo_KillSonic:	; JmpTo
 		jmp	(KillSonic).l
 ; ===========================================================================
 Player_CheckChunk:
-		rts	; to be continued
+		include	"Player/Chunks.asm"
 
 ; ===========================================================================
 ;----------------------------------------------------------------------------
@@ -26087,27 +26090,28 @@ loc_12D5C:				; CODE XREF: AnglePos+358j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Floor_ChkTile:				; CODE XREF: FindFloorp FindFloor2p ...
+Floor_ChkTile:	
 		move.w	d2,d0
-		add.w	d0,d0
-		andi.w	#$F00,d0
+		add.w	d0,d0		; y*2
+		andi.w	#$F00,d0	; Masked, only upper nibble matters
 		move.w	d3,d1
-		lsr.w	#7,d1
-		andi.w	#$7F,d1	; ''
-		add.w	d1,d0
-		moveq	#$FFFFFFFF,d1
+		lsr.w	#7,d1		; Divide X position by 128
+		andi.w	#$7F,d1		; mask
+		add.w	d1,d0		; add both numbers
+		moveq	#-1,d1		; ???
 		lea	(Level_Layout).w,a1
-		move.b	(a1,d0.w),d1
+		move.b	(a1,d0.w),d1	; Get current chunk
+
 		andi.w	#$FF,d1
 		lsl.w	#7,d1
 		move.w	d2,d0
-		andi.w	#$70,d0	; 'p'
+		andi.w	#$70,d0
 		add.w	d0,d1
 		move.w	d3,d0
 		lsr.w	#3,d0
 		andi.w	#$E,d0
 		add.w	d0,d1
-		movea.l	d1,a1
+		movea.l	d1,a1	; block at a1
 		rts
 ; End of function Floor_ChkTile
 
@@ -26491,12 +26495,9 @@ loc_130F6:				; CODE XREF: CalcRoomInFront+76j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-sub_13102:				; CODE XREF: Sonic_Jump+16p
-					; Tails_Jump:loc_11408p
-
-; FUNCTION CHUNK AT 0001328E SIZE 00000060 BYTES
-; FUNCTION CHUNK AT 00013408 SIZE 00000068 BYTES
-
+sub_13102:	; only Jump rotuine uses this
+; input :
+; d0 - angle
 		move.l	#Primary_Collision,(Collision_addr).w
 		cmpi.b	#$C,top_solid_bit(a0)
 		beq.s	loc_1311A
@@ -26506,23 +26507,22 @@ loc_1311A:				; CODE XREF: sub_13102+Ej
 		move.b	lrb_solid_bit(a0),d5
 		move.b	d0,($FFFFF768).w
 		move.b	d0,($FFFFF76A).w
-		addi.b	#$20,d0	; ' '
+		addi.b	#$20,d0
 		andi.b	#$C0,d0
-		cmpi.b	#$40,d0	; '@'
+		cmpi.b	#$40,d0
 		beq.w	loc_13408
 		cmpi.b	#$80,d0
 		beq.w	Sonic_DontRunOnWalls
 		cmpi.b	#$C0,d0
 		beq.w	loc_1328E
 
-loc_13146:				; CODE XREF: Sonic_DoLevelCollision:loc_1056Ap
-					; Sonic_DoLevelCollision+122p ...
+loc_13146:	
 		move.l	#Primary_Collision,(Collision_addr).w
 		cmpi.b	#$C,top_solid_bit(a0)
 		beq.s	loc_1315E
 		move.l	#Secondary_Collision,(Collision_addr).w
 
-loc_1315E:				; CODE XREF: sub_13102+52j
+loc_1315E:	
 		move.b	top_solid_bit(a0),d5
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -26738,8 +26738,7 @@ locret_1333E:				; CODE XREF: ObjHitWallRight+26j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-Sonic_DontRunOnWalls:			; CODE XREF: Sonic_DoLevelCollision:loc_105FEp
-					; Sonic_DoLevelCollision:loc_1066Ap ...
+Sonic_DontRunOnWalls:			; This label is a lie
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
@@ -36132,7 +36131,7 @@ AniArt_Load:
 		add.w	d0,d0
 		add.w	d0,d0
 		move.w	DynArtCue_Index+2(pc,d0.w),d1
-		lea	DynArtCue_Index(pc,d1.w),a2
+		lea	DynArtCue_Index(pc,d1.w),a2	; AnimCue
 		move.w	DynArtCue_Index(pc,d0.w),d0
 		jmp	DynArtCue_Index(pc,d0.w)
 ; ---------------------------------------------------------------------------
@@ -36231,6 +36230,14 @@ loc_1AB1A:
 		dbf	d6,loc_1AACA
 		rts
 ; ===========================================================================
+AnimCueHead	macro	name, num, VRAM
+AnimCue_\name:
+		dc.w	num
+		endm
+AnimCueEntry	macro	Art, location, frames
+		endm
+; ===========================================================================
+
 AnimCue_EHZ:	dc.w 4
 		dc.l Art_EHZFlower1+$FF000000
 		dc.w $7280
@@ -37607,46 +37614,46 @@ j_Adjust2PArtPointer_1:		; CODE XREF: Debug_ShowItem+1Ap
 ; (in my experience this is a guaranteed crash or hang)
 ; ---------------------------------------------------------------------------
 	IndexStart	ArtLoadCues
-	GenerateIndex 1, PLCID, Main
-	GenerateIndex 1, PLCID, Main2
-	GenerateIndex 1, PLCID, Explode
-	GenerateIndex 1, PLCID, GameOver
+	GenerateIndexID	1, PLC, Main
+	GenerateIndexID	1, PLC, Main2
+	GenerateIndexID	1, PLC, Explode
+	GenerateIndexID	1, PLC, GameOver
 
-	GenerateIndex 1, PLCID, S1TitleCard
-	GenerateIndex 1, PLCID, Boss
-	GenerateIndex 1, PLCID, Signpost
-	GenerateIndex 1, PLCID, S1SpecialStage
+	GenerateIndexID	1, PLC, S1TitleCard
+	GenerateIndexID	1, PLC, Boss
+	GenerateIndexID	1, PLC, Signpost
+	GenerateIndexID	1, PLC, S1SpecialStage
 
-	GenerateIndex 1, PLCID, GHZ
-	GenerateIndex 1, PLCID, GHZ2
-	GenerateIndex 1, PLCID, CPZ
-	GenerateIndex 1, PLCID, CPZ2
-	GenerateIndex 1, PLCID, MMZ
-	GenerateIndex 1, PLCID, MMZ2
-	GenerateIndex 1, PLCID, EHZ
-	GenerateIndex 1, PLCID, EHZ2
-	GenerateIndex 1, PLCID, HPZ
-	GenerateIndex 1, PLCID, HPZ2
-	GenerateIndex 1, PLCID, HTZ
-	GenerateIndex 1, PLCID, HTZ2
-	GenerateIndex 1, PLCID, CNZ
-	GenerateIndex 1, PLCID, CNZ2
+	GenerateIndexID	1, PLC, GHZ
+	GenerateIndexID	1, PLC, GHZ2
+	GenerateIndex	1, PLC, CPZ
+	GenerateIndex	1, PLC, CPZ2
+	GenerateIndex	1, PLC, MMZ
+	GenerateIndex	1, PLC, MMZ2
+	GenerateIndex	1, PLC, EHZ
+	GenerateIndex	1, PLC, EHZ2
+	GenerateIndex	1, PLC, HPZ
+	GenerateIndex	1, PLC, HPZ2
+	GenerateIndex	1, PLC, HTZ
+	GenerateIndex	1, PLC, HTZ2
+	GenerateIndex	1, PLC, CNZ
+	GenerateIndex	1, PLC, CNZ2
 
-	GenerateIndex 1, PLCID, GHZAnimals
-	GenerateIndex 1, PLCID, CPZAnimals
-	GenerateIndex 1, PLCID, MMZAnimals
-	GenerateIndex 1, PLCID, HPZAnimals
-	GenerateIndex 1, PLCID, EHZAnimals
-	GenerateIndex 1, PLCID, HTZAnimals
-	GenerateIndex 1, PLCID, CNZAnimals
+	GenerateIndexID	1, PLC, GHZAnimals
+	GenerateIndex	1, PLC, CPZAnimals
+	GenerateIndex	1, PLC, MMZAnimals
+	GenerateIndex	1, PLC, HPZAnimals
+	GenerateIndex	1, PLC, EHZAnimals
+	GenerateIndex	1, PLC, HTZAnimals
+	GenerateIndex	1, PLC, CNZAnimals
 
 ; macro for a pattern load request
 PLC_Start	macro	name
-		@\name\:
-		dc.w	((@\name\_End-@\name\)/6)-1
+		PLC_\name\:
+		dc.w	((PLC_\name\_End-PLC_\name\)/6)-1
 		endm
 PLC_End		macro	name
-		@\name\_End:
+		PLC_\name\_End:
 		endm
 PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 		dc.l	fromROMaddr		; art to load

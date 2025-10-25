@@ -428,22 +428,27 @@ Ani_\group\_\name:	include	"GameMode/Overworld/Objects/\group\/\name\/\name\ANI.
 IndexStart		macro	name
 		if (narg=1)
 \name:
-@index:
 		endif
+@index:
 c	=		0
 			endm
 ; ---
-GenerateLocalIndex	macro	label
+GenerateLocalIndex	macro	Increase,label
 			dc.w	@\label\-@Index
 		if (narg=1)
 @Index\label:		equ	c
 		endif
-c	=		c+2
+c	=		c+Increase
 			endm
 ; ---
-GenerateIndex		macro	Increase,LabelName,name
-			dc.w	@\name\-@Index
-\LabelName\_\name:		equ	c
+GenerateIndexID		macro	Increase,LabelName,name
+			dc.w	\LabelName\_\name\-@Index
+\LabelName\ID_\name:		equ	c
+c	=		c+increase
+			endm
+; ---
+GenerateIndex	macro	Increase,LabelName,name
+			dc.w	\LabelName\_\name\-@Index
 c	=		c+increase
 			endm
 
