@@ -9965,13 +9965,16 @@ Obj11:					; DATA XREF: ROM:Obj_Indexo
 		move.w	#(3<<7)&$380,d0
 		bra.w	DisplaySpriteSub
 ; ===========================================================================
-Obj11_Index:	dc.w loc_7BC6-Obj11_Index
-		dc.w loc_7CC8-Obj11_Index
-		dc.w loc_7D5A-Obj11_Index
-		dc.w loc_7D5E-Obj11_Index
+Obj11_Index:	dc.w @Init-Obj11_Index
+		dc.w Obj11_EHZ-Obj11_Index
+		dc.w Obj11_Display-Obj11_Index
+		dc.w Obj11_HPZ-Obj11_Index
 ; ===========================================================================
 
-loc_7BC6:	
+Obj11_Child1	=	$30
+Obj11_Child2	=	$34
+
+@Init:	
 		addq.b	#2,routine(a0)
 		move.l	#Map_obj11_GHZ,mappings(a0)
 		move.w	#$44C6,art_tile(a0)
@@ -10007,13 +10010,13 @@ loc_7BC6:
 		move.w	#8,d1
 		bsr.s	sub_7C76
 		beq.s	@Child1Spawned
-		subq.b	#2,routine(a0)
+		move.b	#0,routine(a0)
 		rts
 		@Child1Spawned:
 		move.w	subtype(a1),d0
 		subq.w	#8,d0
 		move.w	d0,x_pos(a1)
-		move.l	a1,$30(a0)
+		move.l	a1,Obj11_Child1(a0)
 		swap	d1
 		subq.w	#8,d1
 		bls.s	@AllSegmentsDone
@@ -10021,7 +10024,7 @@ loc_7BC6:
 		bsr.s	sub_7C76
 		bne.s	@Child2Failed
 
-		move.l	a1,$34(a0)
+		move.l	a1,Obj11_Child2(a0)
 		move.w	d4,d0
 		add.w	d0,d0
 		add.w	d4,d0
@@ -10030,11 +10033,11 @@ loc_7BC6:
 		move.w	d0,x_pos(a1)
 
 	@AllSegmentsDone:	
-		bra.s	loc_7CC8
+		bra.s	Obj11_EHZ
 ;-----------------------------------------------------------------------------
 @Child2Failed:
-		subq.b	#2,routine(a0)	; return as safety precaution
-		movea.l	$30(a0),a1	; DELETE CHILD 1
+		move.b	#0,routine(a0)	; return as safety precaution
+		movea.l	Obj11_Child1(a0),a1	; DELETE CHILD 1
 		bra.w	DeleteObject2
 ;-----------------------------------------------------------------------------
 sub_7C76:	
@@ -10050,7 +10053,7 @@ sub_7C76:
 		move.b	#$40,mainspr_width(a1)
 		move.b	d1,mainspr_childsprites(a1)
 		subq.b	#1,d1
-		lea	$10(a1),a2
+		lea	sub2_x_pos(a1),a2
 	@PositionSegments:	
 		move.w	d3,(a2)+	; Horizontal Position
 		move.w	d2,(a2)+	; Vertical Position
@@ -10060,13 +10063,12 @@ sub_7C76:
 		moveq	#0,d0	; make sure it's seen as zero when completed
 		rts
 	@FailedSpawn:
-		moveq	#-1,d0
 		rts
 ; End of function sub_7C76
 
 ;-----------------------------------------------------------------------------
 
-loc_7CC8:	
+Obj11_EHZ:	
 		move.b	status(a0),d0
 		andi.b	#$18,d0
 		bne.s	loc_7CDE
@@ -10127,22 +10129,22 @@ loc_7D2A:				; CODE XREF: ROM:00007D26j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_7D3E:	
-		movea.l	$30(a0),a1	; DELETE CHILD
+		movea.l	Obj11_Child1(a0),a1	; DELETE CHILD
 		bsr.w	DeleteObject2
 		cmpi.b	#8,$28(a0)
 		bls.s	loc_7D56
-		movea.l	$34(a0),a1
+		movea.l	Obj11_Child2(a0),a1
 		bsr.w	DeleteObject2
 
 loc_7D56:	
 		bra.w	DeleteObject
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_7D5A:				; DATA XREF: ROM:00007BC2o
+Obj11_Display:				; DATA XREF: ROM:00007BC2o
 		bra.w	DisplaySprite
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_7D5E:				; DATA XREF: ROM:00007BC4o
+Obj11_HPZ:				; DATA XREF: ROM:00007BC4o
 		move.b	status(a0),d0
 		andi.b	#$18,d0
 		bne.s	loc_7D74
@@ -10178,7 +10180,7 @@ loc_7D9C:				; CODE XREF: ROM:00007D72j
 
 loc_7DA0:				; CODE XREF: ROM:00007D6Cj
 		moveq	#0,d1
-		move.b	$28(a0),d1
+		move.b	subtype(a0),d1
 		lsl.w	#3,d1
 		move.w	d1,d2
 		addq.w	#8,d1
@@ -10212,7 +10214,7 @@ sub_7DC0:				; CODE XREF: ROM:00007D1Ep
 sub_7DDA:				; CODE XREF: sub_7DC0+Cp
 		btst	d6,status(a0)
 		beq.s	loc_7E3E
-		btst	#1,status(a1)
+		btst	#PlayerStatusBitAir,status(a1)
 		bne.s	loc_7DFA
 		moveq	#0,d0
 		move.w	x_pos(a1),d0
@@ -10223,7 +10225,7 @@ sub_7DDA:				; CODE XREF: sub_7DC0+Cp
 		bcs.s	loc_7E08
 
 loc_7DFA:				; CODE XREF: sub_7DDA+Cj sub_7DDA+1Aj
-		bclr	#3,status(a1)
+		bclr	#PlayerStatusBitOnObject,status(a1)
 		bclr	d6,status(a0)
 		moveq	#0,d4
 		rts
@@ -10232,10 +10234,10 @@ loc_7DFA:				; CODE XREF: sub_7DDA+Cj sub_7DDA+1Aj
 loc_7E08:				; CODE XREF: sub_7DDA+1Ej
 		lsr.w	#4,d0
 		move.b	d0,(a0,d5.w)
-		movea.l	$30(a0),a2
+		movea.l	Obj11_Child1(a0),a2
 		cmpi.w	#8,d0
 		bcs.s	loc_7E20
-		movea.l	$34(a0),a2
+		movea.l	Obj11_Child2(a0),a2
 		subi.w	#8,d0
 
 loc_7E20:				; CODE XREF: sub_7DDA+3Cj
@@ -10243,7 +10245,7 @@ loc_7E20:				; CODE XREF: sub_7DDA+3Cj
 		move.w	d0,d1
 		add.w	d0,d0
 		add.w	d1,d0
-		move.w	$12(a2,d0.w),d0
+		move.w	sub2_y_pos(a2,d0.w),d0
 		subq.w	#8,d0
 		moveq	#0,d1
 		move.b	$16(a1),d1
@@ -10320,7 +10322,7 @@ loc_7EC0:				; CODE XREF: sub_7E60+5Aj
 		move.b	$3B(a0),d4
 
 loc_7ECE:				; CODE XREF: sub_7E60+68j
-		movea.l	$30(a0),a1
+		movea.l	Obj11_Child1(a0),a1
 		lea	$45(a1),a2
 		lea	$15(a1),a1
 		moveq	#0,d1
@@ -10375,7 +10377,7 @@ loc_7F1E:				; CODE XREF: sub_7E60+B6j
 		addq.w	#6,a1
 		cmpa.w	a2,a1
 		bne.s	loc_7F30
-		movea.l	$34(a0),a1
+		movea.l	Obj11_Child2(a0),a1
 		lea	$15(a1),a1
 
 loc_7F30:				; CODE XREF: sub_7E60+C6j
@@ -10394,7 +10396,7 @@ sub_7F36:				; CODE XREF: ROM:loc_7D06p
 		move.w	d0,d4
 		lea	(Obj11_BendData2).l,a4
 		moveq	#0,d0
-		move.b	$28(a0),d0
+		move.b	subtype(a0),d0
 		lsl.w	#4,d0
 		moveq	#0,d3
 		move.b	$3F(a0),d3
@@ -10408,9 +10410,9 @@ loc_7F64:
 		andi.w	#$F,d3
 		lsl.w	#4,d3
 		lea	(a4,d3.w),a3
-		movea.l	$30(a0),a1
-		lea	$42(a1),a2
-		lea	$12(a1),a1
+		movea.l	Obj11_Child1(a0),a1
+		lea	sub9_y_pos+next_subspr(a1),a2
+		lea	sub2_y_pos(a1),a1
 
 loc_7F7A:				; CODE XREF: sub_7F36:loc_7F9Aj
 		moveq	#0,d0
@@ -10421,11 +10423,11 @@ loc_7F7A:				; CODE XREF: sub_7F36:loc_7F9Aj
 		swap	d0
 		add.w	$3C(a0),d0
 		move.w	d0,(a1)
-		addq.w	#6,a1
+		addq.w	#next_subspr,a1
 		cmpa.w	a2,a1
 		bne.s	loc_7F9A
-		movea.l	$34(a0),a1
-		lea	$12(a1),a1
+		movea.l	Obj11_Child2(a0),a1
+		lea	sub2_y_pos(a1),a1
 
 loc_7F9A:				; CODE XREF: sub_7F36+5Aj
 		dbf	d2,loc_7F7A
@@ -10453,11 +10455,11 @@ loc_7FC0:				; CODE XREF: sub_7F36:loc_7FE0j
 		swap	d0
 		add.w	$3C(a0),d0
 		move.w	d0,(a1)
-		addq.w	#6,a1
+		addq.w	#next_subspr,a1
 		cmpa.w	a2,a1
 		bne.s	loc_7FE0
-		movea.l	$34(a0),a1
-		lea	$12(a1),a1
+		movea.l	Obj11_Child2(a0),a1
+		lea	sub2_y_pos(a1),a1
 
 loc_7FE0:				; CODE XREF: sub_7F36+A0j
 		dbf	d2,loc_7FC0
@@ -28168,6 +28170,7 @@ Obj13_Index:	dc.w @Init-Obj13_Index
 		move.b	#$10,width_pixels(a0)
 		move.b	#1,priority(a0)
 		move.b	#$12,mapping_frame(a0)
+
 		bsr.s	sub_144D4
 		beq.s	@Child1Spawned
 		subq.b	#2,routine(a0)
