@@ -49,7 +49,7 @@ namespace S2ObjectDefinitions.EHZ
 
 		public override string Name
 		{
-			get { return "Twisting Pathway"; }
+			get { return "Twisting Pathway (REMOVED)"; }
 		}
 
 		public override string SubtypeName(byte subtype)
