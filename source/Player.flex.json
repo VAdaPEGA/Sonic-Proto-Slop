@@ -1,20 +1,49 @@
 {
     "Flex": 2,
     "name": "",
-    "node": "75e0e523-52d6-4ae3-9a02-991b42ae8d27",
+    "node": "140e9253-006a-446d-b739-08fe75c0b918",
     "objects": [
         {
             "format": "Sonic 2.js",
-            "name": "object",
+            "name": "Monitor",
             "palettes": [],
+            "art": {
+                "path": "Art\\nemesis\\Monitor and contents.bin",
+                "compression": "Nemesis",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "Mappings\\sprite\\obj26.bin",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            },
+            "uuid": "140e9253-006a-446d-b739-08fe75c0b918"
+        },
+        {
+            "format": "Sonic 2.js",
+            "name": "LampPost",
+            "palettes": [
+                {
+                    "path": "Art\\palettes\\Sonic and Tails.bin",
+                    "length": 1
+                },
+                {
+                    "path": "Level\\EHZ\\PalMain_1.bin",
+                    "length": 3
+                }
+            ],
             "art": {
                 "path": "Art\\nemesis\\LampPost.bin",
                 "compression": "Nemesis",
                 "offset": 0
             },
             "mappings": {
-                "path": "Mappings\\sprite\\obj79.bin",
-                "label": ""
+                "path": "Mappings\\sprite\\LampPost.asm",
+                "label": "@Map"
             },
             "dplcs": {
                 "enabled": false,
