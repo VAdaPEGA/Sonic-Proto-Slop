@@ -5338,7 +5338,7 @@ locret_47AA:				; CODE XREF: ChangeRingFrame+4Ej
 SignpostArtLoad:
 		tst.w	(Debug_placement_mode).w
 		bne.w	locret_47E2
-		cmpi.b	#1,(Current_Act).w
+		cmpi.b	#3,(Current_Act).w	; No Signpost art on Boss acts
 		beq.s	locret_47E2
 		move.w	(Camera_X_pos).w,d0
 		move.w	(Camera_Max_X_pos).w,d1
@@ -9586,6 +9586,7 @@ DynResize_EHZ:				; DATA XREF: ROM:DynResize_Indexo
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 off_78F0:	dc.w DynResize_EHZ1-off_78F0
 		dc.w DynResize_EHZ2-off_78F0
+		dc.w locret_7980-off_78F0
 		dc.w locret_7980-off_78F0
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
