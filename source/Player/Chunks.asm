@@ -45,7 +45,7 @@
 
 		sub.b	#8,d1		; Is this a S tube?
 		bcs.w	loc_1023A	; Force Player 1 to roll ala S1 (a.k.a wrong)
-		cmpi.b	#9,d1
+		cmpi.b	#11,d1
 		bhi.s	@doNothing
 		nop	; no code yet, will figure it out
 ; ---------------------------------------------------------------------------
