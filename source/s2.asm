@@ -9212,13 +9212,13 @@ loc_7586:
 ; End of function DynScreenResizeLoad
 
 ; ===========================================================================
-DynResize_Index:dc.w DynResize_GHZ-DynResize_Index; 0
-		dc.w DynResize_CPZ-DynResize_Index; 1
-		dc.w DynResize_MMZ-DynResize_Index; 2
-		dc.w DynResize_EHZ-DynResize_Index; 3
-		dc.w DynResize_HPZ-DynResize_Index; 4
-		dc.w DynResize_HTZ-DynResize_Index; 5
-		dc.w DynResize_CNZ-DynResize_Index; 6
+DynResize_Index:dc.w DynResize_GHZ-DynResize_Index	; 0
+		dc.w DynResize_CPZ-DynResize_Index	; 1
+		dc.w DynResize_MMZ-DynResize_Index	; 2
+		dc.w DynResize_EHZ-DynResize_Index	; 3
+		dc.w DynResize_HPZ-DynResize_Index	; 4
+		dc.w DynResize_HTZ-DynResize_Index	; 5
+		dc.w DynResize_CNZ-DynResize_Index	; 6
 ; ===========================================================================
 DynResize_GHZ:	
 		moveq	#0,d0
@@ -9231,6 +9231,7 @@ DynResize_GHZ_Index:
 		dc.w DynResize_GHZ1-DynResize_GHZ_Index; 0
 		dc.w DynResize_GHZ2-DynResize_GHZ_Index; 1
 		dc.w DynResize_GHZ3-DynResize_GHZ_Index; 2
+		dc.w locret_75CA-DynResize_GHZ_Index
 ; ===========================================================================
 
 DynResize_GHZ1:				
@@ -9414,9 +9415,11 @@ DynResize_CPZ:				; DATA XREF: ROM:DynResize_Indexo
 		move.w	DynResize_CPZ_Index(pc,d0.w),d0
 		jmp	DynResize_CPZ_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_CPZ_Index:dc.w DynResize_CPZ1-DynResize_CPZ_Index
+DynResize_CPZ_Index:
+		dc.w DynResize_CPZ1-DynResize_CPZ_Index
 		dc.w DynResize_CPZ2-DynResize_CPZ_Index
 		dc.w DynResize_CPZ3-DynResize_CPZ_Index
+		dc.w DynResize_CPZ1-DynResize_CPZ_Index
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 DynResize_CPZ1:				; DATA XREF: ROM:DynResize_CPZ_Indexo
@@ -9713,11 +9716,11 @@ DynResize_HPZ:				; DATA XREF: ROM:DynResize_Indexo
 		move.w	DynResize_HPZ_Index(pc,d0.w),d0
 		jmp	DynResize_HPZ_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_HPZ_Index:dc.w DynResize_HPZ1-DynResize_HPZ_Index
-					; DATA XREF: ROM:DynResize_HPZ_Indexo
-					; ROM:000079F2o ...
+DynResize_HPZ_Index:
+		dc.w DynResize_HPZ1-DynResize_HPZ_Index
 		dc.w DynResize_HPZ2-DynResize_HPZ_Index
 		dc.w DynResize_HPZ3-DynResize_HPZ_Index
+		dc.w DynResize_HPZ1-DynResize_HPZ_Index
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 DynResize_HPZ1:				; DATA XREF: ROM:DynResize_HPZ_Indexo
@@ -9797,11 +9800,11 @@ DynResize_HTZ:				; DATA XREF: ROM:DynResize_Indexo
 		move.w	DynResize_HTZ_Index(pc,d0.w),d0
 		jmp	DynResize_HTZ_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_HTZ_Index:dc.w DynResize_HTZ1-DynResize_HTZ_Index
-					; DATA XREF: ROM:DynResize_HTZ_Indexo
-					; ROM:00007A94o ...
+DynResize_HTZ_Index:
+		dc.w DynResize_HTZ1-DynResize_HTZ_Index
 		dc.w DynResize_HTZ2-DynResize_HTZ_Index
 		dc.w DynResize_HTZ3-DynResize_HTZ_Index
+		dc.w locret_7ABA-DynResize_HTZ_Index
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 DynResize_HTZ1:				; DATA XREF: ROM:DynResize_HTZ_Indexo
@@ -9824,9 +9827,8 @@ DynResize_HTZ2:				; DATA XREF: ROM:00007A94o
 		move.w	DynResize_HTZ2_Index(pc,d0.w),d0
 		jmp	DynResize_HTZ2_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_HTZ2_Index:dc.w loc_7AD2-DynResize_HTZ2_Index
-					; DATA XREF: ROM:DynResize_HTZ2_Indexo
-					; ROM:00007ACCo ...
+DynResize_HTZ2_Index:
+		dc.w loc_7AD2-DynResize_HTZ2_Index
 		dc.w loc_7AF4-DynResize_HTZ2_Index
 		dc.w loc_7B12-DynResize_HTZ2_Index
 		dc.w loc_7B30-DynResize_HTZ2_Index
@@ -9895,9 +9897,8 @@ DynResize_HTZ3:				; DATA XREF: ROM:00007A96o
 		move.w	DynResize_HTZ3_Index(pc,d0.w),d0
 		jmp	DynResize_HTZ3_Index(pc,d0.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-DynResize_HTZ3_Index:dc.w loc_7B5A-DynResize_HTZ3_Index
-					; DATA XREF: ROM:DynResize_HTZ3_Indexo
-					; ROM:00007B52o ...
+DynResize_HTZ3_Index:
+		dc.w loc_7B5A-DynResize_HTZ3_Index
 		dc.w loc_7B6E-DynResize_HTZ3_Index
 		dc.w loc_7B8C-DynResize_HTZ3_Index
 		dc.w locret_7B9A-DynResize_HTZ3_Index
