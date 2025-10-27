@@ -56,7 +56,7 @@ PlayerStatusBitOnObject	equ	3	; on-object.
 PlayerStatusBitRollLock	equ	4	; roll-jumping. 
 PlayerStatusBitPush	equ	5	; pushing. 
 PlayerStatusBitWater	equ	6	; underwater.
-PlayerStatusBitUnused	equ	7	; unused.
+PlayerStatusBitChunk	equ	7	; Chunk related.
 ;for anything else (generally): 
 StatusBitHFlip		equ	0	; left-facing. 
 StatusBitVFlip		equ	1	; upside-down facing. 
@@ -81,13 +81,18 @@ subtype:		equ $28
 ; conventions mostly shared by Player Objects (Obj01, Obj02, and Obj09).
 ; Special Stage Sonic uses some different conventions
 ground_speed:		equ $14		; 2 bytes ; directionless representation of speed... not updated in the air
-flip_angle:		equ $27		; angle about the x axis (360 degrees = 256) (twist/tumble)
+obj_control:		equ $27		; 0 for normal, 1 for hanging or for resting on a flipper, $81 for going through CNZ/OOZ/MTZ tubes or stopped in CNZ cages or stoppers or flying if Tails
+
+flip_type:		equ $2A		; Type of Flipma animation
+flip_angle:		equ $2B		; angle about the x axis (360 degrees = 256) (twist/tumble/corkscrew)
 flips_remaining:	equ $2C		; number of flip revolutions remaining
 flip_speed:		equ $2D		; number of flip revolutions per frame / 256
+
 move_lock:		equ $2E		; 2 bytes ; horizontal control lock, counts down to 0
 invulnerable_time:	equ $30		; 2 bytes ; time remaining until you stop blinking
 invincibility_time:	equ $32		; 2 bytes ; remaining
 speedshoes_time:	equ $34		; 2 bytes ; remaining
+
 next_tilt:		equ $36		; angle on ground in front of sprite
 tilt:			equ $37		; angle on ground
 stick_to_convex:	equ $38		; 0 for normal, 1 to make Sonic stick to convex surfaces like the rotating discs in Sonic 1 and 3
@@ -263,9 +268,11 @@ Game_Mode:			equ $FFFFF600
 Ctrl_1_Logical:			equ $FFFFF602
 Ctrl_1_Held_Logical:		equ Ctrl_1_Logical
 Ctrl_1_Press_Logical:		equ Ctrl_1_Logical+1
+
 Ctrl_1:				equ $FFFFF604
 Ctrl_1_Held:			equ Ctrl_1
 Ctrl_1_Press:			equ Ctrl_1+1
+
 Ctrl_2:				equ $FFFFF606
 Ctrl_2_Held:			equ Ctrl_2
 Ctrl_2_Press:			equ Ctrl_2+1
@@ -339,6 +346,8 @@ Obj_load_addr_3:		equ $FFFFF77C
 Camera_X_pos_last_P2:		equ $FFFFF78C
 
 Collision_addr:  		equ $FFFFF796
+
+;Free:		equ	$FFFFF7C8 ; replaced by obj_control(a0)
 
 Bonus_Countdown_1:		equ $FFFFF7D2
 Bonus_Countdown_2:		equ $FFFFF7D4

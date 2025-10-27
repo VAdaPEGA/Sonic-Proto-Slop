@@ -3637,7 +3637,7 @@ loc_3270:				; CODE XREF: ROM:00003272j
 		lea		(Nem_TitleSonicTails).l,a0
 		bsr.w		NemDec
 		lea		(VDP_data_port).l,a6
-VRAMLevSelTextArt	=	$C860
+VRAMLevSelTextArt	=	$A000
 		locVRAMtemp	VRAMLevSelTextArt,_VDPcommand
 		move.l	#_VDPcommand,4(a6)
 		lea	(ArtUnc_LevelSelect).l,a5
@@ -3892,30 +3892,37 @@ LevelSelect_LevelOrder:
 		dc.b	ZoneID_GHZ,00
 		dc.b	ZoneID_GHZ,01
 		dc.b	ZoneID_GHZ,02
+		dc.b	ZoneID_GHZ,03
 
 		dc.b	ZoneID_CPZ,00
 		dc.b	ZoneID_CPZ,01
 		dc.b	ZoneID_CPZ,02
+		dc.b	ZoneID_CPZ,03
 
 		dc.b	ZoneID_MMZ,00
 		dc.b	ZoneID_MMZ,01
 		dc.b	ZoneID_MMZ,02
+		dc.b	ZoneID_MMZ,03
 
 		dc.b	ZoneID_EHZ,00
 		dc.b	ZoneID_EHZ,01
 		dc.b	ZoneID_EHZ,02
+		dc.b	ZoneID_EHZ,03
 
 		dc.b	ZoneID_HPZ,00
 		dc.b	ZoneID_HPZ,01
 		dc.b	ZoneID_HPZ,02
+		dc.b	ZoneID_HPZ,03
 
 		dc.b	ZoneID_HTZ,00
 		dc.b	ZoneID_HTZ,01
 		dc.b	ZoneID_HTZ,02
+		dc.b	ZoneID_HTZ,03
 
 		dc.b	ZoneID_CNZ,00
 		dc.b	ZoneID_CNZ,01
 		dc.b	ZoneID_CNZ,02
+		dc.b	ZoneID_CNZ,03
 
 		dc.b	08,00
 		dc.b	$80,00
@@ -4086,9 +4093,6 @@ locret_377A:
 
 
 LevelSelect_TextLoad:			; We'll replace this soon
-		; $D000
-
-
 
 		lea	(LevelSelectText).l,a1
 		lea	(VDP_data_port).l,a6
@@ -4097,11 +4101,12 @@ LevelSelect_TextLoad:			; We'll replace this soon
 		move.w	#(VRAMLevSelTextArt/$20)+TMap_Priority,d3
 		moveq	#LevelSelectMax-1,d1
 
-loc_3794:	
+	@LoadBaseTextColour:	
 		move.l	d4,4(a6)
 		bsr.w	sub_381C
-		addi.l	#$800000,d4
-		dbf	d1,loc_3794
+		addi.l	#$800000,d4	; Next line
+		dbf	d1,@LoadBaseTextColour
+
 		moveq	#0,d0
 		move.w	($FFFFFF82).w,d0
 		move.w	d0,d1
@@ -4115,6 +4120,11 @@ loc_3794:
 		add.w	d1,d1
 		add.w	d0,d1
 		adda.w	d1,a1
+		lsr.w	#3,d0
+		move.w	d0,d1
+		lsr.w	#1,d0
+		add.w	d1,d0
+		move.w	d0,Vscroll_Factor+2.w
 		move.w	#(VRAMLevSelTextArt/$20)+TMap_Priority+TMap_PalLine3,d3
 		move.l	d4,4(a6)
 		bsr.w	sub_381C
@@ -4123,11 +4133,11 @@ loc_3794:
 		bne.s	loc_37E6
 		move.w	#(VRAMLevSelTextArt/$20)+TMap_Priority+TMap_PalLine3+"0",d3
 
-loc_37E6:				; CODE XREF: LevelSelect_TextLoad+64j
-		locVRAMtemp ($E000+(24*128)+(2*25)),_VDPcommand
+loc_37E6:	
+		locVRAMtemp ($E000+(31*128)+(2*25)),_VDPcommand
 		move.l	#_VDPcommand,(VDP_control_port).l
 		move.w	($FFFFFF84).w,d0
-		addi.w	#$80,d0	; '€'
+		addi.w	#$80,d0
 		move.b	d0,d2
 		lsr.b	#4,d0
 		bsr.w	sub_3808
@@ -9397,7 +9407,7 @@ DynResize_MMZ4:				; DATA XREF: ROM:DynResize_MMZ_Indexo
 		clr.b	($FFFFFE30).w
 		move.w	#1,($FFFFFE02).w
 		move.w	#$502,(Current_ZoneAndAct).w
-		move.b	#1,($FFFFF7C8).w
+		move.b	#1,obj_control(a1)
 
 locret_774E:				; CODE XREF: ROM:0000772Ej
 					; ROM:00007736j
@@ -14297,7 +14307,7 @@ Obj26_SolidSides:			; CODE XREF: ROM:0000AF38p
 		add.w	d2,d2
 		cmp.w	d2,d3
 		bcc.s	loc_B20E
-		tst.b	($FFFFF7C8).w	; lock multi
+		tst.b	obj_control(a1)	; lock multi
 		bmi.s	loc_B20E
 		cmpi.b	#6,(MainCharacter+routine).w	; check if player is dead
 		bcc.s	loc_B20E
@@ -20500,7 +20510,7 @@ SolidObject_cont:
 		bcc.w	SolidObject_TestClearPush	; branch, if Sonic is below this point
 ; loc_F5D2:
 SolidObject_ChkBounds:
-		tst.b	($FFFFF7C8).w
+		tst.b	obj_control(a1)
 		bmi.w	SolidObject_TestClearPush	; branch, if object collisions are disabled for Sonic
 		cmpi.b	#6,routine(a1)			; is Sonic dead?
 		bcc.w	loc_F680			; if yes, branch
@@ -20670,7 +20680,7 @@ MvSonicOnPtfm:
 		subi.w	#9,d0
 
 loc_F71E:
-		tst.b	($FFFFF7C8).w
+		tst.b	obj_control(a1)
 		bmi.s	locret_F746
 		cmpi.b	#6,routine(a1)
 		bcc.s	locret_F746
@@ -20905,7 +20915,7 @@ loc_F8C2:				; CODE XREF: sub_F7F2+1AAj
 		bhi.w	locret_F966
 		cmpi.w	#$FFF0,d0
 		bcs.w	locret_F966
-		tst.b	($FFFFF7C8).w
+		tst.b	obj_control(a1)
 		bmi.w	locret_F966
 		cmpi.b	#6,routine(a1)
 		bcc.w	locret_F966
@@ -21038,14 +21048,14 @@ Obj01_Normal:
 ; ===========================================================================
 	IndexStart	
 	GenerateIndex	2, Obj01, Init
-	GenerateIndex	2, Obj01, Control
-	GenerateIndex	2, Obj01, Hurt
-	GenerateIndex	2, Obj01, Dead
-	GenerateIndex	2, Obj01, ResetLevel
+	GenerateIndexID	2, Obj01, Control
+	GenerateIndexID	2, Obj01, Hurt
+	GenerateIndexID	2, Obj01, Dead
+	GenerateIndexID	2, Obj01, ResetLevel
 ; ===========================================================================
 ; Obj01_Main:
 Obj01_Init:
-		addq.b	#2,routine(a0)	; => Obj01_Control
+		addq.b	#Obj01ID_Control,routine(a0)
 		move.b	#$13,y_radius(a0)	; this sets Sonic's collision height (2*pixels)
 		move.b	#9,x_radius(a0)
 		move.l	#Map_Sonic,mappings(a0)
@@ -21054,9 +21064,11 @@ Obj01_Init:
 		move.b	#2,priority(a0)
 		move.b	#$18,width_pixels(a0)
 		move.b	#4,render_flags(a0)
+
 		move.w	#$600,(Sonic_top_speed).w	; set Sonic's top speed
 		move.w	#$C,(Sonic_acceleration).w	; set Sonic's acceleration
 		move.w	#$80,(Sonic_deceleration).w	; set Sonic's deceleration
+
 		move.b	#$C,top_solid_bit(a0)
 		move.b	#$D,lrb_solid_bit(a0)
 		move.b	#0,flips_remaining(a0)
@@ -21088,7 +21100,7 @@ loc_FAB0:
 		move.w	(Ctrl_1).w,(Ctrl_1_Logical).w	; copy new held buttons, to enable joypad
 
 loc_FABC:
-		btst	#0,($FFFFF7C8).w	; is Sonic interacting with another object that holds him in place or controls his movement somehow?
+		btst	#0,obj_control(a0)	; is Sonic interacting with another object that holds him in place or controls his movement somehow?
 		bne.s	Obj01_ControlsLock	; if yes, branch to skip Sonic's control
 		moveq	#0,d0
 		move.b	status(a0),d0
@@ -21115,11 +21127,10 @@ Obj01_ControlsLock:
 
 loc_FAFE:
 		bsr.w	Sonic_Animate
-		tst.b	($FFFFF7C8).w	; equivalent to the final's obj_control(a0)
-		bmi.s	loc_FB0E
-		jsr	TouchResponse
-
-loc_FB0E:
+		tst.b	obj_control(a0)
+		bmi.s	@IgnoreCollisionWhenPlayerIsLocked
+			jsr	TouchResponse
+	@IgnoreCollisionWhenPlayerIsLocked:
 		bsr.w	Player_CheckChunk
 		bra.w	LoadSonicDynPLC
 ; ===========================================================================
@@ -23136,7 +23147,7 @@ Obj02_Init:
 ; ---------------------------------------------------------------------------
 Obj02_Control:
 		bsr.w	Tails_Control
-		btst	#0,($FFFFF7C8).w	; is Tails interacting with another object that holds him in place or controls his movement somehow?
+		btst	#0,obj_control(a0)	; is Tails interacting with another object that holds him in place or controls his movement somehow?
 		bne.s	Obj02_ControlsLock	; if yes, branch to skip Tails' control
 		moveq	#0,d0
 		move.b	status(a0),d0
@@ -23150,7 +23161,7 @@ Obj02_ControlsLock:
 		move.b	($FFFFF768).w,next_tilt(a0)
 		move.b	($FFFFF76A).w,tilt(a0)
 		bsr.w	Tails_Animate
-		tst.b	($FFFFF7C8).w
+		tst.b	obj_control(a0)
 		bmi.s	loc_10CFC
 		jsr	(TouchResponse).l
 
@@ -25302,7 +25313,7 @@ loc_12170:				; CODE XREF: ROM:00012144j
 		subq.w	#1,($FFFFFE14).w
 		bcc.w	loc_121FA
 		bsr.w	ResumeMusic
-		move.b	#$81,($FFFFF7C8).w
+		
 		move.w	#$B2,d0	; '²'
 		jsr	(PlaySound_Special).l
 		move.b	#$A,$34(a0)
@@ -25318,6 +25329,7 @@ loc_12170:				; CODE XREF: ROM:00012144j
 		move.w	#0,x_vel(a0)
 		move.w	#0,ground_speed(a0)
 		move.b	#1,($FFFFEEDC).w
+		move.b	#$81,obj_control(a0)
 		movea.l	(sp)+,a0
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
@@ -26936,7 +26948,7 @@ loc_13536:
 Obj79_Main:		
 		tst.w	(Debug_placement_mode).w
 		bne.w	locret_135CA
-		tst.b	($FFFFF7C8).w
+		tst.b	obj_control(a1)
 		bmi.w	locret_135CA
 		move.b	($FFFFFE30).w,d1
 		andi.b	#$7F,d1	; ''
@@ -27265,16 +27277,13 @@ word_139BC:	dc.w 2			; DATA XREF: ROM:00013996o
 		dc.w $F007,   $E,    7,$FFF0; 0
 		dc.w $F007, $80E, $807,	   0; 4
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		nop
-
 S1Obj64:
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	S1Obj64_Index(pc,d0.w),d1
 		jmp	S1Obj64_Index(pc,d1.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-S1Obj64_Index:	dc.w S1Obj64_Init-S1Obj64_Index	; DATA XREF: ROM:S1Obj64_Indexo
-					; ROM:000139E0o ...
+S1Obj64_Index:	dc.w S1Obj64_Init-S1Obj64_Index
 		dc.w S1Obj64_Animate-S1Obj64_Index
 		dc.w S1Obj64_ChkWater-S1Obj64_Index
 		dc.w S1Obj64_Display-S1Obj64_Index
@@ -27494,7 +27503,7 @@ S1Obj64_BblTypes:dc.b	0,  1,	0,  0,	0,  0,	1,  0,	0; 0 ; DATA XREF: ROM:00013B84
 
 
 S1Obj64_ChkSonic:			; CODE XREF: ROM:00013AA4p
-		tst.b	($FFFFF7C8).w
+		tst.b	obj_control(a1)
 		bmi.s	loc_13CBE
 		lea	(MainCharacter).w,a1
 		move.w	x_pos(a1),d0
@@ -27538,8 +27547,7 @@ byte_13CE2:	dc.b   4,$FC		; 0 ; DATA XREF: ROM:00013CC8o
 					; ROM:00013CCAo
 byte_13CE4:	dc.b   4,  6,  7,  8,$FC; 0 ; DATA XREF: ROM:00013CCCo
 byte_13CE9:	dc.b  $F,$13,$14,$15,$FF; 0 ; DATA XREF: ROM:00013CCEo
-Map_Obj0A_Bubbles:dc.w word_13D1C-Map_Obj0A_Bubbles ; DATA XREF: ROM:00011E88o
-					; ROM:000139EEo ...
+Map_Obj0A_Bubbles:dc.w word_13D1C-Map_Obj0A_Bubbles
 		dc.w word_13D26-Map_Obj0A_Bubbles
 		dc.w word_13D30-Map_Obj0A_Bubbles
 		dc.w word_13D3A-Map_Obj0A_Bubbles
@@ -39047,27 +39055,34 @@ LevelSelectText:
 	dc.b "     Green Hill -Stage 1"	; Temporary
 	dc.b "           Zone -Stage 2"
 	dc.b "                -Stage 3"
+	dc.b "                - Boss ", $0
 	dc.b " Chemical Plant -Stage 1"
 	dc.b "           Zone -Stage 2"
 	dc.b "                -Stage 3"
+	dc.b "                - Boss ", $0
 	dc.b "   Morning Mill -Stage 1"
 	dc.b "           Zone -Stage 2"
 	dc.b "                -Stage 3"
+	dc.b "                - Boss ", $0
 	dc.b "   Emerald Hill -Stage 1"
 	dc.b "           Zone -Stage 2"
 	dc.b "                -Stage 3"
+	dc.b "                - Boss ", $0
 	dc.b "  Hidden Palace -Stage 1"
 	dc.b "           Zone -Stage 2"
 	dc.b "                -Stage 3"
+	dc.b "                - Boss ", $0
 	dc.b "       Hill Top -Stage 1"
 	dc.b "           Zone -Stage 2"
 	dc.b "                -Stage 3"
+	dc.b "                - Boss ", $0
 	dc.b "   Casino Night -Stage 1"
 	dc.b "           Zone -Stage 2"
 	dc.b "                -Stage 3"
+	dc.b "                - Boss ", $0
 	dc.b "  Special Stage         "
 	dc.b "   Sound Select \       "
-LevelSelectMax		equ	23
+LevelSelectMax		equ	30
 
 	Artunc_Add none, HitboxViewer,	Logo\Art\, HitboxViewer	; Hitbox Viewer
 	Artunc_Add none, DebugTXT,	Routines\, DebugTXT	; Text used in Debug Mode and Error Handler
