@@ -26876,8 +26876,6 @@ ObjHitWallLeft:
 
 locret_134C4:				; CODE XREF: ROM:000134BEj
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		nop
 ;----------------------------------------------------
 ; Object 79 - lamppost
 ;----------------------------------------------------
@@ -26888,12 +26886,11 @@ Obj79:					; DATA XREF: ROM:Obj_Indexo
 		move.w	Obj79_Index(pc,d0.w),d1
 		jsr	Obj79_Index(pc,d1.w)
 		jmp	(MarkObjGone).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj79_Index:	dc.w Obj79_Init-Obj79_Index ; DATA XREF: ROM:Obj79_Indexo
-					; ROM:000134DEo ...
+; ===========================================================================
+Obj79_Index:	dc.w Obj79_Init-Obj79_Index
 		dc.w Obj79_Main-Obj79_Index
 		dc.w Obj79_AfterHit-Obj79_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 Obj79_Init:				; DATA XREF: ROM:Obj79_Indexo
 		addq.b	#2,routine(a0)
@@ -26916,14 +26913,13 @@ Obj79_Init:				; DATA XREF: ROM:Obj79_Indexo
 		cmp.b	d2,d1
 		bcs.s	Obj79_Main
 
-loc_13536:				; CODE XREF: ROM:00013520j
+loc_13536:	
 		bset	#0,2(a2,d0.w)
 		move.b	#4,routine(a0)
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Obj79_Main:				; CODE XREF: ROM:00013534j
-					; DATA XREF: ROM:000134DEo
+Obj79_Main:		
 		tst.w	(Debug_placement_mode).w
 		bne.w	locret_135CA
 		tst.b	($FFFFF7C8).w
@@ -26940,9 +26936,9 @@ Obj79_Main:				; CODE XREF: ROM:00013534j
 		bset	#0,2(a2,d0.w)
 		move.b	#4,routine(a0)
 		bra.w	locret_135CA
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Obj79_HitLamp:				; CODE XREF: ROM:00013566j
+Obj79_HitLamp:		
 		move.w	(MainCharacter+x_pos).w,d0
 		sub.w	x_pos(a0),d0
 		addi.w	#8,d0
@@ -26962,16 +26958,14 @@ Obj79_HitLamp:				; CODE XREF: ROM:00013566j
 		move.b	$23(a0),d0
 		bset	#0,2(a2,d0.w)
 
-locret_135CA:				; CODE XREF: ROM:00013548j
-					; ROM:00013550j ...
+locret_135CA:	
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Obj79_AfterHit:				; DATA XREF: ROM:000134E0o
+Obj79_AfterHit:	
 		move.b	($FFFFFE0F).w,d0
-		andi.b	#2,d0
 		lsr.b	#1,d0
-		addq.b	#1,d0
+		andi.b	#7,d0
 		move.b	d0,mapping_frame(a0)
 		rts
 
@@ -27043,8 +27037,8 @@ locret_13702:				; CODE XREF: Lamppost_LoadInfo+9Cj
 		rts
 ; End of function Lamppost_LoadInfo
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Map_Obj79:	include	"Mappings\sprite\LampPost.asm"
+; ===========================================================================
+Map_Obj79:	incbin	"Mappings\sprite\LampPost.bin"
 		even
 
 ;----------------------------------------------------
@@ -37529,7 +37523,7 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 	PLC_Start	Signpost
 	PLC_Entry	($680*$20),	Nem_Signpost
 	PLC_Entry	($4B6*$20),	Nem_S1BonusPoints
-	PLC_Entry	($462*$20),	Nem_BigFlash
+	;PLC_Entry	($462*$20),	Nem_BigFlash
 	PLC_End		Signpost
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
