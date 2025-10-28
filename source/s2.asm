@@ -4318,11 +4318,7 @@ LevelInit_TitleCard:
 	@NoHud:
 
 		tst.w	(Two_player_mode).w
-		bne.s	LevelInit_LoadTails
-		cmpi.b	#3,(Current_Zone).w
-		beq.s	LevelInit_SkipTails ; funny how	they skipped Tails in EHZ for the Nick Arcade show
-
-LevelInit_LoadTails:
+		beq.s	LevelInit_SkipTails
 		move.b	#2,(Sidekick).w
 		move.w	(MainCharacter+x_pos).w,(Sidekick+x_pos).w
 		move.w	(MainCharacter+y_pos).w,(Sidekick+y_pos).w
@@ -15205,8 +15201,7 @@ S1Obj7E:
 		move.w	S1Obj7E_Index(pc,d0.w),d1
 		jmp	S1Obj7E_Index(pc,d1.w)
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-S1Obj7E_Index:	dc.w loc_BDA6-S1Obj7E_Index ; DATA XREF: ROM:S1Obj7E_Indexo
-					; ROM:0000BD92o ...
+S1Obj7E_Index:	dc.w loc_BDA6-S1Obj7E_Index
 		dc.w loc_BE1E-S1Obj7E_Index
 		dc.w loc_BE5C-S1Obj7E_Index
 		dc.w loc_BE6A-S1Obj7E_Index
@@ -15420,8 +15415,7 @@ loc_BFA6:				; DATA XREF: ROM:0000BF3Eo
 loc_BFBC:				; CODE XREF: ROM:0000BFB4j
 		bra.w	DisplaySprite
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Map_Obj34:	dc.w word_BFD8-Map_Obj34 ; DATA	XREF: ROM:0000B948o
-					; ROM:Map_Obj34o ...
+Map_Obj34:	dc.w word_BFD8-Map_Obj34
 		dc.w word_C022-Map_Obj34
 		dc.w word_C06C-Map_Obj34
 		dc.w word_C09E-Map_Obj34
