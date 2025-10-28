@@ -21412,19 +21412,19 @@ loc_FD72:
 		bne.w	Obj01_UpdateSpeedOnGround	; if yes, branch
 		bclr	#5,status(a0)
 		cmpi.b	#$B,anim(a0)	; use "standing" animation
-		beq.s	loc_FD9E
+		beq.s	Sonic_Balance
 		move.b	#5,anim(a0)
 
-loc_FD9E:
-		btst	#3,status(a0)
-		beq.s	Sonic_Balance
+Sonic_Balance:
+		btst	#PlayerStatusBitOnObject,status(a0)
+		beq.s	@BalanceOnLevelLayout
 		moveq	#0,d0
 		move.b	interact(a0),d0
 		lsl.w	#6,d0
 		lea	(MainCharacter).w,a1	; a1=character
 		lea	(a1,d0.w),a1		; a1=object
 		tst.b	status(a1)
-		bmi.s	Sonic_LookUp
+		bmi.w	Sonic_LookUp
 		moveq	#0,d1
 		move.b	width_pixels(a1),d1
 		move.w	d1,d2
@@ -21433,47 +21433,56 @@ loc_FD9E:
 		add.w	x_pos(a0),d1
 		sub.w	x_pos(a1),d1
 		cmpi.w	#4,d1
-		blt.s	loc_FE00
+		blt.s	@BalanceLeft
 		cmp.w	d2,d1
-		bge.s	loc_FDF0
+		bge.s	@BalanceRight
 		bra.s	Sonic_LookUp
 ; ---------------------------------------------------------------------------
-
-Sonic_Balance:
+	@BalanceOnLevelLayout:
 		jsr	(ChkFloorEdge).l
 		cmpi.w	#$C,d1
 		blt.s	Sonic_LookUp
 		cmpi.b	#3,next_tilt(a0)
-		bne.s	loc_FDF8
+		bne.s	@BalanceCheckLeft
 
-loc_FDF0:
-		bclr	#0,status(a0)
-		bra.s	loc_FE06
+	@BalanceRight:
+		move.b	#SonicAniID_Balance,anim(a0)
+		bclr	#PlayerStatusBitHFlip,status(a0)
+		move.w	x_pos(a0),d3
+		subq.w	#5,d3
+		jsr	(ChkFloorEdge_Part2).l
+		cmpi.w	#$C,d1
+		blt.s	Obj01_UpdateSpeedOnGround
+		move.b	#SonicAniID_Balance2,anim(a0)
+		bra.s	Obj01_UpdateSpeedOnGround
 ; ---------------------------------------------------------------------------
-
-loc_FDF8:
+	@BalanceCheckLeft:
 		cmpi.b	#3,tilt(a0)
 		bne.s	Sonic_LookUp
 
-loc_FE00:
-		bset	#0,status(a0)
-
-loc_FE06:
-		move.b	#6,anim(a0)
+	@BalanceLeft:
+		move.b	#SonicAniID_Balance,anim(a0)
+		bset	#PlayerStatusBitHFlip,status(a0)
+		move.w	x_pos(a0),d3
+		addq.w	#5,d3
+		jsr	(ChkFloorEdge_Part2).l
+		cmpi.w	#$C,d1
+		blt.s	Obj01_UpdateSpeedOnGround
+		move.b	#SonicAniID_Balance2,anim(a0)
 		bra.s	Obj01_UpdateSpeedOnGround
 ; ---------------------------------------------------------------------------
 
 Sonic_LookUp:
 		btst	#bitUp,(Ctrl_1_Held_Logical).w	; is up being pressed?
 		beq.s	Sonic_Duck		; if not, branch
-		move.b	#7,anim(a0)		; use "looking up" animation
+		move.b	#SonicAniID_LookUp,anim(a0)	; use "looking up" animation
 		bra.s	Obj01_UpdateSpeedOnGround
 ; ---------------------------------------------------------------------------
 
 Sonic_Duck:
 		btst	#bitDn,(Ctrl_1_Held_Logical).w		; is down being pressed?
 		beq.s	Obj01_UpdateSpeedOnGround	; if not, branch
-		move.b	#8,anim(a0)			; use "ducking" animation
+		move.b	#SonicAniID_Duck,anim(a0)	; use "ducking" animation
 
 ; ---------------------------------------------------------------------------
 ; updates Sonic's speed on the ground
@@ -22933,44 +22942,52 @@ loc_10A98:
 ; Animation script - Sonic
 ; TO DO : AUTOMATE PROCESS (This is BAD)
 ; ---------------------------------------------------------------------------
-SonicAniData:	dc.w SonicAni_Walk-SonicAniData
-		dc.w SonicAni_SkidToWalk-SonicAniData
-		dc.w SonicAni_Roll-SonicAniData
-		dc.w SonicAni_Roll2-SonicAniData
-		dc.w SonicAni_Push-SonicAniData
-		dc.w SonicAni_Wait-SonicAniData
-		dc.w SonicAni_Balance-SonicAniData
-		dc.w SonicAni_LookUp-SonicAniData
-		dc.w SonicAni_Duck-SonicAniData
-		dc.w SonicAni_Spindash-SonicAniData
-		dc.w SonicAni_WallRecoil1-SonicAniData
-		dc.w SonicAni_WallRecoil2-SonicAniData
-		dc.w SonicAni_0C-SonicAniData
-		dc.w SonicAni_Stop-SonicAniData
-		dc.w SonicAni_Float1-SonicAniData
-		dc.w SonicAni_Float2-SonicAniData
-		dc.w SonicAni_10-SonicAniData
-		dc.w SonicAni_S1LZHang-SonicAniData
-		dc.w SonicAni_TurnAround-SonicAniData	; 12
-		dc.w SonicAni_SkidToWalk-SonicAniData	; 13
-		dc.w SonicAni_SkidToWalk2-SonicAniData	; 14
-		dc.w SonicAni_SkidToWalk3-SonicAniData	; 15
-		dc.w SonicAni_Death1-SonicAniData
-		dc.w SonicAni_Drown-SonicAniData
-		dc.w SonicAni_Death2-SonicAniData
-		dc.w SonicAni_Bubble-SonicAniData	; 19
-		dc.w SonicAni_Hurt-SonicAniData
-		dc.w SonicAni_S1LZSlide-SonicAniData
-		dc.w SonicAni_1C-SonicAniData
-		dc.w SonicAni_Float3-SonicAniData
-		dc.w SonicAni_1E-SonicAniData
+	IndexStart	SonicAniData
+	GenerateIndexID	1, SonicAni, Walk
+	GenerateIndex	1, SonicAni, SkidToWalk
+	GenerateIndexID	1, SonicAni, Roll
+	GenerateIndexID	1, SonicAni, Roll2
+	GenerateIndexID	1, SonicAni, Push
+	GenerateIndexID	1, SonicAni, Wait
+	GenerateIndexID	1, SonicAni, Balance
+	GenerateIndexID	1, SonicAni, LookUp
+	GenerateIndexID	1, SonicAni, Duck
+	GenerateIndexID	1, SonicAni, Spindash
+	GenerateIndexID	1, SonicAni, WallRecoil1
+	GenerateIndexID	1, SonicAni, WallRecoil2
+	GenerateIndexID	1, SonicAni, 0C
+	GenerateIndexID	1, SonicAni, Stop
+	GenerateIndexID	1, SonicAni, Float1
+	GenerateIndexID	1, SonicAni, Float2
+	GenerateIndexID	1, SonicAni, 10
+	GenerateIndexID	1, SonicAni, S1LZHang
+	GenerateIndexID	1, SonicAni, TurnAround
+	GenerateIndexID	1, SonicAni, SkidToWalk
+	GenerateIndexID	1, SonicAni, SkidToWalk2
+	GenerateIndexID	1, SonicAni, SkidToWalk3
+	GenerateIndexID	1, SonicAni, Death1
+	GenerateIndexID	1, SonicAni, Drown
+	GenerateIndexID	1, SonicAni, Death2
+	GenerateIndexID	1, SonicAni, Bubble
+	GenerateIndexID	1, SonicAni, Hurt
+	GenerateIndexID	1, SonicAni, Balance2
+	GenerateIndexID	1, SonicAni, 1C
+	GenerateIndexID	1, SonicAni, Float3
+	GenerateIndexID	1, SonicAni, 1E
 SonicAni_Walk:		dc.b 	$FF
 			dc.b 	$10,$11,$12,$13,$14,$15,$16,$17, $C, $D, $E, $F, afEnd
+
 SonicAni_Run:		dc.b 	$FF
 			dc.b 	$3C,$3D,$3E,$3F,$3C,$3D,$3E,$3F
 			dc.b	afEnd, afEnd, afEnd, afEnd, afEnd
+
 SonicAni_SkidToWalk:	dc.b	1
 			dc.b	$85,$86,$87, afChange, 0
+SonicAni_SkidToWalk2:	dc.b	2
+			dc.b	$87, afChange, 0
+SonicAni_SkidToWalk3:	dc.b	1
+			dc.b	$87, $88, afChange, 0
+
 SonicAni_Roll:		dc.b 	$FE
 			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70, afEnd
 SonicAni_Roll2:		dc.b 	$FE
@@ -22982,8 +22999,10 @@ SonicAni_Wait:		dc.b	7
 			dc.b	1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1
 			dc.b	1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2
 			dc.b	3,  3,  3,  4,  4,  5,  5, afBack,  4
-SonicAni_Balance:	dc.b	7 
+SonicAni_Balance:	dc.b	8
 			dc.b	$89, $8A,afEnd
+SonicAni_Balance2:	dc.b	7
+			dc.b	$8B,$8C, afEnd
 SonicAni_LookUp:	dc.b	5
 			dc.b	6, 7, afBack, 1
 SonicAni_Duck:		dc.b	5,$7F,$80,afBack, 1
@@ -23006,10 +23025,6 @@ SonicAni_S1LZHang:	dc.b	5
 			dc.b	$8F,$90,afEnd
 SonicAni_TurnAround:	dc.b	1
 			dc.b	$B, $A, afChange, 0	; Turning around
-SonicAni_SkidToWalk2:	dc.b	2
-			dc.b	$87, afChange, 0
-SonicAni_SkidToWalk3:	dc.b	1
-			dc.b	$87, $88, afChange, 0
 SonicAni_Bubble:	dc.b	$B
 			dc.b	$97,$97,$12,$13, afChange, 0
 SonicAni_Death1:	dc.b	$20
@@ -23020,9 +23035,7 @@ SonicAni_Death2:	dc.b	$20
 			dc.b	$98, afEnd
 SonicAni_Unused19:	dc.b	3
 			dc.b	$4E,$4F,$50,$51,$52, 0, afBack, 1
-SonicAni_Hurt:		dc.b	$40
-			dc.b	$8D, afEnd
-SonicAni_S1LZSlide:	dc.b	9
+SonicAni_Hurt:		dc.b	12
 			dc.b	$8D,$8E, afEnd
 SonicAni_1C:		dc.b	$77
 			dc.b	0,$FD,  0
@@ -26589,6 +26602,7 @@ locret_13202:				; CODE XREF: CalcRoomInFront+182j
 ; Sonic_HitFloor:
 ChkFloorEdge:
 		move.w	x_pos(a0),d3
+ChkFloorEdge_Part2:
 		move.w	y_pos(a0),d2
 		moveq	#0,d0
 		move.b	y_radius(a0),d0
@@ -28099,12 +28113,12 @@ Obj12_Display:				; DATA XREF: ROM:000143ECo
 
 @smash:
 		lea	MainCharacter,a1
-		cmpi.b	#id_Roll,sonicAniFrame(a0) ; is Sonic rolling/jumping?
+		cmpi.b	#SonicAniID_Roll,sonicAniFrame(a0) ; is Sonic rolling/jumping?
 		bne.s	@notspinning	; if not, branch
 		bset	#2,status(a1)
 		move.b	#$E,y_radius(a1)
 		move.b	#7,x_radius(a1)
-		move.b	#id_Roll,anim(a1)	; make Sonic roll
+		move.b	#SonicAniID_Roll,anim(a1)	; make Sonic roll
 		move.w	#-$300,y_vel(a1)	; rebound Sonic
 		bset	#PlayerStatusBitAir,status(a1)
 		bclr	#PlayerStatusBitOnObject,status(a1)
@@ -28446,7 +28460,7 @@ Obj14:					; DATA XREF: ROM:Obj_Indexo
 		sub.w	(Camera_X_pos_coarse).w,d0
 		cmpi.w	#$280,d0
 		bhi.w	DeleteObject
-		bra.w	DisplaySprite
+		jmp	DisplaySprite
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Obj14_Index:	dc.w loc_14CD2-Obj14_Index ; DATA XREF:	ROM:Obj14_Indexo
 					; ROM:00014CC8o ...
