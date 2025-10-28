@@ -14194,42 +14194,53 @@ loc_B0AC:				; CODE XREF: sub_B098+4j
 		jmp	Monitor_Subroutines(pc,d0.w)
 ; End of function sub_B098
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Monitor_Subroutines:
-		dc.w Monitor_Null-Monitor_Subroutines
-		dc.w Monitor_SonicLife-Monitor_Subroutines
-		dc.w Monitor_TailsLife-Monitor_Subroutines
-		dc.w Monitor_Null-Monitor_Subroutines
-		dc.w Monitor_Rigns-Monitor_Subroutines
-		dc.w Monitor_Shoes-Monitor_Subroutines
-		dc.w Monitor_Shield-Monitor_Subroutines
-		dc.w Monitor_Invincibility-Monitor_Subroutines
-		dc.w Monitor_Null-Monitor_Subroutines
-		dc.w Monitor_Null-Monitor_Subroutines
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-Monitor_Null:				; DATA XREF: ROM:Monitor_Subroutineso
-					; ROM:0000B0CCo ...
+; ===========================================================================
+	IndexStart	Monitor_Subroutines
+	GenerateIndex	2, Monitor, Tammy
+	GenerateIndex	2, Monitor, SonicLife
+	GenerateIndex	2, Monitor, Tails
+	GenerateIndex	2, Monitor, Eggman
+	GenerateIndex	2, Monitor, Rigns
+	GenerateIndex	2, Monitor, Shoes
+	GenerateIndex	2, Monitor, Boomer
+	GenerateIndex	2, Monitor, Invincibility
+	GenerateIndex	2, Monitor, Random
+	GenerateIndex	2, Monitor, Hops
+; ===========================================================================
+Monitor_Eggman:
+		move.l	a0,-(sp)
+		lea	MainCharacter,a0
+		jsr	HurtSonic
+		move.l	(sp)+,a0
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
+Monitor_Tails:	
 
-Monitor_SonicLife:			; CODE XREF: ROM:0000B11Aj
-					; ROM:0000B12Cj
-					; DATA XREF: ...
+; ===========================================================================
+Monitor_Tammy:	
+
+; ===========================================================================
+Monitor_Hops:	
+
+; ===========================================================================
+Monitor_Boomer:	
+		move.b	#1,($FFFFFE2C).w
+		move.b	#$38,(MainCharacter+$180).w
+		move.w	#$AF,d0
+		jmp	(PlaySound).l
+; ===========================================================================
+Monitor_Random:	
+		move.w	#$E0,d0	; Mess with Jeff
+		jmp	(PlaySound).l
+; ===========================================================================
+Monitor_SonicLife:
 		addq.b	#1,(Life_count).w
 		addq.b	#1,(Update_HUD_lives).w
 		move.w	#MusID_ExtraLife,d0
 		jmp	(PlaySound).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Monitor_TailsLife:			; DATA XREF: ROM:0000B0CAo
-		addq.b	#1,(Life_count).w
-		addq.b	#1,(Update_HUD_lives).w
-		move.w	#MusID_ExtraLife,d0
-		jmp	(PlaySound).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-Monitor_Rigns:				; DATA XREF: ROM:0000B0CEo
+Monitor_Rigns:	
 		addi.w	#$A,(Ring_count).w
 		ori.b	#1,(Update_HUD_rings).w
 		cmpi.w	#$64,(Ring_count).w ; 'd'
@@ -14241,28 +14252,20 @@ Monitor_Rigns:				; DATA XREF: ROM:0000B0CEo
 		bset	#2,($FFFFFE1B).w
 		beq.w	Monitor_SonicLife
 
-loc_B130:				; CODE XREF: ROM:0000B112j
-					; ROM:0000B124j
-		move.w	#$B5,d0	; 'µ'
+loc_B130:	
+		move.w	#$B5,d0
 		jmp	(PlaySound).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-Monitor_Shoes:				; DATA XREF: ROM:0000B0D0o
+Monitor_Shoes:	
 		move.b	#1,($FFFFFE2E).w
 		move.w	#$4B0,(MainCharacter+speedshoes_time).w
 		move.w	#$C00,(Sonic_top_speed).w
 		move.w	#$18,(Sonic_acceleration).w
 		move.w	#$80,(Sonic_deceleration).w
-		move.w	#$E2,d0	; 'â'
+		move.w	#$E2,d0
 		jmp	(PlaySound).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-Monitor_Shield:				; DATA XREF: ROM:0000B0D2o
-		move.b	#1,($FFFFFE2C).w
-		move.b	#$38,(MainCharacter+$180).w
-		move.w	#$AF,d0
-		jmp	(PlaySound).l
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 Monitor_Invincibility:			; DATA XREF: ROM:0000B0D4o
 		move.b	#1,($FFFFFE2D).w
@@ -14279,14 +14282,12 @@ Monitor_Invincibility:			; DATA XREF: ROM:0000B0D4o
 		jmp	(PlaySound).l
 	@NoMusic:
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_B1AA:				; DATA XREF: ROM:0000B04Co
+; ===========================================================================
+loc_B1AA:	
 		subq.w	#1,anim_frame_duration(a0)
 		bmi.w	DeleteObject
 		bra.w	DisplaySprite
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ===========================================================================
 
 
 Obj26_SolidSides:			; CODE XREF: ROM:0000AF38p
@@ -14361,16 +14362,16 @@ Ani_obj26:	dc.w byte_B246-Ani_obj26
 		dc.w byte_B282-Ani_obj26
 		dc.w byte_B28A-Ani_obj26
 		dc.w byte_B292-Ani_obj26
-byte_B246:	dc.b   1,  0,  1,$FF
-byte_B24A:	dc.b   1,  0,  2,  2,  1,  2,  2,$FF
-byte_B252:	dc.b   1,  0,  3,  3,  1,  3,  3,$FF
-byte_B25A:	dc.b   1,  0,  4,  4,  1,  4,  4,$FF
-byte_B262:	dc.b   1,  0,  5,  5,  1,  5,  5,$FF
-byte_B26A:	dc.b   1,  0,  6,  6,  1,  6,  6,$FF
-byte_B272:	dc.b   1,  0,  7,  7,  1,  7,  7,$FF
-byte_B27A:	dc.b   1,  0,  8,  8,  1,  8,  8,$FF
-byte_B282:	dc.b   1,  0,  9,  9,  1,  9,  9,$FF
-byte_B28A:	dc.b   1,  0, $A, $A,  1, $A, $A,$FF
+byte_B246:	dc.b   1,  0,  1,  1,  1, $FF
+byte_B24A:	dc.b   1,  0,  2,  2,  2, $FF
+byte_B252:	dc.b   1,  0,  3,  3,  3, $FF
+byte_B25A:	dc.b   1,  0,  4,  4,  4, $FF
+byte_B262:	dc.b   1,  0,  5,  5,  5, $FF
+byte_B26A:	dc.b   1,  0,  6,  6,  6, $FF
+byte_B272:	dc.b   1,  0,  7,  7,  7, $FF
+byte_B27A:	dc.b   1,  0,  8,  8,  8, $FF
+byte_B282:	dc.b   1,  0,  9,  9,  9, $FF
+byte_B28A:	dc.b   1,  0, $A, $A, $A, $A, $A,$FF
 byte_B292:	dc.b   2,  0,  1, $B,$FE,  1
 
 ; ---------------------------------------------------------------------------
