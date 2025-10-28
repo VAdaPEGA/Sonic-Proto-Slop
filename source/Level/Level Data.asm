@@ -209,3 +209,153 @@ c		=	0
 		dc.w (PLCID_GHZ+(c*2)),(PLCID_GHZ2+(c*2))		; Zone Art (PLC1)
 c		=	c+1
 		endr
+
+; ===========================================================================
+; Corkscrew position and Flipma data for EHZ
+; ===========================================================================
+QuirkyCorkscrewData:
+	; Flip_angle of player relative to chunk
+	QuirkyCorkscrew_Chunk1_Flipma:	dc.b	$16, $2C, $42, $58 ; Going Upwards
+	QuirkyCorkscrew_Chunk2_Flipma:	dc.b	$6E, $84, $9A, $B0 ; Up to Down
+	QuirkyCorkscrew_Chunk3_Flipma:	dc.b	$C6, $DC, $F2, $01 ; Going Downwards
+	QuirkyCorkscrew_DDiag_Flipma:	dc.b	$DC, $DC, $DC, $DC ; Going Downwards
+; ===========================================================================
+	; Y position of player relative to chunk
+
+QuirkyCorkscrew_Reposition	macro	
+c	=	\1
+			rept	narg-1
+			dc.b	(\2+c)-64
+			shift
+		endr
+		endm
+QuirkyCorkscrew_Chunk1_Pos:
+	QuirkyCorkscrew_Reposition	0,	 32, 32, 32, 32, 32, 32, 32, 32
+	QuirkyCorkscrew_Reposition	0,	 32, 32, 32, 32, 32, 32, 31, 31
+	QuirkyCorkscrew_Reposition	0,	 31, 31, 31, 31, 31, 31, 31, 31
+	QuirkyCorkscrew_Reposition	0,	 31, 31, 31, 31, 31, 30, 30, 30
+	QuirkyCorkscrew_Reposition	0,	 30, 30, 30, 30, 30, 30, 29, 29
+	QuirkyCorkscrew_Reposition	0,	 29, 29, 29, 28, 28, 28, 28, 27
+	QuirkyCorkscrew_Reposition	0,	 27, 27, 27, 26, 26, 26, 25, 25
+	QuirkyCorkscrew_Reposition	0,	 25, 24, 24, 24, 23, 23, 22, 22
+	QuirkyCorkscrew_Reposition	0,	 21, 21, 20, 20, 19, 18, 18, 17
+	QuirkyCorkscrew_Reposition	0,	 16, 16, 15, 14, 14, 13, 12, 12
+	QuirkyCorkscrew_Reposition	0,	 11, 10, 10,  9,  8,  8,  7,  6
+	QuirkyCorkscrew_Reposition	0,	  6,  5,  4,  4,  3,  2,  1,  0
+	QuirkyCorkscrew_Reposition	0,	 -1, -1, -2, -2, -3, -4, -4, -5
+	QuirkyCorkscrew_Reposition	0,	 -6, -7, -7, -8, -9, -9,-10,-10
+	QuirkyCorkscrew_Reposition	0,	-11,-11,-12,-12,-13,-14,-14,-15
+	QuirkyCorkscrew_Reposition	0,	-15,-16,-16,-17,-17,-18,-18,-19
+
+
+QuirkyCorkscrew_Chunk1_1_Pos:
+	QuirkyCorkscrew_Reposition	128,	 32, 32, 32, 32, 32, 32, 32, 32
+	QuirkyCorkscrew_Reposition	128,	 32, 32, 32, 32, 32, 32, 31, 31
+	QuirkyCorkscrew_Reposition	128,	 31, 31, 31, 31, 31, 31, 31, 31
+	QuirkyCorkscrew_Reposition	128,	 31, 31, 31, 31, 31, 30, 30, 30
+	QuirkyCorkscrew_Reposition	128,	 30, 30, 30, 30, 30, 30, 29, 29
+	QuirkyCorkscrew_Reposition	128,	 29, 29, 29, 28, 28, 28, 28, 27
+	QuirkyCorkscrew_Reposition	128,	 27, 27, 27, 26, 26, 26, 25, 25
+	QuirkyCorkscrew_Reposition	128,	 25, 24, 24, 24, 23, 23, 22, 22
+	QuirkyCorkscrew_Reposition	128,	 21, 21, 20, 20, 19, 18, 18, 17
+	QuirkyCorkscrew_Reposition	128,	 16, 16, 15, 14, 14, 13, 12, 12
+	QuirkyCorkscrew_Reposition	128,	 11, 10, 10,  9,  8,  8,  7,  6
+	QuirkyCorkscrew_Reposition	128,	  6,  5,  4,  4,  3,  2,  1,  0
+	QuirkyCorkscrew_Reposition	128,	 -1, -1, -2, -2, -3, -4, -4, -5
+	QuirkyCorkscrew_Reposition	128,	 -6, -7, -7, -8, -9, -9,-10,-10
+	QuirkyCorkscrew_Reposition	128,	-11,-11,-12,-12,-13,-14,-14,-15
+	QuirkyCorkscrew_Reposition	128,	-15,-16,-16,-17,-17,-18,-18,-19
+
+QuirkyCorkscrew_Chunk2_Pos:
+	QuirkyCorkscrew_Reposition	128,	-19,-19,-20,-21,-21,-22,-22,-23
+	QuirkyCorkscrew_Reposition	128,	-23,-24,-24,-25,-25,-26,-26,-27
+	QuirkyCorkscrew_Reposition	128,	-27,-28,-28,-28,-29,-29,-30,-30
+	QuirkyCorkscrew_Reposition	128,	-30,-31,-31,-31,-32,-32,-32,-33
+	QuirkyCorkscrew_Reposition	128,	-33,-33,-33,-34,-34,-34,-35,-35
+	QuirkyCorkscrew_Reposition	128,	-35,-35,-35,-35,-35,-35,-36,-36
+	QuirkyCorkscrew_Reposition	128,	-36,-36,-36,-36,-36,-36,-36,-37
+	QuirkyCorkscrew_Reposition	128,	-37,-37,-37,-37,-37,-37,-37,-37
+	QuirkyCorkscrew_Reposition	128,	-37,-37,-37,-37,-37,-37,-37,-37
+	QuirkyCorkscrew_Reposition	128,	-37,-37,-37,-37,-37,-37,-37,-37
+	QuirkyCorkscrew_Reposition	128,	-37,-37,-37,-37,-36,-36,-36,-36
+	QuirkyCorkscrew_Reposition	128,	-36,-36,-36,-35,-35,-35,-35,-35
+	QuirkyCorkscrew_Reposition	128,	-35,-35,-35,-34,-34,-34,-33,-33
+	QuirkyCorkscrew_Reposition	128,	-33,-33,-32,-32,-32,-31,-31,-31
+	QuirkyCorkscrew_Reposition	128,	-30,-30,-30,-29,-29,-28,-28,-28
+	QuirkyCorkscrew_Reposition	128,	-27,-27,-26,-26,-25,-25,-24,-24
+QuirkyCorkscrew_Chunk3_Pos:
+	QuirkyCorkscrew_Reposition	128,	-23,-23,-22,-22,-21,-21,-20,-19
+	QuirkyCorkscrew_Reposition	128,	-19,-18,-18,-17,-16,-16,-15,-14
+	QuirkyCorkscrew_Reposition	128,	-14,-13,-12,-11,-11,-10, -9, -8
+	QuirkyCorkscrew_Reposition	128,	 -7, -7, -6, -5, -4, -3, -2, -1
+	QuirkyCorkscrew_Reposition	128,	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	128,	  8,  8,  9, 10, 10, 11, 12, 13
+	QuirkyCorkscrew_Reposition	128,	 13, 14, 14, 15, 15, 16, 16, 17
+	QuirkyCorkscrew_Reposition	128,	 17, 18, 18, 19, 19, 20, 20, 21
+	QuirkyCorkscrew_Reposition	128,	 21, 22, 22, 23, 23, 24, 24, 24
+	QuirkyCorkscrew_Reposition	128,	 25, 25, 25, 25, 26, 26, 26, 26
+	QuirkyCorkscrew_Reposition	128,	 27, 27, 27, 27, 28, 28, 28, 28
+	QuirkyCorkscrew_Reposition	128,	 28, 28, 29, 29, 29, 29, 29, 29
+	QuirkyCorkscrew_Reposition	128,	 29, 30, 30, 30, 30, 30, 30, 30
+	QuirkyCorkscrew_Reposition	128,	 31, 31, 31, 31, 31, 31, 31, 31
+	QuirkyCorkscrew_Reposition	128,	 31, 31, 32, 32, 32, 32, 32, 32
+	QuirkyCorkscrew_Reposition	128,	 32, 32, 32, 32, 32, 32, 32, 32
+
+QuirkyCorkscrew_Chunk3_1_Pos:
+	QuirkyCorkscrew_Reposition	0,	-23,-23,-22,-22,-21,-21,-20,-19
+	QuirkyCorkscrew_Reposition	0,	-19,-18,-18,-17,-16,-16,-15,-14
+	QuirkyCorkscrew_Reposition	0,	-14,-13,-12,-11,-11,-10, -9, -8
+	QuirkyCorkscrew_Reposition	0,	 -7, -7, -6, -5, -4, -3, -2, -1
+	QuirkyCorkscrew_Reposition	0,	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	0,	  8,  8,  9, 10, 10, 11, 12, 13
+	QuirkyCorkscrew_Reposition	0,	 13, 14, 14, 15, 15, 16, 16, 17
+	QuirkyCorkscrew_Reposition	0,	 17, 18, 18, 19, 19, 20, 20, 21
+	QuirkyCorkscrew_Reposition	0,	 21, 22, 22, 23, 23, 24, 24, 24
+	QuirkyCorkscrew_Reposition	0,	 25, 25, 25, 25, 26, 26, 26, 26
+	QuirkyCorkscrew_Reposition	0,	 27, 27, 27, 27, 28, 28, 28, 28
+	QuirkyCorkscrew_Reposition	0,	 28, 28, 29, 29, 29, 29, 29, 29
+	QuirkyCorkscrew_Reposition	0,	 29, 30, 30, 30, 30, 30, 30, 30
+	QuirkyCorkscrew_Reposition	0,	 31, 31, 31, 31, 31, 31, 31, 31
+	QuirkyCorkscrew_Reposition	0,	 31, 31, 32, 32, 32, 32, 32, 32
+	QuirkyCorkscrew_Reposition	0,	 32, 32, 32, 32, 32, 32, 32, 32
+
+QuirkyCorkscrew_DDiag_Pos:
+	QuirkyCorkscrew_Reposition	-(8*4),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	-(8*3),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	-(8*2),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	-8,	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	0,	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	8,	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*2),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*3),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*4),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*5),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*6),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*7),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*8),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*9),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*10),	  0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(8*11),	  0,  1,  2,  3,  4,  5,  6,  7
+
+
+QuirkyCorkscrew_DDiag_1_Pos:
+	QuirkyCorkscrew_Reposition	(128-(8*4)),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128-(8*3)),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128-(8*2)),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128-8),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	128,	  	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*2),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*3),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*4),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*5),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*6),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*7),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*8),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*9),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*10),	0,  1,  2,  3,  4,  5,  6,  7
+	QuirkyCorkscrew_Reposition	(128+8*11),	0,  1,  2,  3,  4,  5,  6,  7
+
+
+
+; ===========================================================================
