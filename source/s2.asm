@@ -14139,28 +14139,30 @@ Object26_BreakOpen:
 ; Object 2E - monitor contents (code for power-up behavior and rising image)
 ;----------------------------------------------------
 
-Obj2E:					; DATA XREF: ROM:Obj_Indexo
+Obj2E:	
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	Obj2E_Index(pc,d0.w),d1
 		jmp	Obj2E_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj2E_Index:	dc.w loc_B04E-Obj2E_Index ; DATA XREF: ROM:Obj2E_Indexo
-					; ROM:0000B04Ao ...
-		dc.w loc_B092-Obj2E_Index
-		dc.w loc_B1AA-Obj2E_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_B04E:				; DATA XREF: ROM:Obj2E_Indexo
+; ===========================================================================
+Obj2E_Index:	dc.w @Init-Obj2E_Index
+		dc.w @Main-Obj2E_Index
+		dc.w Monitor_Disappear-Obj2E_Index
+		dc.w Monitor_Random-Obj2E_Index
+; ===========================================================================
+	@Init:	
 		addq.b	#2,routine(a0)
 		move.w	#$680,art_tile(a0)
 		bsr.w	Adjust2PArtPointer
-		move.b	#$24,render_flags(a0) ; '$'
+		move.b	#$24,render_flags(a0)
 		move.b	#3,priority(a0)
 		move.b	#8,width_pixels(a0)
 		move.w	#-$300,y_vel(a0)
 		moveq	#0,d0
 		move.b	anim(a0),d0
+		bne.s	@NotRandom
+			addq.b	#4,routine(a0)
+		@NotRandom:
 		addq.b	#1,d0
 		move.b	d0,mapping_frame(a0)
 		movea.l	#Map_Obj26,a1
@@ -14168,35 +14170,28 @@ loc_B04E:				; DATA XREF: ROM:Obj2E_Indexo
 		adda.w	(a1,d0.w),a1
 		addq.w	#2,a1
 		move.l	a1,mappings(a0)
-
-loc_B092:				; DATA XREF: ROM:0000B04Ao
-		bsr.s	sub_B098
-		bra.w	DisplaySprite
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-sub_B098:				; CODE XREF: ROM:loc_B092p
+;----------------------------------------------------		
+	@Main:	
 		tst.w	y_vel(a0)
-		bpl.w	loc_B0AC
+		bpl.w	Monitor_GiveContent
 		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_B0AC:				; CODE XREF: sub_B098+4j
+		bra.w	DisplaySprite
+; ===========================================================================
+Monitor_Random:	
+		move.w	#$E0,d0	; Mess with Jeff
+		jmp	(PlaySound).l
+; ===========================================================================
+Monitor_GiveContent:	
 		addq.b	#2,routine(a0)
 		move.w	#$1D,anim_frame_duration(a0)
 		moveq	#0,d0
 		move.b	anim(a0),d0
 		add.w	d0,d0
-		move.w	Monitor_Subroutines(pc,d0.w),d0
+		move.w	Monitor_Subroutines-2(pc,d0.w),d0
 		jmp	Monitor_Subroutines(pc,d0.w)
-; End of function sub_B098
-
 ; ===========================================================================
 	IndexStart	Monitor_Subroutines
-	GenerateIndex	2, Monitor, Tammy
 	GenerateIndex	2, Monitor, SonicLife
 	GenerateIndex	2, Monitor, Tails
 	GenerateIndex	2, Monitor, Eggman
@@ -14204,7 +14199,7 @@ loc_B0AC:				; CODE XREF: sub_B098+4j
 	GenerateIndex	2, Monitor, Shoes
 	GenerateIndex	2, Monitor, Boomer
 	GenerateIndex	2, Monitor, Invincibility
-	GenerateIndex	2, Monitor, Random
+	GenerateIndex	2, Monitor, Tammy
 	GenerateIndex	2, Monitor, Hops
 ; ===========================================================================
 Monitor_Eggman:
@@ -14227,10 +14222,6 @@ Monitor_Boomer:
 		move.b	#1,($FFFFFE2C).w
 		move.b	#$38,(MainCharacter+$180).w
 		move.w	#$AF,d0
-		jmp	(PlaySound).l
-; ===========================================================================
-Monitor_Random:	
-		move.w	#$E0,d0	; Mess with Jeff
 		jmp	(PlaySound).l
 ; ===========================================================================
 Monitor_SonicLife:
@@ -14283,7 +14274,7 @@ Monitor_Invincibility:			; DATA XREF: ROM:0000B0D4o
 	@NoMusic:
 		rts
 ; ===========================================================================
-loc_B1AA:	
+Monitor_Disappear:	
 		subq.w	#1,anim_frame_duration(a0)
 		bmi.w	DeleteObject
 		bra.w	DisplaySprite
@@ -15556,8 +15547,8 @@ word_C2A4:	dc.w 2			; DATA XREF: ROM:0000C27Co
 word_C2B6:	dc.w 2			; DATA XREF: ROM:0000C27Eo
 		dc.w $F80D,  $14,   $A,	  $C; 0
 		dc.w $F80D,   $C,    6,	 $2C; 4
-Map_Obj3A:	dc.w word_C2DA-Map_Obj3A ; DATA	XREF: ROM:0000BB98o
-					; ROM:Map_Obj3Ao ...
+
+Map_Obj3A:	dc.w word_C2DA-Map_Obj3A
 		dc.w word_C31C-Map_Obj3A
 		dc.w word_C34E-Map_Obj3A
 		dc.w word_C380-Map_Obj3A
@@ -15566,6 +15557,8 @@ Map_Obj3A:	dc.w word_C2DA-Map_Obj3A ; DATA	XREF: ROM:0000BB98o
 		dc.w word_C1AE-Map_Obj3A
 		dc.w word_C1C0-Map_Obj3A
 		dc.w word_C1D2-Map_Obj3A
+		dc.w word_C1D2-Map_Obj3A
+
 word_C2DA:	dc.w 8			; DATA XREF: ROM:Map_Obj3Ao
 		dc.w $F805,  $3E,  $1F,$FFB8; 0
 		dc.w $F805,  $32,  $19,$FFC8; 4
@@ -15605,8 +15598,8 @@ word_C3BA:	dc.w 7			; DATA XREF: ROM:0000C2D0o
 		dc.w $FF04,$186E,$1837,$FFF6; 16
 		dc.w $F80D,$FFF8,$FBFC,	 $28; 20
 		dc.w $F801, $170,  $B8,	 $48; 24
-Map_S1Obj7E:	dc.w word_C406-Map_S1Obj7E ; DATA XREF:	ROM:0000BDDCo
-					; ROM:Map_S1Obj7Eo ...
+
+Map_S1Obj7E:	dc.w word_C406-Map_S1Obj7E
 		dc.w word_C470-Map_S1Obj7E
 		dc.w word_C4A2-Map_S1Obj7E
 		dc.w word_C1E4-Map_S1Obj7E	; drx originally screwed up here and had it reference a PLR list lol
@@ -15687,8 +15680,7 @@ word_C59C:	dc.w $F			; DATA XREF: ROM:0000C404o
 		dc.w $F805,    0,    0,	 $58; 48
 		dc.w $F805,  $26,  $13,	 $68; 52
 		dc.w $F805,  $26,  $13,	 $78; 56
-Map_S1Obj7F:	dc.w word_C624-Map_S1Obj7F ; DATA XREF:	ROM:0000BF86o
-					; ROM:Map_S1Obj7Fo ...
+Map_S1Obj7F:	dc.w word_C624-Map_S1Obj7F
 		dc.w word_C62E-Map_S1Obj7F
 		dc.w word_C638-Map_S1Obj7F
 		dc.w word_C642-Map_S1Obj7F

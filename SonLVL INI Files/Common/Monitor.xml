@@ -48,7 +48,7 @@
     </ImageFromMappings>
   </Images>
   <Subtypes>
-    <Subtype id="00" name="Tammy" image="static" />
+    <Subtype id="00" name="Random" image="static" />
     <Subtype id="01" name="1-up" image="sonic" />
     <Subtype id="02" name="Tails" image="tails" />
     <Subtype id="03" name="Eggman" image="eggman" />
@@ -56,7 +56,7 @@
     <Subtype id="05" name="Shoes" image="shoes" />
     <Subtype id="06" name="Boomer" image="shield" />
     <Subtype id="07" name="Invincibility" image="invincibility" />
-    <Subtype id="08" name="Random" image="random" />
+    <Subtype id="08" name="Tammy" image="random" />
     <Subtype id="09" name="Hops" image="spring" />
     <Subtype id="0A" name="Broken" image="broken" />
   </Subtypes>
@@ -65,7 +65,7 @@
   </Properties>
   <Enums>
     <Enum name="MonitorType">
-      <EnumMember name="Tammy" />
+      <EnumMember name="Random" />
       <EnumMember name="Sonic" />
       <EnumMember name="Tails" />
       <EnumMember name="Eggman" />
@@ -73,7 +73,7 @@
       <EnumMember name="Shoes" />
       <EnumMember name="Boomer" />
       <EnumMember name="Invincibility" />
-      <EnumMember name="Random" />
+      <EnumMember name="Tammy" />
       <EnumMember name="Hops" />
       <EnumMember name="Broken" />
     </Enum>
