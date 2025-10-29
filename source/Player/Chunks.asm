@@ -49,8 +49,12 @@ c	=	c/2	; warning for if someone forgets to add an entry
 		bcs	PlayerQuirkyCorkscrew
 			bclr	#PlayerStatusBitChunk,status(a0)	; Get off the Corkscrew
 			beq.s	@DoNothing
+				move.b	#4,flip_speed(a0)
 				bclr	#PlayerStatusBitOnObject,status(a0)
-				clr.b	flip_angle(a0)
+				tst.b	angle(a0)
+				bne.s	@DoNothing
+					clr.b	flip_angle(a0)
+
 		@DoNothing:
 			rts
 ; ===========================================================================
@@ -113,6 +117,7 @@ PlayerQuirkyCorkscrew:
 			add.w	QuirkyCorkscrewTable(pc,d1.w),a1	; get pointer to current chunk position data
 
 			move.w	y_pos(a0),d0
+			;move.w	d0,d4
 			andi.w	#$F80,d0	; Get Current Chunk position
 
 			move.w	x_pos(a0),d2
@@ -129,12 +134,23 @@ PlayerQuirkyCorkscrew:
 			lea	QuirkyCorkscrewData,a1
 			add.w	QuirkyCorkscrewTable+2(pc,d1.w),a1	; get pointer to current chunk Flipma Data
 
-			lsr.w	#5,d3		; only 4 options
-			lea	QuirkyCorkscrewData,a2
+			lsr.w	#4,d3		; only 4 options
+			bclr	#0,d3		; no uneven bytes
 			move.b	(a1,d3.w),flip_angle(a0)
+			move.b	(1,a1,d3.w),angle(a0)
 
+
+	;		sub.w	y_pos(a0),d4
+	;		neg.w	d4
+	;		asl.w	#3,d4
+	;		tst.w	ground_speed(a0)
+	;		bmi.s	@GoingLeft
+	;			add.w	d4,ground_speed(a0)
 			@DoNothing2:
 		rts
+	;		@GoingLeft:
+	;			sub.w	d4,ground_speed(a0)
+	;			rts
 ; End of function sub_149BC
 
 ; ===========================================================================

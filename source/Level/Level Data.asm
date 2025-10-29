@@ -215,10 +215,10 @@ c		=	c+1
 ; ===========================================================================
 QuirkyCorkscrewData:
 	; Flip_angle of player relative to chunk
-	QuirkyCorkscrew_Chunk1_Flipma:	dc.b	$16, $2C, $42, $58 ; Going Upwards
-	QuirkyCorkscrew_Chunk2_Flipma:	dc.b	$6E, $84, $9A, $B0 ; Up to Down
-	QuirkyCorkscrew_Chunk3_Flipma:	dc.b	$C6, $DC, $F2, $01 ; Going Downwards
-	QuirkyCorkscrew_DDiag_Flipma:	dc.b	$DC, $DC, $DC, $DC ; Going Downwards
+	QuirkyCorkscrew_Chunk1_Flipma:	dc.b	$16, $00, $2C, $F0, $42, $E8, $58, $E0  ; Going Upwards
+	QuirkyCorkscrew_Chunk2_Flipma:	dc.b	$6E, $F4, $84, $F0, $9A, $10, $B0, $1C  ; Up to Down
+	QuirkyCorkscrew_Chunk3_Flipma:	dc.b	$C6, $20, $DC, $18, $F2, $10, $01, $00  ; Going Downwards
+	QuirkyCorkscrew_DDiag_Flipma:	dc.b	$DC, $1C, $DC, $1C, $DC, $1C, $DC, $1C  ; Going Downwards
 ; ===========================================================================
 	; Y position of player relative to chunk
 
