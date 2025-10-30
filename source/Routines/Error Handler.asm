@@ -270,11 +270,7 @@ ShowErrorValue:
 		rts
 ; ===========================================================================
 ErrorWaitForC:
-		if	(Lockon)
 		jsr	ReadJoypads
-		else
-		bsr.w	ReadJoypads
-		endif
 		cmpi.b	#btnC,(Ctrl_1_Press).w ; is button C pressed?
 		bne.s	@checkforABC	; if not, branch
 		rts	

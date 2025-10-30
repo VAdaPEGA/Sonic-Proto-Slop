@@ -1,5 +1,5 @@
 CheckSumError:
-		bsr.w	VDPSetupGame
+		jsr	VDPSetupGame
 	;	move.w	#$4EF9,(v_vbla_jmp).w			; JMP command
 	;	move.l	#VBI_Standard,(v_vbla_address).w	; VBI default
 		locCRAM	0 					; set VDP to CRAM write
@@ -7,7 +7,7 @@ CheckSumError:
 	@fillred:
 		move.w	#cRed,(vdp_data_port).l ; fill palette with red
 		dbf	d7,@fillred	; repeat $3F more times
-		bsr.w	JoypadInit
+		jsr	JoypadInit
 
 
 
