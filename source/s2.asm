@@ -336,7 +336,8 @@ MainGameLoop:
 		andi.w	#$1E,d0				; Mask out bytes and clean d0
 		move.w	@GameModeArray(pc,d0.w),a0	; get value from table
 		add.l	a0,a0				; multiply by 2
-		jsr	GameModesStart(a0)	; Jump to Game Mode
+		add.l	#GameModesStart,a0		; stupid workaround I'm so mad x.x
+		jsr	(a0)	; Jump to Game Mode
 		bra.s	MainGameLoop
 ; ===========================================================================
 @GameModeArray:
