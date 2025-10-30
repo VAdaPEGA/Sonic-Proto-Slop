@@ -305,7 +305,7 @@ ChecksumLoop:
 		bcc.s	ChecksumLoop
 		movea.l	#Checksum,a1	; read the checksum
 		cmp.w	(a1),d1		; compare correct checksum to one in ROM
-		beq	CheckSumError
+		;beq	CheckSumError
 
 		lea	($FFFFFE00).w,a6
 		moveq	#0,d7
