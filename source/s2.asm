@@ -129,11 +129,21 @@ Region:		dc.b	"UJE             " ; Region
 		align	$002010
 		incbin	"SOUP\SWAP.BIN"	; special thanks to kakalakola for the help here
 ; ===========================================================================
-
+	if	(filesize("..\SMB1.nes")=-1)
+		inform	3, "YOU DUMBASS, YOU FORGOT YOUR SUPER MARIO BROS. ROM, make sure it's present as 'SMB1.nes' in the root folder"
+	else
+	endif
 		align	$008010,$CA
 		incbin	"SOUP\SOUP.BIN"
-		incbin	"SOUP\SOUP.ArtUnc"
-		incbin	"SOUP\SOUP.ArtUnc"
+	;	incbin	"SOUP\SOUP.ArtUnc"
+	;	incbin	"SOUP\SOUP.ArtUnc"
+	if	(filesize("..\SMB1.nes")=$A010)
+		incbin	"..\SMB1.nes", $8010, $2000
+		incbin	"..\SMB1.nes", $8010, $2000
+	else	; headerless ROM
+		incbin	"..\SMB1.nes", $8000, $2000
+		incbin	"..\SMB1.nes", $8000, $2000
+	endif
 ; ===========================================================================
 		align	$021100
 EntryPoint:
