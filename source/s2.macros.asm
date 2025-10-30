@@ -1,8 +1,13 @@
 ; ---------------------------------------------------------------------------
 ; Macros
-align macro
+align:	macro
+	if (narg=1)
 	cnop 0,\1
+	else
+	dcb.b \1-((*)%\1),\2
+	endc
 	endm
+
 
 stopZ80 macro
 	move.w	#$100,(Z80_Bus_Request).l

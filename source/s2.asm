@@ -12,12 +12,34 @@
 Lockon = 0
 Devmode = 1
 DevHitboxes = 1
+NESROMSupport	= 1
 ; ===========================================================================
 StartOfRom:
-Vectors:	dc.l	System_Stack	; Initial stack pointer value
-		dc.l	EntryPoint	; Start of program
-		dc.l	BusError	; A Crazy error
-		dc.l	AddressError	; Address error (4)
+Vectors:	
+		if (NESROMSupport)
+		dc.b	"NES", $1A	; 0-3 	Constant $4E $45 $53 $1A (ASCII "NES" followed by MS-DOS end-of-file)
+
+		dc.b	$04	; 4 	Size of PRG ROM in 16 KB units
+		dc.b	$02	; 5 	Size of CHR ROM in 8 KB units (value 0 means the board uses CHR RAM)
+		dc.b	$11	; 6 	Flags 6 – Mapper, mirroring, battery, trainer
+		dc.b	$00	; 7 	Flags 7 – Mapper, VS/Playchoice, NES 2.0
+
+		; Entry point is now at $020100
+
+		dc.b	$00	; 8 	Flags 8 – PRG-RAM size (rarely used extension)
+		dc.b	$00	; 9 	Flags 9 – TV system (rarely used extension)
+		dc.b	$00	; 10 	Flags 10 – TV system, PRG-RAM presence (unofficial, rarely used extension)
+		dc.b	$A0	; 11	Unused padding (jump to header)
+
+		dc.l	AddressError	; Address error (4)		; 12-15	Unused padding (should be filled with zero)
+
+		else
+		dc.l	System_Stack	; Initial stack pointer value	; 0-3
+		dc.l	EntryPoint	; Start of program		; 4-7
+		dc.l	BusError	; A Crazy error			; 8-11
+		dc.l	AddressError	; Address error (4)		; 12-15
+		endif
+		
 		dc.l	IllegalInstr	; Illegal instruction
 		dc.l	ZeroDivide	; Division by zero
 		dc.l	ChkInstr	; CHK exception
@@ -42,10 +64,11 @@ Vectors:	dc.l	System_Stack	; Initial stack pointer value
 		dc.b	$87
 		dc.b	"IS THAT "
 		dc.b	"THE BYTE OF 87!?"
+		bra.w	BusError		; Funny Hack-ey workaround
 		dc.w	ASCII_Linebreak
 		dc.b	"=="
 		dc.w	ASCII_Linebreak
-		dc.b	"PROJECT PROTO SLOP        "
+		dc.b	"PROJECT PROTO SLOP    "
 		dc.w	ASCII_Linebreak
 		if (Devmode=1)
 		dc.b	"** DEBUG BUILD **  "
@@ -102,7 +125,23 @@ Region:		dc.b	"UJE             " ; Region
 		include	"Routines\Error Handler.asm"
 		include	"Routines\Error Checksum.asm"
 ; ===========================================================================
+		if (NESROMSupport)
+		align	$002010
+		incbin	"SOUP\SWAP.BIN"
+; ===========================================================================
+
+		align	$008010,$CA
+		incbin	"SOUP\SOUP.BIN"
+		incbin	"SOUP\SOUP.ArtUnc"
+		incbin	"SOUP\SOUP.ArtUnc"
+; ===========================================================================
+		align	$021100
 EntryPoint:
+		move.l	#System_Stack,sp
+		else
+EntryPoint:		
+		endif
+
 		tst.l	(HW_Port_1_Control-1).l	; test port A & B control registers
 		bne.s	PortA_Ok
 		tst.w	(HW_Expansion_Control-1).l	; test port C control register
