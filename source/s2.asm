@@ -127,7 +127,7 @@ Region:		dc.b	"UJE             " ; Region
 ; ===========================================================================
 		if (NESROMSupport)
 		align	$002010
-		incbin	"SOUP\SWAP.BIN"
+		incbin	"SOUP\SWAP.BIN"	; special thanks to kakalakola for the help here
 ; ===========================================================================
 
 		align	$008010,$CA
