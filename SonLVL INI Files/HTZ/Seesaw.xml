@@ -2,8 +2,8 @@
 <ObjDef xmlns="http://www.sonicretro.org" Name="Seesaw" Image="seesaw">
   <Images>
     <ImageFromMappings id="seesaw">
-      <ArtFile filename="../source/art/nemesis/See-saw in HTZ.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj14_a.bin" frame="0" startpal="0" />
+      <ArtFile filename="../source/Objects/SeeSaw/SeeSaw.ArtNem" />
+      <MapFile type="Binary" filename="../source/Objects/SeeSaw/SeeSaw.SprMap" frame="0" startpal="0" />
     </ImageFromMappings>
   </Images>
   <Subtypes>

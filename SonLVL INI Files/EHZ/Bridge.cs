@@ -12,8 +12,8 @@ namespace S2ObjectDefinitions.EHZ
 
 		public override void Init(ObjectData data)
 		{
-			byte[] artfile = ObjectHelper.OpenArtFile("../source/art/nemesis/EHZ bridge.bin", CompressionType.Nemesis);
-			byte[] mapfile = System.IO.File.ReadAllBytes("../source/mappings/sprite/obj11.bin");
+			byte[] artfile = ObjectHelper.OpenArtFile("../source/Objects/Bridge/Bridge_EHZ.ArtNem", CompressionType.Nemesis);
+			byte[] mapfile = System.IO.File.ReadAllBytes("../source/Objects/Bridge/Bridge_EHZ.SprMap");
 			img = ObjectHelper.MapToBmp(artfile, mapfile, 0, 2);
 		}
 

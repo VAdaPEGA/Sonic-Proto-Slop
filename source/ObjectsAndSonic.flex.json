@@ -1,8 +1,58 @@
 {
     "Flex": 2,
     "name": "",
-    "node": "140e9253-006a-446d-b739-08fe75c0b918",
+    "node": "90c2403b-bd62-4029-8c9b-4b11ec886c8d",
     "objects": [
+        {
+            "format": "Sonic 2.js",
+            "name": "CPZUnknown",
+            "palettes": [
+                {
+                    "path": "Level\\CPZ\\Palette\\PalMain_2.bin",
+                    "length": 3
+                }
+            ],
+            "art": {
+                "path": "",
+                "compression": "Nemesis",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "Objects\\_WeirdPlatforms\\MAP__WeirdPlatforms.asm",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            },
+            "uuid": "90c2403b-bd62-4029-8c9b-4b11ec886c8d"
+        },
+        {
+            "format": "Sonic 2.js",
+            "name": "Rings",
+            "palettes": [
+                {
+                    "path": "Level\\EHZ\\Palette\\PalMain_1.bin",
+                    "length": 3
+                }
+            ],
+            "art": {
+                "path": "Objects\\Ring\\Ring.ArtNem",
+                "compression": "Nemesis",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "Objects\\Ring\\Ring.SprMap",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            },
+            "uuid": "29f93203-21e3-4e4d-af9a-50715954e92f"
+        },
         {
             "name": "Common",
             "children": [
@@ -11,21 +61,21 @@
                     "name": "LampPost",
                     "palettes": [
                         {
-                            "path": "Art\\palettes\\Sonic and Tails.bin",
+                            "path": "Level\\Main.pal",
                             "length": 1
                         },
                         {
-                            "path": "Level\\EHZ\\PalMain_1.bin",
+                            "path": "",
                             "length": 3
                         }
                     ],
                     "art": {
-                        "path": "Art\\nemesis\\LampPost.bin",
+                        "path": "Objects\\LampPost\\LampPost.ArtNem",
                         "compression": "Nemesis",
                         "offset": 0
                     },
                     "mappings": {
-                        "path": "Mappings\\sprite\\LampPost.bin",
+                        "path": "Objects\\LampPost\\LampPost.SprMap",
                         "label": "@Map"
                     },
                     "dplcs": {
@@ -57,7 +107,8 @@
                 }
             ],
             "isDirectory": true,
-            "expanded": true
+            "expanded": true,
+            "uuid": "da29f932-0321-436e-8daf-9a50715954e9"
         },
         {
             "format": "Sonic 2.js",

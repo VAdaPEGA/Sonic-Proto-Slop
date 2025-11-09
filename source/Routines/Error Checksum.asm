@@ -7,8 +7,6 @@ CheckSumError:
 	@fillred:
 		move.w	#cRed,(vdp_data_port).l ; fill palette with red
 		dbf	d7,@fillred	; repeat $3F more times
-		jsr	JoypadInit
-
 
 
 		moveq	#16,d1

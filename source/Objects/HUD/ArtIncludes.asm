@@ -1,0 +1,1 @@
+	Nem_add	Lives,	\_ObjLoc,	HUDLivesCounter

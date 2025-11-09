@@ -82,7 +82,7 @@ subtype:		equ $28
 ; Special Stage Sonic uses some different conventions
 ground_speed:		equ $14		; 2 bytes ; directionless representation of speed... not updated in the air
 obj_control:		equ $27		; 0 for normal, 1 for hanging or for resting on a flipper, $81 for going through CNZ/OOZ/MTZ tubes or stopped in CNZ cages or stoppers or flying if Tails
-
+air_left:		equ $28		; Drowning countdown
 flip_type:		equ $2A		; Type of Flipma animation
 flip_angle:		equ $2B		; angle about the x axis (360 degrees = 256) (twist/tumble/corkscrew)
 flips_remaining:	equ $2C		; number of flip revolutions remaining
@@ -241,27 +241,54 @@ Camera_BG_Y_pos_diff:		equ Camera_RAM+$B6
 Camera_X_pos_diff_P2:		equ Camera_RAM+$B8	; (new X pos - old X pos) * 256
 Camera_Y_pos_diff_P2:		equ Camera_RAM+$BA
 
+
+
 Camera_Max_Y_pos:		equ Camera_RAM+$C6
 Camera_Min_X_pos:		equ Camera_RAM+$C8
 Camera_Max_X_pos:		equ Camera_RAM+$CA
 Camera_Min_Y_pos:		equ Camera_RAM+$CC
 Camera_Max_Y_pos_now:		equ Camera_RAM+$CE
 
+Horiz_scroll_delay_val:		equ Camera_RAM+$D0
+Sonic_Pos_Record_Index:		equ Camera_RAM+$D2
+
 Camera_Y_pos_bias:		equ Camera_RAM+$D8
 Camera_Y_pos_bias_P2:		equ Camera_RAM+$DA
 
 Camera_Max_Y_Pos_Changing:	equ Camera_RAM+$DE
+
+Dynamic_Resize_Routine:		equ Camera_RAM+$DF
 
 Camera_Min_X_pos_P2:		equ Camera_RAM+$F8
 Camera_Max_X_pos_P2:		equ Camera_RAM+$FA
 Camera_Min_Y_pos_P2:		equ Camera_RAM+$FC
 Camera_Max_Y_pos_P2:		equ Camera_RAM+$FE
 
+; ---------------------------------------------------------------------------
+; Sound driver RAM
+;
 
+Sound_Driver_RAM	equ	$FFFFF000
 
+SFXPriorityVal:		equ 0
+TempoTimeout:		equ 1
+CurrentTempo:		equ 2	; stores current tempo value
+StopMusic:		equ 3	; set to 1 to pause music, and $80 to unpause music
+FadeOutCounter:		equ 4
 
-Horiz_scroll_delay_val:		equ $FFFFEED0
-Sonic_Pos_Record_Index:		equ $FFFFEED2
+; unused byte
+
+FadeOutDelay:		equ 6
+Communication:		equ 7	; unused byte used to synchronise gameplay events with music, used in Ristar to sync boss attacks
+DACUpdating:		equ 8	; set to $80 while DAC is updating, then back to 0
+QueueToPlay:		equ 9	; if NOT set to $80, means new index was requested
+SFXToPlay:		equ $A	; first sound queue
+SFXToPlay2:		equ $B	; second sound queue
+SFXToPlay3:		equ $C	; third (broken) sound queue
+
+; unused byte
+
+; ---------------------------------------------------------------------------
 
 Game_Mode:			equ $FFFFF600
 
@@ -283,6 +310,7 @@ VDP_Reg1_val:			equ $FFFFF60C
 Demo_Time_left:			equ $FFFFF614
 
 Vscroll_Factor:			equ $FFFFF616
+Hscroll_Factor:			equ $FFFFF61A	; unused
 
 Hint_counter_reserve:		equ $FFFFF624
 Vint_routine:			equ $FFFFF62A
@@ -292,7 +320,10 @@ Sprite_count:			equ $FFFFF62C
 PalCycle_Frame:			equ $FFFFF632
 PalCycle_Timer:			equ $FFFFF634
 
-Game_paused:			equ $FFFFF63A
+RNG_seed:			equ $FFFFF636
+
+;				equ $FFFFF63A	; unused
+Game_paused:			equ $FFFFF63B
 
 DMA_data_thunk:			equ $FFFFF640	; Used as a RAM holder for the final DMA command word. Data will NOT be preserved across V-INTs, so consider this space reserved.
 Hint_flag:			equ $FFFFF644
@@ -305,6 +336,9 @@ Water_routine:			equ $FFFFF64C
 
 Water_fullscreen_flag:		equ $FFFFF64E
 Do_Updates_in_H_int:		equ $FFFFF64F
+
+PalCycle_Frame2:		equ $FFFFF652	; Used by CPZ
+PalCycle_Frame3:		equ $FFFFF654	; Used by CPZ
 
 Plc_Buffer:			equ $FFFFF680
 
@@ -342,6 +376,12 @@ Obj_load_addr_right:		equ $FFFFF770
 Obj_load_addr_left:		equ $FFFFF774
 Obj_load_addr_2:		equ $FFFFF778
 Obj_load_addr_3:		equ $FFFFF77C
+
+
+
+
+Special_Stage_Angle:		equ $FFFFF780	; Same location as something else Object related, research later, idiot
+Special_Stage_Speed:		equ $FFFFF782
 
 Camera_X_pos_last_P2:		equ $FFFFF78C
 
@@ -406,6 +446,11 @@ Error_Type:			equ $FFFFFC44	; error type
 
 System_Stack			equ $FFFFFE00
 
+Level_Reload:			equ $FFFFFE02	; (1 byte)
+;				$FFFFFE03	; (1 byte) Unused
+
+Level_Counter:			equ $FFFFFE04	; (2 bytes) in-level timer (number of frames passed since the level fades from black) 
+
 Debug_object:			equ $FFFFFE06
 Debug_placement_mode:		equ $FFFFFE08
 Debug_Accel_Timer:		equ $FFFFFE0A
@@ -419,6 +464,10 @@ Current_Act:			equ $FFFFFE11
 
 Life_count:			equ $FFFFFE12
 
+;Air_Left:			equ $FFFFFE14	; Moved to Player RAM
+
+Extra_life_flags:		equ $FFFFFE1B
+
 Update_HUD_lives:		equ $FFFFFE1C 
 Update_HUD_rings:		equ $FFFFFE1D 
 Update_HUD_timer:		equ $FFFFFE1E
@@ -431,11 +480,63 @@ Timer_second:			equ Timer+2
 Timer_frame:			equ Timer+3
 
 Score:				equ $FFFFFE26
+Partner:			equ $FFFFFE2C
+
+
+
+LampPost_Save_RAM:		equ	$FFFFFE30
+				rsset	LampPost_Save_RAM
+Last_LampPost_hit:		rs.b	1	; 1 byte -- max activated starpole ID in this act
+Saved_Dynamic_Resize_Routine:	rs.b	1
+Saved_x_pos:			rs.w	1
+Saved_y_pos:			rs.w	1
+Saved_Ring_count:		rs.w	1
+Saved_Timer:			rs.l	1
+Saved_Solid_bits:		rs.w	1
+Saved_Camera_X_pos:		rs.w	1
+Saved_Camera_Y_pos:		rs.w	1
+Saved_Camera_BG_X_pos:		rs.w	1
+Saved_Camera_BG_Y_pos:		rs.w	1
+Saved_Camera_BG2_X_pos:		rs.w	1
+Saved_Camera_BG2_Y_pos:		rs.w	1
+Saved_Camera_BG3_X_pos:		rs.w	1
+Saved_Camera_BG3_Y_pos:		rs.w	1
+Saved_Camera_Max_Y_pos:		rs.w	1
+Saved_Water_Level:		rs.w	1
+Saved_Water_routine:		rs.b	1
+Saved_Water_move:		rs.b	1
+Saved_Extra_life_flags:		rs.b	1
+
+
+Emerald_count:			equ $FFFFFE57
+Got_Emeralds_array:		equ $FFFFFE58	; 7 of them
+
+Logspike_anim_counter:		equ $FFFFFEC0
+Logspike_anim_frame:		equ $FFFFFEC1
+Rings_anim_counter:		equ $FFFFFEC2
+Rings_anim_frame:		equ $FFFFFEC3
+;				equ $FFFFFEC4	; Unused
+;				equ $FFFFFEC5	; Unknown (6 frames)
+Ring_spill_anim_counter:	equ $FFFFFEC6
+Ring_spill_anim_frame:		equ $FFFFFEC7
+Ring_spill_anim_accum:		equ $FFFFFEC8
+
 
 Camera_Min_Y_pos_copy:		equ $FFFFFEF0	; used by debug mode
 Camera_Max_Y_pos_copy:		equ $FFFFFEF2
 
 Next_Extra_life_score:		equ $FFFFFFC0
+
+
+Cheat_Flags:			equ	$FFFFFFE0
+
+				rsset	Cheat_Flags
+Level_select_flag:		rs.b	1
+Slow_motion_flag:		rs.b	1	; This NEEDs to be after Level_select_flag because of the call to Che
+Debug_options_flag:		rs.b	1	; if set, allows you to enable debug mode and "night mode"
+S1_hidden_credits_flag:		rs.b	1	; Leftover from Sonic 1. This NEEDs to be after Debug_options_f
+
+
 
 Two_player_mode:		equ $FFFFFFE8
 

@@ -1,107 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ObjDef xmlns="http://www.sonicretro.org" Namespace="S2ObjectDefinitions.Common" TypeName="Spikes" Language="cs" Name="Spikes" Image="horiz1">
+<ObjDef xmlns="http://www.sonicretro.org" Namespace="S2ObjectDefinitions.Common" TypeName="Spikes" Language="cs" Name="Spikes" Image="vert1">
   <Images>
-    <ImageFromMappings id="horiz1">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
-    </ImageFromMappings>
-    <ImageFromMappings id="horiz2">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
-    </ImageFromMappings>
-    <ImageFromMappings id="horiz3">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
-    </ImageFromMappings>
-    <ImageFromMappings id="horiz4">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
-    </ImageFromMappings>
     <ImageFromMappings id="vert1">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+      <ArtFile filename="../source/Objects/Spikes/UprightSpikes.ArtNem" />
+      <MapFile type="Binary" filename="../source/Objects/Spikes/Spikes.SprMap" frame="0" startpal="0" />
     </ImageFromMappings>
     <ImageFromMappings id="vert2">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+      <ArtFile filename="../source/Objects/Spikes/UprightSpikes.ArtNem" />
+      <MapFile type="Binary" filename="../source/Objects/Spikes/Spikes.SprMap" frame="1" startpal="0" />
     </ImageFromMappings>
     <ImageFromMappings id="vert3">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+      <ArtFile filename="../source/Objects/Spikes/UprightSpikes.ArtNem" />
+      <MapFile type="Binary" filename="../source/Objects/Spikes/Spikes.SprMap" frame="2" startpal="0" />
     </ImageFromMappings>
     <ImageFromMappings id="vert4">
-      <ArtFile filename="../source/art/nemesis/Spikes.bin" />
-      <MapFile type="Binary" filename="../source/mappings/sprite/obj36.bin" frame="0" startpal="1" />
+      <ArtFile filename="../source/Objects/Spikes/UprightSpikes.ArtNem" />
+      <MapFile type="Binary" filename="../source/Objects/Spikes/Spikes.SprMap" frame="3" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="vert5">
+      <ArtFile filename="../source/Objects/Spikes/UprightSpikes.ArtNem" />
+      <MapFile type="Binary" filename="../source/Objects/Spikes/Spikes.SprMap" frame="4" startpal="0" />
+    </ImageFromMappings>
+    <ImageFromMappings id="vert6">
+      <ArtFile filename="../source/Objects/Spikes/UprightSpikes.ArtNem" />
+      <MapFile type="Binary" filename="../source/Objects/Spikes/Spikes.SprMap" frame="5" startpal="0" />
     </ImageFromMappings>
   </Images>
   <Subtypes>
-    <Subtype id="00" name="One Horizontal" image="horiz1" />
+    <Subtype id="00" name="Up 16w, Stationary" image="vert2" />
+    <Subtype id="01" name="Up 16w, Vertical Movement" image="vert2" />
+    <Subtype id="02" name="Up 16w, Horizontal Movement" image="vert2" />
+    <Subtype id="10" name="Up 32w, Stationary" image="vert1" />
+    <Subtype id="11" name="Up 32w, Vertical Movement" image="vert1" />
+    <Subtype id="12" name="Up 32w, Horizontal Movement" image="vert1" />
+    <Subtype id="20" name="Up 48w, Stationary" image="vert3" />
+    <Subtype id="21" name="Up 48w, Vertical Movement" image="vert3" />
+    <Subtype id="22" name="Up 48w, Horizontal Movement" image="vert3" />
+    <Subtype id="30" name="Up 64w, Stationary" image="vert4" />
+    <Subtype id="31" name="Up 64w, Vertical Movement" image="vert4" />
+    <Subtype id="32" name="Up 64w, Horizontal Movement" image="vert4" />
+    <Subtype id="40" name="Up 80w, Stationary" image="vert5" />
+    <Subtype id="41" name="Up 80w, Vertical Movement" image="vert5" />
+    <Subtype id="42" name="Up 80w, Horizontal Movement" image="vert5" />
+    <Subtype id="50" name="Up 112w, Stationary" image="vert6" />
+    <Subtype id="51" name="Up 112w, Vertical Movement" image="vert6" />
+    <Subtype id="52" name="Up 112w, Horizontal Movement" image="vert6" />
+    <Subtype id="60" name="Side 32h, Stationary" image="vert1" />
+    <Subtype id="61" name="Side 32h, Vertical Movement" image="vert1" />
+    <Subtype id="62" name="Side 32h, Horizontal Movement" image="vert1" />
+    <Subtype id="70" name="Side 32h, Stationary" image="vert1" />
+    <Subtype id="71" name="Side 32h, Vertical Movement" image="vert1" />
+    <Subtype id="72" name="Side 32h, Horizontal Movement" image="vert1" />
   </Subtypes>
   <Properties>
-    <CustomProperty name="Count" type="int">
-      <get><![CDATA[return ((obj.SubType & 0x30) >> 4) + 1;]]></get>
-      <set>
-        <![CDATA[        value = System.Math.Max(1, value);
-        value = System.Math.Min(4, value);
-        value--;
-        obj.SubType = (byte)((obj.SubType & ~0x30) | (value << 4));]]>
-      </set>
-    </CustomProperty>
-    <BitsProperty name="Movement" type="SpikeMovement" startbit="0" length="2" />
-    <BitsProperty name="Direction" type="Direction" startbit="6" length="1" />
+    <BitsProperty name="Type" type="SpikeType" startbit="4" length="4" />
+    <BitsProperty name="Movement" type="SpikeMovement" startbit="0" length="4" />
   </Properties>
   <Enums>
-    <Enum name="SpikeMovement">
-      <EnumMember name="Stationary" />
-      <EnumMember name="Vertical" />
-      <EnumMember name="Horizontal" />
-      <EnumMember name="Invalid" />
+    <Enum name="SpikeType">
+      <EnumMember name="Up 16w, 1s" />
+      <EnumMember name="Up 32w, 1s" />
+      <EnumMember name="Up 48w, 1s" />
+      <EnumMember name="Up 64w, 1s" />
+      <EnumMember name="Up 80w, 2s" />
+      <EnumMember name="Up 112w, 2s" />
+      <EnumMember name="Side 32h, 1s" />
+      <EnumMember name="Side 32h, .5s" />
     </Enum>
-    <Enum name="Direction">
-      <EnumMember name="Horizontal" />
+    <Enum name="SpikeMovement">
+      <EnumMember name="Still" />
       <EnumMember name="Vertical" />
+      <EnumMember name="Horizontal" />
+      <EnumMember name="Diagonal left" />
     </Enum>
   </Enums>
   <Display>
     <DisplayOption>
-      <Condition property="Direction" value="Horizontal" />
-      <Condition property="Count" value="1" />
-      <ImageRef image="horiz1" />
-    </DisplayOption>
-    <DisplayOption>
-      <Condition property="Direction" value="Horizontal" />
-      <Condition property="Count" value="2" />
-      <ImageRef image="horiz2" />
-    </DisplayOption>
-    <DisplayOption>
-      <Condition property="Direction" value="Horizontal" />
-      <Condition property="Count" value="3" />
-      <ImageRef image="horiz3" />
-    </DisplayOption>
-    <DisplayOption>
-      <Condition property="Direction" value="Horizontal" />
-      <Condition property="Count" value="4" />
-      <ImageRef image="horiz4" />
-    </DisplayOption>
-    <DisplayOption>
-      <Condition property="Direction" value="Vertical" />
-      <Condition property="Count" value="1" />
-      <ImageRef image="vert1" />
-    </DisplayOption>
-    <DisplayOption>
-      <Condition property="Direction" value="Vertical" />
-      <Condition property="Count" value="2" />
+      <Condition property="Type" value="Up 16w, 1s" />
       <ImageRef image="vert2" />
     </DisplayOption>
     <DisplayOption>
-      <Condition property="Direction" value="Vertical" />
-      <Condition property="Count" value="3" />
+      <Condition property="Type" value="Up 32w, 1s" />
+      <ImageRef image="vert1" />
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="Type" value="Up 48w, 1s" />
       <ImageRef image="vert3" />
     </DisplayOption>
     <DisplayOption>
-      <Condition property="Direction" value="Vertical" />
-      <Condition property="Count" value="4" />
+      <Condition property="Type" value="Up 64w, 1s" />
       <ImageRef image="vert4" />
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="Type" value="Up 80w, 2s" />
+      <ImageRef image="vert5" />
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="Type" value="Up 112w, 2s" />
+      <ImageRef image="vert6" />
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="Type" value="Side 32h, 1s" />
+      <ImageRef image="vert1" />
+    </DisplayOption>
+    <DisplayOption>
+      <Condition property="Type" value="Side 32h, .5s" />
+      <ImageRef image="vert1" />
     </DisplayOption>
   </Display>
 </ObjDef>

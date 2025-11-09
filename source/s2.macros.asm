@@ -1,61 +1,95 @@
+; Gonna help everyone in the future by letting y'all know these are a thing with asm68k
+;
+;	def(a)			Returns true if "a" has been defined
+;	ref(a)			Returns true if "a" has been referenced
+;	type(a)			Returns the data type of "a"
+;	sqrt(a)			Returns the square root of "a"
+;	strlen(text)		Returns the length of string in characters
+;	strcmp(texta,textb)	Returns true if strings match
+;	instr([start,]txa,txb)	Locate substring "a" in string "b"
+;	filesize("filename")	Returns the length of a specified file, or -1 if it does not exist.
+;
+; That last one being very powerful as you may find out~
 ; ---------------------------------------------------------------------------
-; Macros
+; ---------------------------------------------------------------------------
+; enable / disable interrupts
+; ---------------------------------------------------------------------------
+disable_ints:	macro
+		move	#$2700,sr
+		endm
+enable_ints:	macro
+		move	#$2300,sr
+		endm
+; ---------------------------------------------------------------------------
+; Align to the specified location
+; ---------------------------------------------------------------------------
 align:	macro
 	if (narg=1)
 	cnop 0,\1
 	else
 	dcb.b \1-((*)%\1),\2
-	endc
+	endif
 	endm
-
-
-stopZ80 macro
-	move.w	#$100,(Z80_Bus_Request).l
-@loop:	btst	#0,(Z80_Bus_Request).l
-	bne.s	@loop
-	endm
-
-startZ80 macro
-	move.w	#0,(Z80_Bus_Request).l
-	endm
-
 ; ---------------------------------------------------------------------------
-; Get Date	
+; Z80 related	
+; ---------------------------------------------------------------------------
+stopZ80 	macro
+		move.w	#$100,(Z80_Bus_Request).l
+		endm
+; ---------------------------------------------------------------------------
+waitZ80:	macro
+	@wait:	btst	#0,(Z80_Bus_Request).l
+		bne.s	@wait
+		endm
+; ---------------------------------------------------------------------------
+startZ80	macro
+		move.w	#0,(Z80_Bus_Request).l
+		endm
+; ---------------------------------------------------------------------------
+resetZ80:	macro
+		move.w	#$100,(Z80_reset).l
+		endm
+; ---------------------------------------------------------------------------
+resetZ80a:	macro
+		move.w	#0,(Z80_reset).l
+		endm
+; ---------------------------------------------------------------------------
+; Get Date	(the sloppy but "reliable" one)
 ; ---------------------------------------------------------------------------
 GetDate:	macro
-_getyear	=	_year-100
+_getyear	=	_year-100	; somehow this works
 		dc.b "20\#_getyear-"
 		if (strlen("\#_month")=2)
 		dc.b "\#_month-"
 		else
 		dc.b "0\#_month-"
-		endc
+		endif
 		if (strlen("\#_day")=2)
 		dc.b "\#_day "
 		else
 		dc.b "0\#_day "
-		endc
+		endif
 		if (strlen("\#_hours")=2)
 		dc.b "\#_hours:"
 		else
 		dc.b "0\#_hours:"
-		endc
+		endif
 		if (strlen("\#_minutes")=2)
 		dc.b "\#_minutes"
 		else
 		dc.b "0\#_minutes"
-		endc
+		endif
 		endm
 ; ---------------------------------------------------------------------------
 ; Lagometer (uses Window Layer)
 ; ---------------------------------------------------------------------------
 LagOn	macro
-	if	(lagometer)
+	if	(Lagometer)
 	move.w	#$9193,(VDP_Control_Port).l
 	endif
 	endm
 LagOff	macro
-	if	(lagometer)
+	if	(Lagometer)
 	move.w	#$9100,(VDP_Control_Port).l
 	endif
 	endm
@@ -69,7 +103,7 @@ locVRAM:	macro loc,controlport
 		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(VDP_Control_Port).l
 		else
 		move.l	#($40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
-		endc
+		endif
 		endm
 ; ---------------------------------------------------------------------------
 locVRAMtemp:	macro loc
@@ -89,7 +123,7 @@ locCRAM:	macro loc,controlport
 		move.l	#($C0000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(VDP_Control_Port).l
 		else
 		move.l	#($C0000000+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
-		endc
+		endif
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -102,7 +136,7 @@ locVSRAM:	macro loc,controlport
 		move.l	#($40000010+((loc&$3FFF)<<16)+((loc&$C000)>>14)),(VDP_Control_Port).l
 		else
 		move.l	#($40000010+((loc&$3FFF)<<16)+((loc&$C000)>>14)),controlport
-		endc
+		endif
 		endm
 
 ; ---------------------------------------------------------------------------
@@ -190,42 +224,29 @@ fillVRAM:	macro value,length,loc
 ; input: source, destination, width [cells], height [cells]
 ; ---------------------------------------------------------------------------
 
-copyTilemap:	macro source,loc,width,height,jump
+copyTilemap_H40:	macro source,loc,width,height,jump
 		lea	(source).l,a1
 		move.l	#$40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14),d0
-		moveq	#width,d1
-		moveq	#height,d2
+		moveq	#width-1,d1
+		moveq	#height-1,d2
 		if (narg=5)
-		jsr	TilemapToVRAM
+		jsr	PlaneMapToVRAM_H40
 		else
-		bsr.w	TilemapToVRAM
+		bsr.w	PlaneMapToVRAM_H40
 		endif
 		endm
 
-copyTilemap256:	macro source,loc,width,height,jump
+copyTilemap_H20:	macro source,loc,width,height,jump
 		lea	(source).l,a1
 		move.l	#$40000000+((loc&$3FFF)<<16)+((loc&$C000)>>14),d0
-		moveq	#width,d1
-		moveq	#height,d2
+		moveq	#width-1,d1
+		moveq	#height-1,d2
 		if (narg=5)
-		jsr	TilemapToVRAM256
+		jsr	PlaneMapToVRAM_H20
 		else
-		bsr.w	TilemapToVRAM256
+		bsr.w	PlaneMapToVRAM_H20
 		endif
 		endm	
-; ---------------------------------------------------------------------------
-; disable interrupts
-; ---------------------------------------------------------------------------
-disable_ints:	macro
-		move	#$2700,sr
-		endm
-; ---------------------------------------------------------------------------
-; enable interrupts
-; ---------------------------------------------------------------------------
-enable_ints:	macro
-		move	#$2300,sr
-		endm
-
 ; ---------------------------------------------------------------------------
 ; check if object moves out of range
 ; input: location to jump to if out of range, x-axis pos (obX(a0) by default)
@@ -236,7 +257,7 @@ out_of_range:	macro exit,pos
 		move.w	pos,d0		; get object position (if specified as not obX)
 		else
 		move.w	x_pos(a0),d0	; get object position
-		endc
+		endif
 		andi.w	#$FF80,d0	; round down to nearest $80
 		sub.w	(Camera_X_pos_coarse).w,d0
 		cmpi.w	#320*2,d0
@@ -278,24 +299,50 @@ Zip_Add:	macro	name, extention, path, file
 UncSize_Zip_\name:	equ	filesize("\path\\file\.\extention\")	
 Zip_\name:	incbin	'\path\\file\.zip',($1F+strlen("\file")+strlen("\extention"))
 		even
+		if	(UncSize_Art_\name)=-1
+		inform	1, "Missing Uncompressed Art for \name\ at \path\\file\.Zip"
+		endif
 		endm
 ; ---------------------------------------------------------------------------
 ; Adding Sprite Mappings file
 Map_Add:	macro	name, path, file
+		if	filesize("\path\\file\.asm")=-1
+Map_\name:	incbin	'\path\\file\.SprMap'
+		else
 Map_\name:	include	'\path\\file\.asm'
+		endif
 		even
+		endm
+; ---------------------------------------------------------------------------
+; Adding NES "Compressed" Art file
+; Format : Two sets of 8 bytes where each bit represents a pixel, combined for a 4 colour palette
+NES_Add:	macro	name, path, file
+ArtNES_\name:	incbin	'\path\\file\.ArtNES'
+		even
+UncSize_Art_\name:	equ	(filesize("\path\\file\.artNES")*2)
+		endm
+; ---------------------------------------------------------------------------
+; Adding 1BPP "Compressed" Art file
+; Format : Two sets of 8 bytes where each bit represents a pixel, combined for a 4 colour palette
+Mono_Add:	macro	name, path, file
+Art1Bit_\name:	incbin	'\path\\file\.Art1Bit'
+		even
+UncSize_Art_\name:	equ	(filesize("\path\\file\.art1Bit")*4)
 		endm
 ; ---------------------------------------------------------------------------
 ; Adding Nemesis Compressed Art file
 Nem_Add:	macro	name, path, file
-ArtNem_\name:	incbin	'\path\\file\.artnem'
+ArtNem_\name:	incbin	'\path\\file\.ArtNem'
 		even
-UncSize_Art_\name:	equ	filesize("\path\\file\.artunc")
+UncSize_Art_\name:	equ	filesize("\path\\file\.ArtUnc")
+		if	filesize("\path\\file\.ArtUnc")=-1
+		inform	1, "Missing Uncompressed Art for \name\ at \path\\file\.ArtNem"
+		endif
 		endm
 ; ---------------------------------------------------------------------------
 ; Adding Enigma Compressed Tilemap file
 Eni_Add:	macro	name, path, file
-Eni_\name:	incbin	'\path\\file\.mapeni'
+Eni_\name:	incbin	'\path\\file\.MapEni'
 		even
 		endm
 ; ---------------------------------------------------------------------------
@@ -305,10 +352,10 @@ Artunc_Add:		macro	options, name, path, file
 			align	$20000,$69	; allign art if it surpasses DMA boundary
 			endif
 ArtSize_\name:		equ	filesize("\path\\file\.artunc")
-Artunc_\name:		incbin	'\path\\file\.artunc'
+Artunc_\name:		incbin	'\path\\file\.Artunc'
 			even
-temp	=	"\options"
-			case	temp
+@temp	=	"\options"
+			case	@temp
 ="dplc"
 DPLC_\name:		include	'\path\\file\DPLC.asm'
 Map_\name:		include	'\path\\file\MAP.asm'
@@ -344,88 +391,17 @@ LoadzipMAP:	macro	map,width,height,location
 		jsr	TilemapToVRAM	
 		endm
 ; ---------------------------------------------------------------------------
-; Cutscene ZIP compressed art, mappings and palette [NEEDS TO BE REPLACED]
-Zip_CutAdd:		macro	file
-
-UncSize_Zip_Cut\file:	equ	filesize("GameMode/Overworld/Cutscenes/Art/\file\.artunc")	
-Zip_Cut\file:		incbin	'GameMode/Overworld/Cutscenes/Art/\file\.zip',($1F+strlen("\file")+6)
-			even
-Eni_Cut\file:		incbin	'GameMode/Overworld/Cutscenes/Art/\file\.mapeni'
-			even
-			if (narg=1)
-Pal_Cut\file:			incbin	'GameMode/Overworld/Cutscenes/Art/\file\.pal'
-				even
-			endif
-			endm
-; ---------------------------------------------------------------------------
-; Cutscene ZIP compressed art, mappings and palette [NEEDS TO BE REPLACED]
-Nem_CutAdd:		macro	file
-
-UncSize_Zip_Cut\file:	equ	filesize("GameMode/Overworld/Cutscenes/Art/\file\.artunc")	
-Nem_Cut\file:		incbin	'GameMode/Overworld/Cutscenes/Art/\file\.artnem'
-			even
-Eni_Cut\file:		incbin	'GameMode/Overworld/Cutscenes/Art/\file\.mapeni'
-			even
-			if (narg=1)
-Pal_Cut\file:			incbin	'GameMode/Overworld/Cutscenes/Art/\file\.pal'
-				even
-			endif
-			endm
-; ---------------------------------------------------------------------------
-; Uncompressed art for Textbox Profiles
-GatoslipProfileCount	=	0
-Artunc_GatoslipProfile:	macro	file
-Artunc_Profile_\file:	incbin	'HUD/Profiles/\file\.bin'
-			even
-TxtProfile_\file:	equ	GatoslipProfileCount
-GatoslipProfileCount	=	GatoslipProfileCount+1
-			endm
-; ---------------------------------------------------------------------------
-; Uncompressed art for HUD icons
-GatoslipHUDCount	=	2
-Artunc_GatoslipHUD:	macro	file
-Artunc_HUD_\file:	incbin	'HUD/HUDicons/\file\.bin'
-			even
-			incbin	'HUD/HUDicons/confirm/\file\.bin'
-			even
-HUDid_\file:		equ	GatoslipHUDCount
-GatoslipHUDCount	=	GatoslipHUDCount+2
-			endm
-; ---------------------------------------------------------------------------
-; Object Pointers
-ObjPointer	macro	object, name
-		if	(narg=2)
-id_\name	equ	c
-		endc
-		dc.l	object
-c	=	c+1
-		endm
-; ---------------------------------------------------------------------------
-; Adding Overworld Objects for Level Maps
-LvlObj_Add:	macro	group, name 
-Obj_\group\_\name:	include	'GameMode/Overworld/Objects/\group\/\name\/\name\.asm'
-		endm
-; ---------------------------------------------------------------------------
-; Adding Overworld Object Art and Mappings
-LvlObjArt_Add:		macro	group, name, type, map, ani
-		if	strcmp("none","\type")
+; Object Pointers and Definition
+ObjCount	=	0
+IncludeObject	macro
+ObjCount	=	ObjCount+1
+		if	(narg=0)
+		dc.l	ObjNull	; Blank slot
+_Obj\#ObjCount:	equs	"NULL"
 		else
-UncSize_Art_\group\_\name:	equ	filesize("GameMode/Overworld/Objects/\group\/\name\/\name\.artunc")	
-		if	strcmp("artunc","\type")
-			if	(offset(*)&$1FFFF>(offset(*)+UncSize_Art_\group\_\name)&$1FFFF)
-			align	$20000,$69	; allign art if it surpasses DMA boundary
-			endif
-		endif
-\Type\_\group\_\name:	incbin	'GameMode/Overworld/Objects/\group\/\name\/\name\.\type\'
-			even
-		endif
-		if	(narg>=4)
-Map_\group\_\name:	include	"GameMode/Overworld/Objects/\group\/\name\/\name\MAP.asm"
-			even
-		endif
-		if	(narg=5)
-Ani_\group\_\name:	include	"GameMode/Overworld/Objects/\group\/\name\/\name\ANI.asm"
-			even
+ObjId_\1	equ	ObjCount
+_Obj\#ObjCount:	equs	"\1\"
+		dc.l	obj\1
 		endif
 		endm
 ; ---------------------------------------------------------------------------
@@ -448,24 +424,33 @@ c	=		c+Increase
 ; ---
 GenerateIndexID		macro	Increase,LabelName,name
 			dc.w	\LabelName\_\name\-@Index
-\LabelName\ID_\name:		equ	c
+\LabelName\ID_\name:	equ	c
+			if (narg=3)
+			else
+			dc.w	\LabelName\-@Index
+_\LabelName\:		equ	c
+			endif
 c	=		c+increase
 			endm
 ; ---
 GenerateIndex	macro	Increase,LabelName,name
+			if (narg=3)
 			dc.w	\LabelName\_\name\-@Index
+			else
+			dc.w	\LabelName\-@Index
+			endif
 c	=		c+increase
 			endm
 
 ; ---------------------------------------------------------------------------
 Artunc_FakeVScroll	macro	Zone, name, num
 c	=	0
-size	=	filesize('Level/\Zone\/AnimatedTiles/\name\0.bin')
+size	=	filesize('Level/\Zone\/Art/Ani_\name\0.ArtUnc')
 	rept	num
 	if	(*&$1FFFF>(*+(size))&$1FFFF)
 	align	$20000,$69	; allign art if it surpasses DMA boundary
 	endif
-Artunc_\name\_\#c:	incbin	'Level/\Zone\/AnimatedTiles/\name\\#c\.bin'
+Artunc_\name\_\#c:	incbin	'Level/\Zone\/Art/Ani_\name\\#c\.ArtUnc'
 c	=	c+1
 	endr
 	even
@@ -487,6 +472,7 @@ ZoneID_\Name\:		equ	ZoneCount
 ZoneName\#ZoneCount:		equs	\debug
 UncArt_Zone_\#ZoneCount:	equ	filesize("Level/\Name\/Art.Artunc")
 _ZoneFolder\#ZoneCount:		equs	"Level/\Name\/"
+_ZoneName\#ZoneCount:		equs	"\Name\"
 ZonePal_Water\#ZoneCount	=	water
 ZoneCount	=	ZoneCount+1
 		endm

@@ -1,0 +1,62 @@
+; ===========================================================================
+ This is a quick tutorial on how to add a new object
+; ===========================================================================
+			-- Defining your Object --
+; ---------------------------------------------------------------------------
+
+	 Inside "Objects\ObjectTable.asm" you'll find a list of objects
+	add or replace an empty entry like the example bellow:
+
+		IncludeObject		[NAME]
+
+; ===========================================================================
+			-- The Object's Folder --
+; ---------------------------------------------------------------------------
+
+	 Within the "Objects" folder, Copy or create a subfolders and name it
+	to what you've set as the [NAME] earlier
+
+	 Make sure there is a "[NAME].asm" file inside as this is where
+	the main code goes.
+
+; ---------------------------------------------------------------------------
+; -------- Within the Object's Folder you can have the following --------
+; ---------------------------------------------------------------------------
+
+	"MAP_[NAME].asm" or "[NAME].SprMap"
+	These are the main mappings for the object, you can use it internally
+	with the constant "MAP_[NAME]"
+; -------- 
+	"[NAME].ArtNem" and "[NAME].ArtUnc"
+	These are the main Nemesis compressed Art files for the object, 
+	you can use it internally with the constant "ArtNem_[NAME]"
+
+	Note that ONLY "[NAME].ArtNem" is included, 
+	"[NAME].ArtUnc" is a uncompressed copy of the former to make 
+	VRAM calculations easier, as it'll generate 
+	the constant "UncSize_[NAME]"
+
+	The compiler will throw a warning if the file is missing.
+
+	see "Adding DPLC Entries" for more info.
+; -------- 
+	"Animation.asm"
+	This is where animations can be stored, the label "Ani_[NAME]" will be
+	generated automatically
+; -------- 
+	"ArtIncludes.asm"
+	This is where you can insert any arbitrary data or extra Art / mappings
+	You can use the following to make adding Art / mappings easier
+
+		Nem_Add	[NAME], \_ObjLoc, [FILE NAME]
+		Map_Add	[NAME], \_ObjLoc, [FILE NAME]
+
+	These will include the Art or Mappings with constants generated
+	with their respective prefix, for example:
+
+		Nem_Add	Bridge,	\_ObjLoc, Bridge_GHZ
+		Map_Add	Bridge,	\_ObjLoc, Bridge_GHZ
+
+	This will include both "Bridge_GHZ.Artnem" and "Bridge_GHZ.SprMap" and
+	generate the constants "ArtNem_Bridge" and "Map_Bridge"
+

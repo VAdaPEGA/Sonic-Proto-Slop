@@ -1,0 +1,110 @@
+; ===========================================================================
+ This is a quick tutorial on how to add a new zone
+; ===========================================================================
+			-- Defining your Stage --
+; ---------------------------------------------------------------------------
+
+	 Inside "s2.constants.asm" there's a section for Levels, 
+	add an entry like the example bellow:
+
+		IncludeZone	[NAME],	1*,	"Level Select Name"
+
+	*1 for Water, 0 if dry
+
+; ===========================================================================
+			-- The Level Folder --
+; ---------------------------------------------------------------------------
+
+	 Copy one of the subfolders and rename it
+	to what you've set as the [NAME] earlier
+
+	 If your stage has water,
+	copy from a Zone that had water.
+
+
+	 In "Level Chunks Effects.asm", add a new entry 
+	in the index table at the top:
+
+		GenerateLocalIndex	2, DoNothing,	; Name
+
+	! ! IMPORTANT ! ! 
+	Make sure it follows the Zone order inside "s2.constants.asm"
+	
+	 If you want certain chunks to act in certain ways, you'll have to
+	program this in manually, check the way other zones are handled
+
+; ===========================================================================
+			-- Configuration files --
+; ---------------------------------------------------------------------------
+
+	 Within the Zone's Folder you'll find some of the following :
+
+	"ObjPlaceList.asm"
+	This is where the Data for Object Place mode is stored.
+	 If this file is missing, it'll use a generic list.
+
+	"BGScroll.asm"
+	This is where the background deformation code is stored.
+
+	"DynEvents#.asm"
+	This is where dynamic events such as camera boundary changes
+	 and boss spawns happen.
+
+
+; -------- If Your Zone has Water --------
+
+	"DynWater#.asm"
+	This is where dynamic water events are stored.
+
+	"Water.asm"
+	This has the Initial Water Positions for the Zone.
+
+; ===========================================================================
+; 		-- Technical Stuff --
+; 	Structure info:
+; ---------------------------------------------------------------------------
+
+		-Art Folder- is where Art is stored
+	Main Zone Art:			ZoneArt.ArtNem*
+
+	 You may add any additional Art here that is Zone specific
+
+		-Data Folder- contains most data that gets handled by SonLVL
+	Path 1 Collision:		ColP.bin*
+	Path 2 Collision:		ColS.bin*
+	Level layouts Act 1:		Layout_1.bin*
+	Level layouts Act 2:		Layout_2.bin
+	Level layouts Act 3:		Layout_3.bin
+	Level layouts Boss Act:		Layout_Boss.bin
+	Background Layout:		Layout_BG.bin*
+	16x16 Block data:		Map16.MapEni*
+	128x128 Chunk data:		Map128.bin*
+	Object layout Act 1:		ObjPos_1.bin*
+	Object layout Act 2:		ObjPos_2.bin
+	Object layout Act 3:		ObjPos_3.bin
+	Object layout Boss Act:		ObjPos_B.bin
+	Ring layout Act 1:		RingPos_1.bin*
+	Ring layout Act 2:		RingPos_2.bin
+	Ring layout Act 3:		RingPos_3.bin
+	Ring layout Boss Act:		RingPos_B.bin
+	Start Position Act 1:		StartPos_1.bin*
+	Start Position Act 2:		StartPos_2.bin
+	Start Position Act 3:		StartPos_3.bin
+	Start Position Boss Act:	StartPos_B.bin
+
+		-DeathPit Folder- contains Individual files 
+	for the respawn points for death pits
+
+		-Palette Folder- Has all colour data for the Zone
+	Main Palette Act 1:		PalMain_1.bin*
+	Main Palette Act 2:		PalMain_2.bin
+	Main Palette Act 3:		PalMain_3.bin
+	Main Palette Boss Act:		PalMain_B.bin
+
+	Water Palette Act 1:		PalWater_1.bin
+	Water Palette Act 2:		PalWater_2.bin
+	Water Palette Act 3:		PalWater_3.bin
+	Water Palette Boss Act:		PalWater_B.bin
+	
+	* Must be present
+; ---------------------------------------------------------------------------

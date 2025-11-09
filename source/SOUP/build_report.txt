@@ -1,0 +1,42 @@
+----------------------------------------------------------------------
+---                 WLA 6502 Macro Assembler v10.6                 ---
+----------------------------------------------------------------------
+                Programmed by Ville Helin in 1998-2008
+        In GitHub since 2014: https://github.com/vhelin/wla-dx
+                   $VER: wla-6502 10.6 (19.11.2023)
+
+USAGE: ..\..\Assembler\wla-6502.exe [OPTIONS] <OUTPUT> <ASM FILE>
+
+OPTIONS:
+-c  Continue parsing after an error
+-d  Disable WLA's ability to calculate A-B where A and B are labels
+-h  Assume all label references are 16-bit by default (size hints
+    still work)
+-i  Add list file information
+-k  Keep empty sections
+-M  Output makefile rules
+-MP Create a phony target for each dependency other than the main file,
+    use this with -M
+-MF <FILE> Specify a file to write the dependencies to, use with -M
+-p  Pause printing after a screen full of text has been printed,
+    use this with -SX and -SY
+-q  Quiet
+-s  Don't create _sizeof_* and _paddingof_* definitions
+-SX <WIDTH> The number of characters per line in console (default 80)
+-SY <HEIGHT> The number of lines in console (default 24)
+-t  Test assemble
+-v  Verbose messages
+-v1 Verbose messages (only discard sections)
+-v2 Verbose messages (-v1 plus short summary)
+-w  Require labels to end in a colon
+-x  Extra compile time labels and definitions
+-I <DIR>  Include directory
+-D <DEF>  Declare definition
+
+OUTPUT:
+-o <FILE>  Output object file
+-l <FILE>  Output library file
+
+EXAMPLES:
+..\..\Assembler\wla-6502.exe -M -t -o main.o main.asm
+..\..\Assembler\wla-6502.exe -D VER=1 -D TWO=2 -v -o main.o main.asm

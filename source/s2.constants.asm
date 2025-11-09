@@ -113,27 +113,6 @@ bitDn:		equ 1
 bitUp:		equ 0
 
 ; ---------------------------------------------------------------------------
-; Sound driver constants
-
-SFXPriorityVal:			equ 0
-TempoTimeout:			equ 1
-CurrentTempo:			equ 2	; stores current tempo value
-StopMusic:			equ 3	; set to 1 to pause music, and $80 to unpause music
-FadeOutCounter:			equ 4
-
-; unused byte
-
-FadeOutDelay:			equ 6
-Communication:			equ 7	; unused byte used to synchronise gameplay events with music, used in Ristar to sync boss attacks
-DACUpdating:			equ 8	; set to $80 while DAC is updating, then back to 0
-QueueToPlay:			equ 9	; if NOT set to $80, means new index was requested
-SFXToPlay:			equ $A	; first sound queue
-SFXToPlay2:			equ $B	; second sound queue
-SFXToPlay3:			equ $C	; third (broken) sound queue
-
-; unused byte
-
-; ---------------------------------------------------------------------------
 ; Extended RAM constants (for routines that would convert data for STI's use)
 ConvertedChunksLoc:		equ $00FE0000
 ; ---------------------------------------------------------------------------
@@ -167,7 +146,7 @@ MusID_Boss:			equ ((MusPtr_Boss-MusicIndex)/4)+MusID__First		; $8C
 
 
 id_roll	=	2
-
+; ===========================================================================
 ; Game modes
 	IncludeGameMode	Logo,		Logo,		"Logo intro"
 	IncludeGameMode	TitleScreen,	TitleScreen,	"Title"
@@ -179,7 +158,7 @@ id_roll	=	2
 
 GameModeFlag_TitleCard:		equ 7 ; flag bit
 GameModeID_TitleCard:		equ 1<<GameModeFlag_TitleCard			; $80 ; flag mask
-
+; ===========================================================================
 ; 	Levels		folder,	water,	debug
 	IncludeZone	GHZ,	0,	"Green Hill but Broken"
 	IncludeZone	CPZ,	1,	"Chemical Plant"
@@ -190,6 +169,7 @@ GameModeID_TitleCard:		equ 1<<GameModeFlag_TitleCard			; $80 ; flag mask
 	IncludeZone	CNZ,	0,	"Casino Night"
 	inform	0, " Zones : \#ZoneCount\"
 
+; ===========================================================================
 ; Background music
 
 ;		speed up,  name		file				
@@ -210,7 +190,7 @@ GameModeID_TitleCard:		equ 1<<GameModeFlag_TitleCard			; $80 ; flag mask
 
 ;		inform	0, " Music : \#MusicCount\"
 
-
+; ---------------------------------------------------------------------------
 SndID_SuperBonk	=	$A3
 ;	IncludeSound	$81, Jump,		Player/Jump.asm,	"TOOFSCARADE", "JUMP"
 ;	IncludeSound	$81, JumpSon,		Player/Jump_Son.asm,	"TOMYLOBO", "JUMP"
