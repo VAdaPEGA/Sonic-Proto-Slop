@@ -1707,29 +1707,22 @@ ArtSize_LevelSelect	=	(UncSize_art_LevSel1+UncSize_art_LevSelNums+UncSize_art_Le
 		lea	(Eni_TitleMap).l,a0
 		move.w	#0,d0
 		bsr.w	EniDec
-
-	copyTilemap_H40	RAM_Start,0,40,28
+	copyTilemap_H40	RAM_Start,VRAM_FG,40,28
 
 		lea	(RAM_Start).l,a1
 		lea	(Eni_TitleBg1).l,a0
 		move.w	#0,d0
-
-loc_3330:
 		bsr.w	EniDec
-		lea	(RAM_Start).l,a1
-		move.l	#$60000003,d0
-		moveq	#$1F,d1
-		moveq	#$1B,d2
-		bsr.w	PlaneMapToVRAM_H40
+	copyTilemap_H40	RAM_Start,VRAM_BG,32,28
+
+
 		lea	(RAM_Start).l,a1
 		lea	(Eni_TitleBg2).l,a0
 		move.w	#0,d0
 		bsr.w	EniDec
-		lea	(RAM_Start).l,a1
-		move.l	#$60400003,d0
-		moveq	#$1F,d1
-		moveq	#$1B,d2
-		bsr.w	PlaneMapToVRAM_H40
+	copyTilemap_H40	RAM_Start,(VRAM_BG+64),32,28
+		
+
 		moveq	#1,d0
 		bsr.w	PalLoadFade
 		move.b	#MusID_Title,d0

@@ -34,7 +34,7 @@ Explosion_Ground	equ	8
 		move.w	@Score(a0),@Score(a1)	; pass score on
 ;----------------------------------------------------
 	@Init:	
-		addq.b	#2,routine(a0)
+		st	routine(a0)
 		move.b	#4,render_flags(a0)
 		move.b	#0,collision_flags(a0)
 
