@@ -319,14 +319,16 @@ Map_\name:	include	'\path\\file\.asm'
 NES_Add:	macro	name, path, file
 ArtNES_\name:	incbin	'\path\\file\.ArtNES'
 		even
+Size_ArtNES_\name:	equ	filesize("\path\\file\.artNES")
 UncSize_Art_\name:	equ	(filesize("\path\\file\.artNES")*2)
 		endm
 ; ---------------------------------------------------------------------------
 ; Adding 1BPP "Compressed" Art file
-; Format : Two sets of 8 bytes where each bit represents a pixel, combined for a 4 colour palette
+; Format : 8 bytes where each bit represents a pixel
 Mono_Add:	macro	name, path, file
 Art1Bit_\name:	incbin	'\path\\file\.Art1Bit'
 		even
+Size_Art1Bit_\name:	equ	filesize("\path\\file\.art1Bit")
 UncSize_Art_\name:	equ	(filesize("\path\\file\.art1Bit")*4)
 		endm
 ; ---------------------------------------------------------------------------

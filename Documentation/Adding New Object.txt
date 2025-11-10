@@ -34,7 +34,7 @@
 	Note that ONLY "[NAME].ArtNem" is included, 
 	"[NAME].ArtUnc" is a uncompressed copy of the former to make 
 	VRAM calculations easier, as it'll generate 
-	the constant "UncSize_[NAME]"
+	the constant "UncSize_Art_[NAME]"
 
 	The compiler will throw a warning if the file is missing.
 

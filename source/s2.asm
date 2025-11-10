@@ -159,10 +159,10 @@ Region:		dc.b	"UJE             " ; Region
 	NES_Add	LevSelNums,	SOUP\, LevelSelectNumbers
 	NES_Add LevSelLetters,	SOUP\, LevelSelectLetters
 		incbin	"..\SMB1.nes", ($9000+(*-ArtNES_LevSelNums)),($1000-(*-ArtNES_LevSelNums))
-	Mono_Add LevelSelectPart1, Routines\, DebugASCII_Part1	; Level select text (1BPP cause why not)
-	Mono_Add LevelSelectPart2, Routines\, DebugASCII_Part2
-	Mono_Add LevelSelectPart3, Routines\, DebugASCII_Part3
 	endif
+	Mono_Add	LevSel1, Routines\, DebugASCII_Part1	; Level select text (1BPP cause why not)
+	Mono_Add	LevSel2, Routines\, DebugASCII_Part2
+	Mono_Add	LevSel3, Routines\, DebugASCII_Part3
 ; ===========================================================================
 		align	$021100
 EntryPoint:
@@ -880,6 +880,65 @@ ClearScreen:
 		include "Routines/Decompress Kosinski.asm"
 		include "Routines/Decompress Chameleon.asm"
 
+; ===========================================================================
+; Convert 1-bit / NES Art to be Mega Drive compatible
+;
+; input :
+; d0 : Art Size (divide by 8 for NES) -1
+; d1 : Colour 1 
+; d2 : Colour 0 (keep left nibble clear)
+; a0 : 1-bit Art
+; a1 : Output RAM
+; 
+; output :
+; a2, a3
+; d3, d4, d5, d6, d7 : trash
+; ---------------------------------------------------------------------------
+DecNESArt:
+	@loopTile:
+	move.l	a1,a2
+	moveq	#8-1,d7
+	bsr	Dec1BitArtLoopByte
+	move.l	a1,a3
+	moveq	#8-1,d7
+	bsr	Dec1BitArtLoopByte
+	swap	d1
+	swap	d2
+	move.l	a2,a1
+		moveq	#16-1,d7
+		@loopConvert:
+			move.w	(a2)+,d5
+			move.w	(a3)+,d6
+			and.w	d2,d5
+			and.w	d1,d6
+			or.w	d5,d6
+			move.w	d6,(a1)+
+		dbf	d7,@loopConvert
+	swap	d1
+	swap	d2
+	dbf	d0,@loopTile
+	rts
+Dec1BitArt:
+	move.w	d0,d7
+Dec1BitArtLoopByte:
+	move.b	(a0)+,d3	; Current 1-bit colour Byte of data (8 pixels)
+	moveq	#8-1,d4		; loop
+		@LoopRow:
+			btst	d4,d3	; check bit
+			sne	d5	; set or clear depending on state
+			subq.b	#1,d4	; next bit
+			btst	d4,d3	; 
+			sne	d6	; same as above
+			and.b	d2,d5	; 
+			and.b	d2,d6	;
+			lsl.b	#4,d5	;
+			add.b	d5,d6	;
+			or.b	d1,d6	;
+			move.b	d6,(a1)+	; store result in RAM
+		dbf	d4,@LoopRow
+	dbf	d7,Dec1BitArtLoopByte
+	rts	
+; ===========================================================================«
 		include "Level/Level Palette Cycle.asm"
 
 
@@ -1528,22 +1587,19 @@ Sega_GoToTitleScreen:
 		rts
 ; ===========================================================================
 
-TitleScreen:				; CODE XREF: ROM:000003A0j
+TitleScreen:	
 		move.b	#$E4,d0
 		bsr.w	PlaySound_Special
 		bsr.w	ClearPLC
 		bsr.w	Pal_FadeToBlack
 		move	#$2700,sr
 		lea	(VDP_control_port).l,a6
-		move.w	#$8004,(a6)
-		move.w	#$8230,(a6)
-		move.w	#$8407,(a6)
-		move.w	#$9001,(a6)
-		move.w	#$9200,(a6)
-		move.w	#$8B03,(a6)
-		move.w	#$8720,(a6)
+		move.l	#$80048230,(a6)
+		move.l	#$84079001,(a6)
+		move.l	#$92008B03,(a6)
+		move.l	#$87208C81,(a6)
 		clr.b	(Water_fullscreen_flag).w
-		move.w	#$8C81,(a6)
+
 		bsr.w	ClearScreen
 
 		lea	(Sprite_Input_Table).w,a1
@@ -1590,18 +1646,44 @@ TitleScreen:				; CODE XREF: ROM:000003A0j
 		locVRAM		$4000
 		lea		(ArtNem_TitleSonicTails).l,a0
 		bsr.w		NemDec
-		lea		(VDP_data_port).l,a6
 
+; --- Loading Level Select Art
 VRAMLevSelTextArt	=	$A000
+ArtSize_LevelSelect	=	(UncSize_art_LevSel1+UncSize_art_LevSelNums+UncSize_art_LevSel2+UncSize_art_LevSelLetters+UncSize_art_LevSel3)
+
+		lea	Art1Bit_LevSel1,a0
+		lea	$FFFF0000,a1
+		move.w	#Size_Art1Bit_LevSel1-1,d0	; Size
+		move.l	#$FFFF000F,d2	; Colour for 0
+		move.l	#$DDDD00EE,d1	; Colour for 1
+		bsr	Dec1BitArt
+
+		lea	ArtNES_LevSelNums,a0
+		move.w	#Size_ArtNES_LevSelNums/16-1,d0
+		bsr	DecNESArt
+
+		lea	Art1Bit_LevSel2,a0
+		move.w	#Size_Art1Bit_LevSel2-1,d0	; Size
+		bsr	Dec1BitArt
+
+		lea	ArtNES_LevSelLetters,a0
+		move.w	#(Size_ArtNES_LevSelLetters-12*16)/16-1,d0
+		bsr	DecNESArt
+
+		lea	Art1Bit_LevSel3,a0
+		move.w	#Size_Art1Bit_LevSel3-1,d0	; Size
+		bsr	Dec1BitArt
+
+		lea		(VDP_data_port).l,a6
 		locVRAMtemp	VRAMLevSelTextArt,_VDPcommand
 		move.l	#_VDPcommand,4(a6)
+		lea	$FFFF0000,a5	; start of RAM
+		move.w	#(ArtSize_LevelSelect/4)-1,d1
+	@LoadLevelSelectText:	
+		move.l	(a5)+,(a6)
+		dbf	d1,@LoadLevelSelectText
 
-;		lea	(ArtUnc_LevelSelect).l,a5
-;		move.w	#(ArtSize_LevelSelect/4)-1,d1
-;	@LoadLevelSelectText:			
-;		move.l	(a5)+,(a6)
-;		dbf	d1,@LoadLevelSelectText
-
+; --- Loading Hitbox Viewer Art
 		locVRAMtemp	$FF80,_VDPcommand
 		move.l	#_VDPcommand,4(a6)
 		lea	(ArtUnc_HitboxViewer).l,a5
@@ -1619,7 +1701,8 @@ VRAMLevSelTextArt	=	$A000
 		move.w	#0,(Current_ZoneAndAct).w
 		move.w	#0,(PalCycle_Timer).w
 		bsr.w	Pal_FadeToBlack
-		move	#$2700,sr
+
+		disable_ints
 		lea	(RAM_Start).l,a1
 		lea	(Eni_TitleMap).l,a0
 		move.w	#0,d0
