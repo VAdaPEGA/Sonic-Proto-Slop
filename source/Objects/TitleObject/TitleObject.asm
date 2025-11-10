@@ -1,8 +1,6 @@
 ;----------------------------------------------------
 ; Object 0E - Sonic and Tails from the title screen
 ;----------------------------------------------------
-
-Obj0E:					; DATA XREF: ROM:Obj_Indexo
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	Obj0E_Index(pc,d0.w),d1
@@ -17,15 +15,15 @@ Obj0E_Index:	dc.w loc_B38E-Obj0E_Index
 loc_B38E:				; DATA XREF: ROM:Obj0E_Indexo
 		addq.b	#2,routine(a0)
 		move.w	#$148,x_pixel(a0)
-		move.w	#$C4,y_pixel(a0) ; 'Ä'
-		move.l	#Map_Obj0E,mappings(a0)
+		move.w	#$C4,y_pixel(a0)
+		move.l	#Map_TitleObject,mappings(a0)
 		move.w	#$4200,art_tile(a0)
 		move.b	#1,priority(a0)
 		move.b	#$1D,anim_frame_duration+1(a0)
 		tst.b	mapping_frame(a0)
 		beq.s	loc_B3D0
-		move.w	#$FC,x_pixel(a0) ; 'ü'
-		move.w	#$CC,y_pixel(a0) ; 'Ì'
+		move.w	#$FC,x_pixel(a0)
+		move.w	#$CC,y_pixel(a0)
 		move.w	#$2200,art_tile(a0)
 
 loc_B3D0:	
