@@ -32,3 +32,20 @@ While working on this, here's a bunch of stuff we found:
       - The unknown test platform object (Obj0C) happens to be 8 tiles big and uses the same VRAM location in the list
 
 - EHZ was once the object playground for everything, with unreferenced Object Place mode entries for Badniks meant for HPZ and HTZ
+
+- The Ring collision routine checks for Sonic 1's Ducking frame to change the bounding box, which points to a diagonal walking frame in Nick Arcade. (It points to one of Tails's Running frames that go unused in this build)
+  - Tails never changes collision when ducking because the frame it checks for is out of bounds.
+
+- Sonic's "grabbed" animation from CPZ uses the wrong frame data, erroneously using the back-left frames from the LZ/WFZ spin. Suggesting a different frame order as it's not a direct 1:1 copy from S1.
+  - Curiously, the unused Leaping, Slide and shrinking animations still use the S1 frame data, completely unchanged.
+
+- The order of Tails's frames remained mostly the same throughout Sonic 2, the animation data however, was very unfinished despite most sprites being present.
+  - There are copies of Sonic's animations still in Tails's scripts, such as the Wall Recoil, suggesting it was copied after that had been implemented.
+    - The Wall Recoil Animation data remains untouched in Sonic 2 Final and S3 Beta (Nov 3 1993 Proto)
+      - One of the Animations remains unchanged in S3K Final, the second was replaced by hang sprite in MGZ, but the last got replaced by an unknown animation (9, $A4, $9B, $FF), likely an extra teeter animation.
+    - Curiously, unlike some other animations that use placeholder frames, the shrinking animation slot uses a single death frame.
+  - Rolling animation doesn't take speed into account due to a missing flag, they likely tested Tails using Sonic's object at one point and didn't want the animation data to be overwritten by the speed routine.
+    - Frame data is also backwards compared to the mappings, suggesting whoever imported the frames didn't know it was meant to move to the right.
+  - Balancing and Pushing seem to be test animations
+    - Curiously, the Pushing set seem to encompass most of the tail idle animations but goes one over, suggesting that the tail idle used to be 6 frames.
+    - Skidding has two frames, meaning the system they had going for animations may not had the correct offset

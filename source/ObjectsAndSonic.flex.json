@@ -1,8 +1,37 @@
 {
     "Flex": 2,
     "name": "",
-    "node": "90c2403b-bd62-4029-8c9b-4b11ec886c8d",
+    "node": "28062df6-0a63-4b3d-8db4-1a57d4c4b325",
     "objects": [
+        {
+            "format": "Sonic 2.js",
+            "name": "HUD",
+            "palettes": [
+                {
+                    "path": "Level\\Main.pal",
+                    "length": 1
+                },
+                {
+                    "path": "Level\\EHZ\\Palette\\PalMain_1.bin",
+                    "length": 3
+                }
+            ],
+            "art": {
+                "path": "Objects\\HUD\\HUD.ArtNem",
+                "compression": "Nemesis",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "Objects\\HUD\\HUD.SprMap",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": false,
+                "path": "",
+                "label": ""
+            },
+            "uuid": "06f0bba4-8c87-4569-afcd-c105c9cb6789"
+        },
         {
             "format": "Sonic 2.js",
             "name": "CPZUnknown",
@@ -51,7 +80,39 @@
                 "path": "",
                 "label": ""
             },
-            "uuid": "29f93203-21e3-4e4d-af9a-50715954e92f"
+            "uuid": "f0bba48c-8775-492f-8dc1-05c9cb678913"
+        },
+        {
+            "name": "Badniks",
+            "children": [
+                {
+                    "format": "Sonic 2.js",
+                    "name": "Crabmeat",
+                    "palettes": [
+                        {
+                            "path": "Level\\Main.pal",
+                            "length": 1
+                        }
+                    ],
+                    "art": {
+                        "path": "Objects\\Crabmeat\\Crabmeat.ArtNem",
+                        "compression": "Nemesis",
+                        "offset": 0
+                    },
+                    "mappings": {
+                        "path": "Objects\\Crabmeat\\Crabmeat.SprMap",
+                        "label": ""
+                    },
+                    "dplcs": {
+                        "enabled": false,
+                        "path": "",
+                        "label": ""
+                    },
+                    "uuid": "29f93203-21e3-4e4d-af9a-50715954e92f"
+                }
+            ],
+            "isDirectory": true,
+            "expanded": true
         },
         {
             "name": "Common",
@@ -115,22 +176,47 @@
             "name": "Sonic",
             "palettes": [
                 {
-                    "path": "Art\\palettes\\Sonic and Tails.bin",
+                    "path": "Level\\Main.pal",
                     "length": 1
                 }
             ],
             "art": {
-                "path": "Art\\uncompressed\\Sonic's art.bin",
+                "path": "Objects\\_Player\\Sonic.ArtUnc",
                 "compression": "Uncompressed",
                 "offset": 0
             },
             "mappings": {
-                "path": "Mappings\\sprite\\Sonic.bin",
+                "path": "Objects\\_Player\\Sonic.SprMAP",
                 "label": ""
             },
             "dplcs": {
                 "enabled": true,
-                "path": "Mappings\\spriteDPLC\\Sonic.bin",
+                "path": "Objects\\_Player\\Sonic.DPLC",
+                "label": ""
+            },
+            "uuid": "bb06f0bb-a48c-4775-a92f-cdc105c9cb67"
+        },
+        {
+            "format": "Sonic 2.js",
+            "name": "Tails",
+            "palettes": [
+                {
+                    "path": "Level\\Main.pal",
+                    "length": 1
+                }
+            ],
+            "art": {
+                "path": "Objects\\_Player\\Tails.ArtUnc",
+                "compression": "Uncompressed",
+                "offset": 0
+            },
+            "mappings": {
+                "path": "Objects\\_Player\\Tails.SprMAP",
+                "label": ""
+            },
+            "dplcs": {
+                "enabled": true,
+                "path": "Objects\\_Player\\Tails.DPLC",
                 "label": ""
             },
             "uuid": "28062df6-0a63-4b3d-8db4-1a57d4c4b325"
