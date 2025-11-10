@@ -1545,41 +1545,39 @@ TitleScreen:				; CODE XREF: ROM:000003A0j
 		clr.b	(Water_fullscreen_flag).w
 		move.w	#$8C81,(a6)
 		bsr.w	ClearScreen
+
 		lea	(Sprite_Input_Table).w,a1
 		moveq	#0,d0
 		move.w	#(Sprite_Input_Table_End-Sprite_Input_Table)/4-1,d1
-
-loc_3230:				; CODE XREF: ROM:00003232j
+	@ClearSpriteTable:	
 		move.l	d0,(a1)+
-		dbf	d1,loc_3230
+		dbf	d1,@ClearSpriteTable
+
 		lea	(Object_Space).w,a1
-		moveq	#0,d0
 		move.w	#(Object_Space_End-Object_Space)/4-1,d1
-
-loc_3240:				; CODE XREF: ROM:00003242j
+	@ClearObjectRAM:		
 		move.l	d0,(a1)+
-		dbf	d1,loc_3240
+		dbf	d1,@ClearObjectRAM
+
 		lea	(unk_F700).w,a1
-		moveq	#0,d0
-		move.w	#$3F,d1	; '?'
-
-loc_3250:				; CODE XREF: ROM:00003252j
+		move.w	#$100/4-1,d1
+	@ClearRAM2:		
 		move.l	d0,(a1)+
-		dbf	d1,loc_3250
+		dbf	d1,@ClearRAM2
+
 		lea	(Camera_RAM).w,a1
-		moveq	#0,d0
-		move.w	#$3F,d1	; '?'
-
-loc_3260:				; CODE XREF: ROM:00003262j
+		move.w	#$100/4-1,d1
+	@ClearCamRAM:			
 		move.l	d0,(a1)+
-		dbf	d1,loc_3260
-		lea	(Target_palette).w,a1
-		moveq	#0,d0
-		move.w	#$1F,d1
+		dbf	d1,@ClearCamRAM
 
-loc_3270:				; CODE XREF: ROM:00003272j
-		move.l	d0,(a1)+
-		dbf	d1,loc_3270
+;		lea	(Target_palette).w,a1	; useless
+;		move.w	#(Target_palette_End-Target_palette)/4-1,d1
+;	@ClearFadePalette:			
+;		move.l	d0,(a1)+
+;		dbf	d1,@ClearFadePalette
+
+
 		moveq	#3,d0
 		bsr.w	PalLoadFade
 		bsr.w	Pal_FadeFromBlack
@@ -1604,8 +1602,6 @@ VRAMLevSelTextArt	=	$A000
 ;		move.l	(a5)+,(a6)
 ;		dbf	d1,@LoadLevelSelectText
 
-
-
 		locVRAMtemp	$FF80,_VDPcommand
 		move.l	#_VDPcommand,4(a6)
 		lea	(ArtUnc_HitboxViewer).l,a5
@@ -1613,6 +1609,8 @@ VRAMLevSelTextArt	=	$A000
 	@LoadHitboxViewer:			
 		move.l	(a5)+,(a6)
 		dbf	d1,@LoadHitboxViewer
+
+
 
 		move.b	#0,(Last_LampPost_hit).w
 		move.w	#0,(Debug_placement_mode).w
@@ -1656,15 +1654,16 @@ loc_3330:
 		move.b	#0,(Debug_mode_flag).w
 		move.w	#0,(Two_player_mode).w
 		move.w	#$178,(Demo_Time_left).w
+
 		lea	(Object_Space+$80).w,a1
 		moveq	#0,d0
-		move.w	#$F,d1
-
-loc_339A:				; CODE XREF: ROM:0000339Cj
+		move.w	#Object_RAM/4-1,d1
+loc_339A:	
 		move.l	d0,(a1)+
 		dbf	d1,loc_339A
-		move.b	#$E,(Object_Space+$40).w
-		move.b	#$E,(Object_Space+$80).w
+
+		move.b	#ObjID_TitleObject,(Object_Space+$40).w
+		move.b	#ObjID_TitleObject,(Object_Space+$80).w
 		move.b	#1,(Object_Space+$80+mapping_frame).w
 		jsr	(RunObjects).l
 		jsr	(BuildSprites).l
@@ -6832,88 +6831,6 @@ loc_D98C:
 		bls.s	loc_D98A
 		move.w	a2,(Ring_end_addr_P2).w		; update end address
 		rts
-
-; ---------------------------------------------------------------------------
-; Subroutine to handle ring collision
-; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-; sub_D998:
-Touch_Rings:
-		movea.w	(Ring_start_addr).w,a1
-		movea.w	(Ring_end_addr).w,a2
-		cmpa.w	#MainCharacter,a0
-		beq.s	loc_D9AE
-		movea.w	(Ring_start_addr_P2).w,a1
-		movea.w	(Ring_end_addr_P2).w,a2
-
-loc_D9AE:
-		cmpa.l	a1,a2
-		beq.w	locret_DA36
-		cmpi.w	#$5A,invulnerable_time(a0)
-		bcc.s	locret_DA36
-		move.w	x_pos(a0),d2
-		move.w	y_pos(a0),d3
-		subi.w	#8,d2
-		moveq	#0,d5
-		move.b	y_radius(a0),d5
-		subq.b	#3,d5
-		sub.w	d5,d3
-		cmpi.b	#$39,mapping_frame(a0)
-		bne.s	loc_D9E0
-		addi.w	#$C,d3
-		moveq	#$A,d5
-
-loc_D9E0:				; CODE XREF: Touch_Rings+40j
-		move.w	#6,d1
-		move.w	#$C,d6
-		move.w	#$10,d4
-		add.w	d5,d5
-
-loc_D9EE:				; CODE XREF: Touch_Rings+9Aj
-		tst.w	(a1)
-		bne.w	loc_DA2C
-		move.w	2(a1),d0
-		sub.w	d1,d0
-		sub.w	d2,d0
-		bcc.s	loc_DA06
-		add.w	d6,d0
-		bcs.s	loc_DA0C
-		bra.w	loc_DA2C
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_DA06:				; CODE XREF: Touch_Rings+64j
-		cmp.w	d4,d0
-		bhi.w	loc_DA2C
-
-loc_DA0C:				; CODE XREF: Touch_Rings+68j
-		move.w	4(a1),d0
-		sub.w	d1,d0
-		sub.w	d3,d0
-		bcc.s	loc_DA1E
-		add.w	d6,d0
-		bcs.s	loc_DA24
-		bra.w	loc_DA2C
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_DA1E:				; CODE XREF: Touch_Rings+7Cj
-		cmp.w	d5,d0
-		bhi.w	loc_DA2C
-
-loc_DA24:				; CODE XREF: Touch_Rings+80j
-		move.w	#$604,(a1)
-		jsr	Collect_Single_Ring
-
-loc_DA2C:				; CODE XREF: Touch_Rings+58j Touch_Rings+6Aj ...
-		lea	6(a1),a1
-		cmpa.l	a1,a2
-		bne.w	loc_D9EE
-
-locret_DA36:				; CODE XREF: Touch_Rings+18j Touch_Rings+22j
-		rts
-; End of function Touch_Rings
-
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 

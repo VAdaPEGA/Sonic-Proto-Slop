@@ -1,5 +1,5 @@
 TouchResponse:				; a.k.a ReactToItem in S1 disassemblies
-		jsr	Touch_Rings
+		bsr	Touch_Rings
 		move.w	x_pos(a0),d2
 		move.w	y_pos(a0),d3
 		subi.w	#8,d2
@@ -424,3 +424,85 @@ Touch_E1:				; CODE XREF: TouchResponse+338j
 
 j_Sonic_ResetOnFloor:
 		jmp	(Sonic_ResetOnFloor).l
+
+
+; ---------------------------------------------------------------------------
+; Subroutine to handle ring collision
+; ---------------------------------------------------------------------------
+
+; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
+; sub_D998:
+Touch_Rings:
+		movea.w	(Ring_start_addr).w,a1
+		movea.w	(Ring_end_addr).w,a2
+		cmpa.w	#MainCharacter,a0
+		beq.s	@Player1
+		movea.w	(Ring_start_addr_P2).w,a1
+		movea.w	(Ring_end_addr_P2).w,a2
+
+	@Player1:
+		cmpa.l	a1,a2
+		beq.w	locret_DA36
+		cmpi.w	#$5A,invulnerable_time(a0)
+		bcc.s	locret_DA36
+		move.w	x_pos(a0),d2
+		move.w	y_pos(a0),d3
+		subi.w	#8,d2
+		moveq	#0,d5
+		move.b	y_radius(a0),d5
+		subq.b	#3,d5
+		sub.w	d5,d3
+
+		cmpi.b	#SonicAniID_Duck,anim(a0)	; Check Ducking
+		bne.s	loc_D9E0
+		addi.w	#$C,d3
+		moveq	#$A,d5
+
+loc_D9E0:				; CODE XREF: Touch_Rings+40j
+		move.w	#6,d1
+		move.w	#$C,d6
+		move.w	#$10,d4
+		add.w	d5,d5
+
+loc_D9EE:				; CODE XREF: Touch_Rings+9Aj
+		tst.w	(a1)
+		bne.w	loc_DA2C
+		move.w	2(a1),d0
+		sub.w	d1,d0
+		sub.w	d2,d0
+		bcc.s	loc_DA06
+		add.w	d6,d0
+		bcs.s	loc_DA0C
+		bra.w	loc_DA2C
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_DA06:				; CODE XREF: Touch_Rings+64j
+		cmp.w	d4,d0
+		bhi.w	loc_DA2C
+
+loc_DA0C:				; CODE XREF: Touch_Rings+68j
+		move.w	4(a1),d0
+		sub.w	d1,d0
+		sub.w	d3,d0
+		bcc.s	loc_DA1E
+		add.w	d6,d0
+		bcs.s	loc_DA24
+		bra.w	loc_DA2C
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_DA1E:				; CODE XREF: Touch_Rings+7Cj
+		cmp.w	d5,d0
+		bhi.w	loc_DA2C
+
+loc_DA24:				; CODE XREF: Touch_Rings+80j
+		move.w	#$604,(a1)
+		jsr	Collect_Single_Ring
+
+loc_DA2C:				; CODE XREF: Touch_Rings+58j Touch_Rings+6Aj ...
+		lea	6(a1),a1
+		cmpa.l	a1,a2
+		bne.w	loc_D9EE
+
+locret_DA36:				; CODE XREF: Touch_Rings+18j Touch_Rings+22j
+		rts
+; End of function Touch_Rings
