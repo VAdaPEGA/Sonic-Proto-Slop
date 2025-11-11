@@ -16,3 +16,7 @@ SonLVL INI Files/dllcache/
 SMB1.nes
 source/SpecialStage/S1SSEdit.undo
 Tools/SonAni.lnk
+SPS_Build.bin
+SPS_Build.SkillIssue.bin
+stderr.txt
+stdout.txt

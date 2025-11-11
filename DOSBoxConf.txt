@@ -1,0 +1,9 @@
+[cpu]
+cycles=max
+
+[autoexec]
+MOUNT S .\source\SOUP
+S:
+S:\x816.exe -l SOUP.ASM
+S:\x816.exe -l SWAP.ASM
+exit
