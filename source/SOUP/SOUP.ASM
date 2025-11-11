@@ -666,6 +666,38 @@ CHRBank0	=	$AAAA
 CHRBank1	=	$BAAA
 
 ;-------------------------------------------------------------------------------------
+
+_ChrA	= 10
+_ChrB	= 11
+_ChrC	= 12
+_ChrD	= 13
+_ChrE	= 14
+_ChrF	= 15
+_ChrG	= 16
+_ChrH	= 17
+_ChrI	= 18
+_ChrJ	= 19
+_ChrK	= 20
+_ChrL	= 21
+_ChrM	= 22
+_ChrN	= 23
+_ChrO	= 24
+_ChrP	= 25
+_ChrQ	= 26
+_ChrR	= 27
+_ChrS	= 28
+_ChrT	= 29
+_ChrU	= 30
+_ChrV	= 31
+_ChrW	= 32
+_ChrX	= 33
+_ChrY	= 34
+_ChrZ	= 35
+_Chr!	= $2b
+_ChrCoin = $2e
+_ChrSmallX = $29
+
+;-------------------------------------------------------------------------------------
 ;DIRECTIVES
 
        .index 8
@@ -1632,35 +1664,6 @@ IncModeTask_B: inc OperMode_Task  ;move onto next mode
 
 ;-------------------------------------------------------------------------------------
 
-_ChrA = 10
-_ChrB = 11
-_ChrC = 12
-_ChrD = 13
-_ChrE = 14
-_ChrF = 15
-_ChrG = 16
-_ChrH = 17
-_ChrI = 18
-_ChrJ = 19
-_ChrK = 20
-_ChrL = 21
-_ChrM = 22
-_ChrN = 23
-_ChrO = 24
-_ChrP = 25
-_ChrQ = 26
-_ChrR = 27
-_ChrS = 28
-_ChrT = 29
-_ChrU = 20
-_ChrV = 31
-_ChrW = 32
-_ChrX = 33
-_ChrY = 34
-_ChrZ = 35
-_ChrCoin = $2e
-_ChrSmallX = $29
-
 GameText:
 TopStatusBarLine:
 	.db	$20, $23	; Score
@@ -2347,32 +2350,31 @@ BowserPaletteData:
   .db $0f, $1a, $30, $27
   .db $00
 
-MarioThanksMessage:
-;"THANK YOU MARIO!"
-  .db $25, $48, $10
-  .db $1d, $11, $0a, $17, $14, $24
-  .db $22, $18, $1e, $24
-  .db $16, $0a, $1b, $12, $18, $2b
-  .db $00
-
 LuigiThanksMessage:
-;"THANK YOU LUIGI!"
-  .db $25, $48, $10
-  .db $1d, $11, $0a, $17, $14, $24
-  .db $22, $18, $1e, $24
-  .db $15, $1e, $12, $10, $12, $2b
-  .db $00
+MarioThanksMessage:
+	.db $25, $4B+3, 5
+	.db _ChrU, _ChrH, $24, _ChrO, _ChrH
+	.db $25, $62+3, 23
+	.db _ChrY, _ChrO, _ChrU, $24
+	.db _ChrF, _ChrO, _ChrW, _ChrN, _ChrD, $24
+	.db _ChrT, _ChrH, _ChrE, $24
+	.db _ChrP, _ChrR, _ChrI, _ChrN, _ChrC, _ChrA, _ChrI, _ChrS, _ChrS
+	.db $00
 
 MushroomRetainerSaved:
-;"BUT OUR PRINCESS IS IN"
-  .db $25, $c5, $16
-  .db $0b, $1e, $1d, $24, $18, $1e, $1b, $24
-  .db $19, $1b, $12, $17, $0c, $0e, $1c, $1c, $24
-  .db $12, $1c, $24, $12, $17
-;"ANOTHER CASTLE!"
-  .db $26, $05, $0f
-  .db $0a, $17, $18, $1d, $11, $0e, $1b, $24
-  .db $0c, $0a, $1c, $1d, $15, $0e, $2b, $00
+	.db $25, $A9+3, 9
+	.db _ChrW, _ChrR, _ChrO, _ChrN, _ChrG, _Chr!, _Chr!, _Chr!, _Chr!
+
+	.db $25, $C2+3, 23
+	.db _ChrS, _ChrH, _ChrE, $24 
+	.db _ChrI, _ChrS, $24 
+	.db _ChrI, _ChrN, $24
+	.db _ChrA, _ChrN, _ChrU, _ChrT, _ChrH, _ChrE, _ChrR, $24
+	.db _ChrH, _ChrO, _ChrU, _ChrS, _ChrE
+
+	.db $26, $29+3, 9
+	.db _ChrG, _ChrO, $24, $24, _ChrA, _ChrW, _ChrA, _ChrY, _Chr!
+	.db $00
 
 PrincessSaved1:
 ;"YOUR QUEST IS OVER."
