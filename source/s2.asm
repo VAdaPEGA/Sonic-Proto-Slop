@@ -150,16 +150,17 @@ Region:		dc.b	"UJE             " ; Region
 	;	incbin	"SOUP\SOUP.ArtUnc"
 	;	incbin	"SOUP\SOUP.ArtUnc"
 	if	(filesize("..\SMB1.nes")=$A010)
-		incbin	"..\SMB1.nes", $8010, $1000
-	NES_Add	LevSelNums,	SOUP\, LevelSelectNumbers
-	NES_Add LevSelLetters,	SOUP\, LevelSelectLetters
-		incbin	"..\SMB1.nes", ($9010+(*-ArtNES_LevSelNums)),($1000-(*-ArtNES_LevSelNums))
+NES_CHR	=	$8010
 	else	; headerless ROM
-		incbin	"..\SMB1.nes", $8000, $1000
+NES_CHR	=	$8000
+	endif
+		incbin	"..\SMB1.nes", NES_CHR, $CD0
+	NES_Add	ProToad,	SOUP\, ProToad	
+		incbin	"..\SMB1.nes", (NES_CHR+($CD0+size_artnes_protoad)),($1000-$CD0-size_artnes_protoad)
+
 	NES_Add	LevSelNums,	SOUP\, LevelSelectNumbers
 	NES_Add LevSelLetters,	SOUP\, LevelSelectLetters
-		incbin	"..\SMB1.nes", ($9000+(*-ArtNES_LevSelNums)),($1000-(*-ArtNES_LevSelNums))
-	endif
+		incbin	"..\SMB1.nes", (NES_CHR+$1000+(*-ArtNES_LevSelNums)),($1000-(*-ArtNES_LevSelNums))
 	Mono_Add	LevSel1, Routines\, DebugASCII_Part1	; Level select text (1BPP cause why not)
 	Mono_Add	LevSel2, Routines\, DebugASCII_Part2
 	Mono_Add	LevSel3, Routines\, DebugASCII_Part3
