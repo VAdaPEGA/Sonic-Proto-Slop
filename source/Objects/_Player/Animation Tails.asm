@@ -181,3 +181,4 @@ TailsAni_1D:		dc.b	3
 TailsAni_1E:		dc.b	3
 			dc.b	1,  2,  3,  4,  5,  6,  7,  8
 			dc.b	afEnd
+			even
