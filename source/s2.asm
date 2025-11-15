@@ -138,8 +138,47 @@ Region:		dc.b	"UJE             " ; Region
 		include	"Routines\Error Checksum.asm"
 ; ===========================================================================
 		if (NESROMSupport)
-		align	$002010
-		incbin	"SOUP\SWAP.BIN"	; special thanks to kakalakola for the help here
+		include	"SOUP\6502MacroSet.asm"
+SMBTopScoreDisplay	= $07d7
+		OBJ	*+$8000-$10	; Allign code
+SwapChr:
+		NES_MOVEA $80,A
+		NES_ST	A,$8008	; Reset 
+		NES_ST	A,$EAAE
+		
+		NES_MOVEA %00010,A
+		NES_ST	A,$8008
+		NES_LSR	A
+		NES_ST	A,$8008
+		NES_LSR	A
+		NES_ST	A,$8008
+		NES_LSR	A
+		NES_ST	A,$8008
+		NES_LSR	A
+		NES_ST	A,$8008
+		
+		NES_MOVEA 2,A
+		NES_ST	A,$EAAE
+		NES_LSR	A
+		NES_ST	A,$EAAE
+		NES_LSR	A
+		NES_ST	A,$EAAE
+		NES_ST	A,$EAAE
+		NES_ST	A,$EAAE
+		NES_JMP	$8128
+SwapChrEnd:
+;-------------------------------------------------------------------------------------
+		align	$A000
+		NES_DisableInts
+		NES_MOVEA	((SwapChrEnd-SwapChr)-1),X	; number of loops (ammount of data to store in RAM)
+@loop:		
+		NES_LD	SwapChr+X,A	; get 
+		NES_ST	A,SMBTopScoreDisplay+X	; store code here so game knows it's a cold boot
+		NES_SUBQ	X	; subtract X by 1
+		NES_BPL	@loop	; loop until X is negative
+		NES_JMP	SMBTopScoreDisplay
+		OBJEND	; return to normal allignment
+	; Special Thanks to kakalakola for the help with the Bank Switching
 ; ===========================================================================
 	if	(filesize("..\SMB1.nes")=-1)
 		inform	3, "YOU DUMBASS, YOU FORGOT YOUR SUPER MARIO BROS. ROM, make sure it's present as 'SMB1.nes' in the root folder"
