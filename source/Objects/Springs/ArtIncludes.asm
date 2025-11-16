@@ -44,6 +44,7 @@ byte_E999:	dc.b   0,  8,  7,  7,  9,  9,  9,  9
 ; ----------------------------------------------------------------------------
 ; Primary sprite mappings for springs (Red)
 ; ----------------------------------------------------------------------------
+Map_Springs:
 		IndexStart	Map_obj41	
 		GenerateIndex	2, Map_SpringVertical
 		GenerateIndex	2, word_EA5C

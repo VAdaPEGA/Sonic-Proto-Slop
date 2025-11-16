@@ -11,12 +11,12 @@ LoadDebugObjectSprite:
 ; End of function Debug_ShowItem
 ; ===========================================================================
 ObjPlaceEntry	macro	ID, Subtype, Frame, VRAM, Mappings
-	if	(narg<4)
-@temp	equs	\_Obj\#ID
-@temp	equs	Map_\@temp
-		dc.l	@temp+ID<<24	; Use ID defined Mapping data
+	if	(narg=5)
+		dc.l	Mappings+(ID<<24)	; Use Specified Mapping Data
 	else
-		dc.l	Mappings+ID<<24	; Use Specified Mapping Data
+tempc	=	ID
+_temp	equs	_Obj\#tempc
+		dc.l	Map_\_temp+(ID<<24)	; Use ID defined Mapping data
 	endif
 		dc.b	Subtype, Frame
 	if	(narg=3)
@@ -37,7 +37,7 @@ ObjPlacec	=	ObjPlacec+1
 ObjPlacec	=	0
 		rept	ZoneCount
 _ObjPlaceLst_\#ObjPlacec:
-	@ListStart:	dc.w	@ListEnd-@ListStart
+	@ListStart:	dc.w	(@ListEnd-@ListStart)/8
 _temp	equs	_ZoneFolder\#ObjPlacec
 		if	(filesize("\_temp\ObjPlaceList.asm")=-1)
 	; Generic List if file doesn't exist

@@ -58,11 +58,3 @@ Ani_Obj2B:	dc.w byte_B7BA-Ani_Obj2B ; DATA	XREF: ROM:loc_B768o
 byte_B7BA:	dc.b   7,  0,  1,$FF	; 0 ; DATA XREF: ROM:Ani_Obj2Bo
 byte_B7BE:	dc.b   3,  0,  1,$FF	; 0 ; DATA XREF: ROM:0000B7B6o
 byte_B7C2:	dc.b   7,  0,$FF,  0	; 0 ; DATA XREF: ROM:0000B7B8o
-Map_Obj2B:	dc.w word_B7CA-Map_Obj2B ; DATA	XREF: ROM:0000B732o
-					; ROM:Map_Obj2Bo ...
-		dc.w word_B7D4-Map_Obj2B
-word_B7CA:	dc.w 1			; DATA XREF: ROM:Map_Obj2Bo
-		dc.w $F00F,    0,    0,$FFF0; 0
-word_B7D4:	dc.w 1			; DATA XREF: ROM:0000B7C8o
-		dc.w $F00F,  $10,    8,$FFF0; 0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ

@@ -4,9 +4,9 @@
 	ObjPlaceEntry	ObjID_Monitor,		0,	1,	$0680
 	ObjPlaceEntry	ObjID_LampPost,		1,	0,	$047C
 	ObjPlaceEntry	ObjID_LayerSwitcher,	0,  	0,	($26BC+10)
-	ObjPlaceEntry	ObjID_Waterfall,	0,  	0,	$23AE
-	ObjPlaceEntry	ObjID_Waterfall,	2,	3,	$23AE
-	ObjPlaceEntry	ObjID_Waterfall,	4,	5,	$23AE
+	ObjPlaceEntry	ObjID_Waterfall,	0,  	0,	$23AE,	MAP_Waterfall_EHZ
+	ObjPlaceEntry	ObjID_Waterfall,	2,	3,	$23AE,	MAP_Waterfall_EHZ
+	ObjPlaceEntry	ObjID_Waterfall,	4,	5,	$23AE,	MAP_Waterfall_EHZ
 	ObjPlaceEntry	ObjID_Platforms,	1,  	0,	$0400,	MAP_Platforms_EHZ
 	ObjPlaceEntry	ObjID_Platforms,	$A,	1,	$0400,	MAP_Platforms_EHZ
 	ObjPlaceEntry	ObjID_Spikes,		0,	1,	$2434
