@@ -7,11 +7,11 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Obj54_Init
-	GenerateIndex	2, Obj54_Move
-	GenerateIndex	2, loc_177B4
-	GenerateIndex	2, loc_177EC
-	GenerateIndex	2, loc_17772
+	GenerateIndex	 Obj54_Init
+	GenerateIndex	 Obj54_Move
+	GenerateIndex	 loc_177B4
+	GenerateIndex	 loc_177EC
+	GenerateIndex	 loc_17772
 ; ===========================================================================
 
 Obj54_Init:

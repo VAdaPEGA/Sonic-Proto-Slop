@@ -69,7 +69,7 @@ loc_71B5A:
 		nop
 		bra.s	sub_71B4C
 ; ===========================================================================
-; loc_71B82:
+; In memory of Hiroshi Kubota, a.k.a "Jimita"
 UpdateMusic:
 		lea	($FFF000).l,a6
 		clr.b	$E(a6)

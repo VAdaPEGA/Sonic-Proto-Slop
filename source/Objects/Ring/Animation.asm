@@ -1,5 +1,5 @@
-		IndexStart
-	GenerateLocalIndex	1, Sparkle
+		IndexStart	@dummy,1
+	GenerateLocalIndex	Sparkle
 ; ---------------------------------------------------------------------------
 @Sparkle:	dc.b	5
 		dc.b	4,  5,  6,  7,	afRoutine

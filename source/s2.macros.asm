@@ -408,40 +408,47 @@ _Obj\#ObjCount:	equs	"\1\"
 		endm
 ; ---------------------------------------------------------------------------
 ; Tables!!!!
-IndexStart		macro	name
-		if (narg=1)
+IndexStart	macro	name, increment, count
+IndexCount	= 0
+IndexIncrement	= 2
+		if	(narg>0)
 \name:
 		endif
-@index:
-c	=		0
-			endm
-; ---
-GenerateLocalIndex	macro	Increase,label
-			dc.w	@\label\-@Index
-		if (narg=1)
-@Index\label:		equ	c
+		if	(narg>1)
+IndexIncrement	=	increment
 		endif
-c	=		c+Increase
+		if	(narg>2)
+IndexCount	=	count
+		endif
+@Index:
+	endm
+; ---
+GenerateLocalIndex	macro	label
+			dc.w	@\label\-@Index
+			if (narg=1)
+@Index\label:		equ	IndexCount
+			endif
+IndexCount	=	IndexCount+IndexIncrement
+		endm
+; ---
+GenerateIndexID		macro	LabelName,name
+			if (narg=1)
+			dc.w	\LabelName\-@Index
+_\LabelName\:		equ	IndexCount
+			else
+			dc.w	\LabelName\_\name\-@Index
+\LabelName\ID_\name:	equ	IndexCount
+			endif
+IndexCount	=	IndexCount+IndexIncrement
 			endm
 ; ---
-GenerateIndexID		macro	Increase,LabelName,name
-			dc.w	\LabelName\_\name\-@Index
-\LabelName\ID_\name:	equ	c
-			if (narg=3)
-			else
+GenerateIndex		macro	LabelName,name
+			if (narg=1)
 			dc.w	\LabelName\-@Index
-_\LabelName\:		equ	c
-			endif
-c	=		c+increase
-			endm
-; ---
-GenerateIndex	macro	Increase,LabelName,name
-			if (narg=3)
-			dc.w	\LabelName\_\name\-@Index
 			else
-			dc.w	\LabelName\-@Index
+			dc.w	\LabelName\_\name\-@Index
 			endif
-c	=		c+increase
+IndexCount	=	IndexCount+IndexIncrement
 			endm
 
 ; ---------------------------------------------------------------------------

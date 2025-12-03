@@ -7,15 +7,15 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, RingObj,	Init
-	GenerateIndex	2, RingObj,	Main
-	GenerateIndex	2, RingObj,	Collect
-	GenerateIndexID	2, RingObj,	Display
-	GenerateIndex	2, RingObj,	DeleteObject
+	GenerateIndex	 RingObj,	Init
+	GenerateIndex	 RingObj,	Main
+	GenerateIndex	 RingObj,	Collect
+	GenerateIndexID	 RingObj,	Display
+	GenerateIndex	 RingObj,	DeleteObject
 
-	GenerateIndexID	2, Ring,	Spill
-	GenerateIndex	2, loc_A9FA
-	GenerateIndex	2, Spill_Collect
+	GenerateIndexID	 Ring,	Spill
+	GenerateIndex	 loc_A9FA
+	GenerateIndex	 Spill_Collect
 ; ---------------------------------------------------------------------------
 ; Distances between rings (format: horizontal, vertical)
 ; ---------------------------------------------------------------------------

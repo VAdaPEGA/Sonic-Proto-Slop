@@ -485,19 +485,19 @@ VintRet:
 ; ===========================================================================
 ; off_B6C:
 	IndexStart	Vint_SwitchTbl
-	GenerateIndexID	2, Vint, Lag
-	GenerateIndexID	2, Vint, SEGA
-	GenerateIndexID	2, Vint, Title
-	GenerateIndexID	2, Vint, Unused6
-	GenerateIndexID	2, Vint, Level
-	GenerateIndexID	2, Vint, S1SS
-	GenerateIndexID	2, Vint, TitleCard
-	GenerateIndexID	2, Vint, UnusedE
-	GenerateIndexID	2, Vint, Pause
-	GenerateIndexID	2, Vint, Fade
-	GenerateIndexID	2, Vint, PCM
-	GenerateIndexID	2, Vint, SSResults
-	GenerateIndex	2, Vint, TitleCard
+	GenerateIndexID	Vint, Lag
+	GenerateIndexID	Vint, SEGA
+	GenerateIndexID	Vint, Title
+	GenerateIndexID	Vint, Unused6
+	GenerateIndexID	Vint, Level
+	GenerateIndexID	Vint, S1SS
+	GenerateIndexID	Vint, TitleCard
+	GenerateIndexID	Vint, UnusedE
+	GenerateIndexID	Vint, Pause
+	GenerateIndexID	Vint, Fade
+	GenerateIndexID	Vint, PCM
+	GenerateIndexID	Vint, SSResults
+	GenerateIndex	Vint, TitleCard
 ; ===========================================================================
 ; loc_B86: VintSub0:
 Vint_Lag:
@@ -7952,39 +7952,39 @@ locret_1B23C:
 ; overflow and completely screw up the variables stored directly after the queue buffer.
 ; (in my experience this is a guaranteed crash or hang)
 ; ---------------------------------------------------------------------------
-	IndexStart	ArtLoadCues
-	GenerateIndexID	1, PLC, Main
-	GenerateIndexID	1, PLC, Main2
-	GenerateIndexID	1, PLC, Explode
-	GenerateIndexID	1, PLC, GameOver
+	IndexStart	ArtLoadCues, 1
+	GenerateIndexID	PLC, Main
+	GenerateIndexID	PLC, Main2
+	GenerateIndexID	PLC, Explode
+	GenerateIndexID	PLC, GameOver
 
-	GenerateIndexID	1, PLC, S1TitleCard
-	GenerateIndexID	1, PLC, Boss
-	GenerateIndexID	1, PLC, Signpost
-	GenerateIndexID	1, PLC, S1SpecialStage
+	GenerateIndexID	PLC, S1TitleCard
+	GenerateIndexID	PLC, Boss
+	GenerateIndexID	PLC, Signpost
+	GenerateIndexID	PLC, S1SpecialStage
 
-	GenerateIndexID	1, PLC, GHZ
-	GenerateIndexID	1, PLC, GHZ2
-	GenerateIndex	1, PLC, CPZ
-	GenerateIndex	1, PLC, CPZ2
-	GenerateIndex	1, PLC, MMZ
-	GenerateIndex	1, PLC, MMZ2
-	GenerateIndex	1, PLC, EHZ
-	GenerateIndex	1, PLC, EHZ2
-	GenerateIndex	1, PLC, HPZ
-	GenerateIndex	1, PLC, HPZ2
-	GenerateIndex	1, PLC, HTZ
-	GenerateIndex	1, PLC, HTZ2
-	GenerateIndex	1, PLC, CNZ
-	GenerateIndex	1, PLC, CNZ2
+	GenerateIndexID	PLC, GHZ
+	GenerateIndexID	PLC, GHZ2
+	GenerateIndex	PLC, CPZ
+	GenerateIndex	PLC, CPZ2
+	GenerateIndex	PLC, MMZ
+	GenerateIndex	PLC, MMZ2
+	GenerateIndex	PLC, EHZ
+	GenerateIndex	PLC, EHZ2
+	GenerateIndex	PLC, HPZ
+	GenerateIndex	PLC, HPZ2
+	GenerateIndex	PLC, HTZ
+	GenerateIndex	PLC, HTZ2
+	GenerateIndex	PLC, CNZ
+	GenerateIndex	PLC, CNZ2
 
-	GenerateIndexID	1, PLC, GHZAnimals
-	GenerateIndex	1, PLC, CPZAnimals
-	GenerateIndex	1, PLC, MMZAnimals
-	GenerateIndex	1, PLC, HPZAnimals
-	GenerateIndex	1, PLC, EHZAnimals
-	GenerateIndex	1, PLC, HTZAnimals
-	GenerateIndex	1, PLC, CNZAnimals
+	GenerateIndexID	PLC, GHZAnimals
+	GenerateIndex	PLC, CPZAnimals
+	GenerateIndex	PLC, MMZAnimals
+	GenerateIndex	PLC, HPZAnimals
+	GenerateIndex	PLC, EHZAnimals
+	GenerateIndex	PLC, HTZAnimals
+	GenerateIndex	PLC, CNZAnimals
 
 ; macro for a pattern load request
 PLC_Start	macro	name

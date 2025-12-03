@@ -15,10 +15,10 @@ Obj09_Normal:
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Obj09_Init
-	GenerateIndex	2, Obj09_Main
-	GenerateIndex	2, Obj09_ExitTransition
-	GenerateIndex	2, Obj09_ExitSpecialStage
+	GenerateIndex	 Obj09_Init
+	GenerateIndex	 Obj09_Main
+	GenerateIndex	 Obj09_ExitTransition
+	GenerateIndex	 Obj09_ExitSpecialStage
 ; ===========================================================================
 Obj09_Init:	
 		addq.b	#2,routine(a0)
@@ -50,8 +50,8 @@ Obj09_Main:
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Obj09_OnWall
-	GenerateIndex	2, Obj09_InAir
+	GenerateIndex	 Obj09_OnWall
+	GenerateIndex	 Obj09_InAir
 ; ===========================================================================
 
 Obj09_OnWall:		

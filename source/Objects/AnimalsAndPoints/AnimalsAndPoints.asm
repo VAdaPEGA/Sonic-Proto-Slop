@@ -8,32 +8,32 @@ Obj28:
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-		GenerateIndex	2, Anml, Ending
-		GenerateIndex	2, loc_9CB8
-		GenerateIndex	2, Anml, Flightless	; Pocky (Bunny)
-		GenerateIndex	2, Anml, Birds		; Cucky (Chicken)
-		GenerateIndex	2, Anml, Flightless	; Pecky (Penguin)
-		GenerateIndex	2, Anml, Flightless	; Rocky (Seal)
-		GenerateIndex	2, Anml, Flightless	; Picky (Pig)
-		GenerateIndex	2, Anml, Birds		; Flicky (Do I even need to write this one down?)
-		GenerateIndex	2, Anml, Flightless	; Ricky (Squirrel)
+		GenerateIndex	 Anml, Ending
+		GenerateIndex	 loc_9CB8
+		GenerateIndex	 Anml, Flightless	; Pocky (Bunny)
+		GenerateIndex	 Anml, Birds		; Cucky (Chicken)
+		GenerateIndex	 Anml, Flightless	; Pecky (Penguin)
+		GenerateIndex	 Anml, Flightless	; Rocky (Seal)
+		GenerateIndex	 Anml, Flightless	; Picky (Pig)
+		GenerateIndex	 Anml, Birds		; Flicky (Do I even need to write this one down?)
+		GenerateIndex	 Anml, Flightless	; Ricky (Squirrel)
 
-		GenerateIndex	2, loc_9DCE
+		GenerateIndex	 loc_9DCE
 
-		GenerateIndexID	2, Anml, loc_9DEE
-		GenerateIndex	2, Anml, loc_9DEE
+		GenerateIndexID	 Anml, loc_9DEE
+		GenerateIndex	 Anml, loc_9DEE
 
-		GenerateIndex	2, loc_9E0E
-		GenerateIndex	2, loc_9E48
-		GenerateIndex	2, loc_9EA2
-		GenerateIndex	2, loc_9EC0
-		GenerateIndex	2, loc_9EA2
-		GenerateIndex	2, loc_9EC0
-		GenerateIndex	2, loc_9EA2
-		GenerateIndex	2, loc_9EFE
-		GenerateIndex	2, loc_9E64
+		GenerateIndex	 loc_9E0E
+		GenerateIndex	 loc_9E48
+		GenerateIndex	 loc_9EA2
+		GenerateIndex	 loc_9EC0
+		GenerateIndex	 loc_9EA2
+		GenerateIndex	 loc_9EC0
+		GenerateIndex	 loc_9EA2
+		GenerateIndex	 loc_9EFE
+		GenerateIndex	 loc_9E64
 
-		GenerateIndexID	2, Points, Main
+		GenerateIndexID	 Points, Main
 
 Anml_StoreType	equ	$30
 Anml_InitXVel	equ	$32

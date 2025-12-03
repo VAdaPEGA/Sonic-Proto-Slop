@@ -7,12 +7,12 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, loc_821E
-	GenerateIndex	2, loc_83AA
-	GenerateIndex	2, loc_8526
-	GenerateIndex	2, loc_8526
-	GenerateIndex	2, loc_852A
-	GenerateIndex	2, loc_83CA
+	GenerateIndex	 loc_821E
+	GenerateIndex	 loc_83AA
+	GenerateIndex	 loc_8526
+	GenerateIndex	 loc_8526
+	GenerateIndex	 loc_852A
+	GenerateIndex	 loc_83CA
 ; ===========================================================================
 loc_821E:	
 		addq.b	#2,routine(a0)

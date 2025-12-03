@@ -10,9 +10,9 @@ buzzbomber_parent:	equ $3C
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-		GenerateIndex	2, Obj22, Init
-		GenerateIndex	2, Obj22, Main
-		GenerateIndex	2, Obj22, Delete
+		GenerateIndex	 Obj22, Init
+		GenerateIndex	 Obj22, Main
+		GenerateIndex	 Obj22, Delete
 ; ===========================================================================
 ; loc_A41C:
 Obj22_Init:

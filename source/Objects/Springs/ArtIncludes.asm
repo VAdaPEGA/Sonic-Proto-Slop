@@ -46,33 +46,33 @@ byte_E999:	dc.b   0,  8,  7,  7,  9,  9,  9,  9
 ; ----------------------------------------------------------------------------
 Map_Springs:
 		IndexStart	Map_obj41	
-		GenerateIndex	2, Map_SpringVertical
-		GenerateIndex	2, word_EA5C
-		GenerateIndex	2, word_EA66
-		GenerateIndex	2, Map_SpringHorizontal
-		GenerateIndex	2, word_EA8A
-		GenerateIndex	2, word_EA94
-		GenerateIndex	2, word_EAA6
-		GenerateIndex	2, Map_SpringDiagonal
-		GenerateIndex	2, word_EADA
-		GenerateIndex	2, word_EAF4
-		GenerateIndex	2, word_EB16
+		GenerateIndex	 Map_SpringVertical
+		GenerateIndex	 word_EA5C
+		GenerateIndex	 word_EA66
+		GenerateIndex	 Map_SpringHorizontal
+		GenerateIndex	 word_EA8A
+		GenerateIndex	 word_EA94
+		GenerateIndex	 word_EAA6
+		GenerateIndex	 Map_SpringDiagonal
+		GenerateIndex	 word_EADA
+		GenerateIndex	 word_EAF4
+		GenerateIndex	 word_EB16
 ; -------------------------------------------------------------------------------
 ; Secondary sprite mappings for springs (Yellow)
 ; merged with the above mappings; can't split to file in a useful way...
 ; -------------------------------------------------------------------------------
 		IndexStart	Map_obj41a
-		GenerateIndex	2, Map_SpringVertical
-		GenerateIndex	2, word_EA5C
-		GenerateIndex	2, word_EA66
-		GenerateIndex	2, Map_SpringHorizontal
-		GenerateIndex	2, word_EA8A
-		GenerateIndex	2, word_EA94
-		GenerateIndex	2, word_EAA6
-		GenerateIndex	2, Map_SpringDiagonal_Alt
-		GenerateIndex	2, word_EB5A
-		GenerateIndex	2, word_EB74
-		GenerateIndex	2, word_EB96
+		GenerateIndex	 Map_SpringVertical
+		GenerateIndex	 word_EA5C
+		GenerateIndex	 word_EA66
+		GenerateIndex	 Map_SpringHorizontal
+		GenerateIndex	 word_EA8A
+		GenerateIndex	 word_EA94
+		GenerateIndex	 word_EAA6
+		GenerateIndex	 Map_SpringDiagonal_Alt
+		GenerateIndex	 word_EB5A
+		GenerateIndex	 word_EB74
+		GenerateIndex	 word_EB96
 Map_SpringVertical:	
 		dc.w 2
 		dc.w $F00D,    0,    0,$FFF0

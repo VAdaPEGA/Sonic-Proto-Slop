@@ -7,12 +7,12 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Obj50_Init
-	GenerateIndex	2, loc_15FDA
-	GenerateIndex	2, loc_16006
-	GenerateIndex	2, loc_16030
-	GenerateIndex	2, Obj50_Routine08
-	GenerateIndex	2, Obj50_Routine0A
+	GenerateIndex	 Obj50_Init
+	GenerateIndex	 loc_15FDA
+	GenerateIndex	 loc_16006
+	GenerateIndex	 loc_16030
+	GenerateIndex	 Obj50_Routine08
+	GenerateIndex	 Obj50_Routine0A
 ; ===========================================================================
 Obj50_Init:	
 		addq.b	#2,routine(a0)

@@ -7,9 +7,9 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Decoration, INIT
-	GenerateIndex	2, Decoration, DrawStill
-	GenerateIndex	2, Decoration, DrawAnimated
+	GenerateIndex	 Decoration, INIT
+	GenerateIndex	 Decoration, DrawStill
+	GenerateIndex	 Decoration, DrawAnimated
 Obj1C_Conf:	
 @macro	macro	Mappings, Frame, VRAM, Width, Priority
 	dc.l Mappings+Frame<<24	; Mappings

@@ -2,38 +2,38 @@
 ; Animation script - Sonic
 ; TO DO : AUTOMATE PROCESS (This is BAD)
 ; ---------------------------------------------------------------------------
-	IndexStart	SonicAniData
-	GenerateIndexID	1, SonicAni, Walk
-	GenerateIndex	1, SonicAni, Run
-	GenerateIndexID	1, SonicAni, Roll
-	GenerateIndexID	1, SonicAni, Roll2
-	GenerateIndexID	1, SonicAni, Push
-	GenerateIndexID	1, SonicAni, Wait
-	GenerateIndexID	1, SonicAni, Balance
-	GenerateIndexID	1, SonicAni, LookUp
-	GenerateIndexID	1, SonicAni, Duck
-	GenerateIndexID	1, SonicAni, Spindash
-	GenerateIndexID	1, SonicAni, WallRecoil1
-	GenerateIndexID	1, SonicAni, WallRecoil2
-	GenerateIndexID	1, SonicAni, WallRecoil3
-	GenerateIndexID	1, SonicAni, Stop
-	GenerateIndexID	1, SonicAni, Float1
-	GenerateIndexID	1, SonicAni, Float2
-	GenerateIndexID	1, SonicAni, Spring
-	GenerateIndexID	1, SonicAni, Hang
-	GenerateIndexID	1, SonicAni, TurnAround
-	GenerateIndexID	1, SonicAni, SkidToWalk
-	GenerateIndexID	1, SonicAni, SkidToWalk2
-	GenerateIndexID	1, SonicAni, SkidToWalk3
-	GenerateIndexID	1, SonicAni, Death1
-	GenerateIndexID	1, SonicAni, Drown
-	GenerateIndexID	1, SonicAni, Death2
-	GenerateIndexID	1, SonicAni, Bubble
-	GenerateIndexID	1, SonicAni, Hurt
-	GenerateIndexID	1, SonicAni, Balance2
-	GenerateIndexID	1, SonicAni, Null	; S1 Big Ring (make Sonic invisible)
-	GenerateIndexID	1, SonicAni, Float3	; continue screen in S1
-	GenerateIndexID	1, SonicAni, ContinueGetUp
+	IndexStart	SonicAniData, 1
+	GenerateIndexID	SonicAni, Walk
+	GenerateIndex	SonicAni, Run
+	GenerateIndexID	SonicAni, Roll
+	GenerateIndexID	SonicAni, Roll2
+	GenerateIndexID	SonicAni, Push
+	GenerateIndexID	SonicAni, Wait
+	GenerateIndexID	SonicAni, Balance
+	GenerateIndexID	SonicAni, LookUp
+	GenerateIndexID	SonicAni, Duck
+	GenerateIndexID	SonicAni, Spindash
+	GenerateIndexID	SonicAni, WallRecoil1
+	GenerateIndexID	SonicAni, WallRecoil2
+	GenerateIndexID	SonicAni, WallRecoil3
+	GenerateIndexID	SonicAni, Stop
+	GenerateIndexID	SonicAni, Float1
+	GenerateIndexID	SonicAni, Float2
+	GenerateIndexID	SonicAni, Spring
+	GenerateIndexID	SonicAni, Hang
+	GenerateIndexID	SonicAni, TurnAround
+	GenerateIndexID	SonicAni, SkidToWalk
+	GenerateIndexID	SonicAni, SkidToWalk2
+	GenerateIndexID	SonicAni, SkidToWalk3
+	GenerateIndexID	SonicAni, Death1
+	GenerateIndexID	SonicAni, Drown
+	GenerateIndexID	SonicAni, Death2
+	GenerateIndexID	SonicAni, Bubble
+	GenerateIndexID	SonicAni, Hurt
+	GenerateIndexID	SonicAni, Balance2
+	GenerateIndexID	SonicAni, Null	; S1 Big Ring (make Sonic invisible)
+	GenerateIndexID	SonicAni, Float3	; continue screen in S1
+	GenerateIndexID	SonicAni, ContinueGetUp
 ; ---------------------------------------------------------------------------
 SonicAni_Walk:		dc.b 	-1
 			dc.b 	$10,$11,$12,$13,$14,$15,$16,$17, $C, $D, $E, $F

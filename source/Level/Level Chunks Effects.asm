@@ -8,13 +8,13 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 	IndexStart
-	GenerateLocalIndex	2, DoNothing	; GHZ
-	GenerateLocalIndex	2, DoNothing	; CPZ
-	GenerateLocalIndex	2, DoNothing	; MMZ
-	GenerateLocalIndex	2, EHZ		; EHZ
-	GenerateLocalIndex	2, DoNothing	; HPZ
-	GenerateLocalIndex	2, IcePhysics	; HTZ
-	GenerateLocalIndex	2, DoNothing	; CNZ
+	GenerateLocalIndex	DoNothing	; GHZ
+	GenerateLocalIndex	DoNothing, 1	; CPZ
+	GenerateLocalIndex	DoNothing, 1	; MMZ
+	GenerateLocalIndex	EHZ		; EHZ
+	GenerateLocalIndex	DoNothing, 1	; HPZ
+	GenerateLocalIndex	IcePhysics	; HTZ
+	GenerateLocalIndex	DoNothing, 1	; CNZ
 ; ===========================================================================
 	if	(c=ZoneCount*2)
 	else

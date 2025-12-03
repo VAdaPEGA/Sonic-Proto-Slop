@@ -7,13 +7,13 @@ PalCycle_Load:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, PalCycle_GHZ
-	GenerateIndex	2, PalCycle_CPZ
-	GenerateIndex	2, PalCycle_None
-	GenerateIndex	2, PalCycle_EHZ
-	GenerateIndex	2, PalCycle_HPZ
-	GenerateIndex	2, PalCycle_HTZ
-	GenerateIndex	2, PalCycle_CNZ
+	GenerateIndex	 PalCycle_GHZ
+	GenerateIndex	 PalCycle_CPZ
+	GenerateIndex	 PalCycle_None
+	GenerateIndex	 PalCycle_EHZ
+	GenerateIndex	 PalCycle_HPZ
+	GenerateIndex	 PalCycle_HTZ
+	GenerateIndex	 PalCycle_CNZ
 ; ===========================================================================
 PalCycle_GHZ:
 	subq.w	#1,(PalCycle_Timer).w

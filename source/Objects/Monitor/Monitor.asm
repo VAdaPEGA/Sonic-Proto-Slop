@@ -9,16 +9,16 @@ Obj26:					; DATA XREF: ROM:Obj_Indexo
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,Object26_Init
-	GenerateIndex 2,Object26_Solid
-	GenerateIndex 2,Object26_BreakOpen
-	GenerateIndex 2,Object26_Animate
-	GenerateIndex 2,Object26_Display
+	GenerateIndex	Object26_Init
+	GenerateIndex	Object26_Solid
+	GenerateIndex	Object26_BreakOpen
+	GenerateIndex	Object26_Animate
+	GenerateIndex	Object26_Display
 ; -----
-	GenerateIndex 2,Obj2E_Init
-	GenerateIndex 2,Obj2E_Main
-	GenerateIndex 2,Monitor_Disappear
-	GenerateIndex 2,Monitor_Random
+	GenerateIndex	Obj2E_Init
+	GenerateIndex	Obj2E_Main
+	GenerateIndex	Monitor_Disappear
+	GenerateIndex	Monitor_Random
 ; ===========================================================================
 
 Object26_Init:				; DATA XREF: ROM:Obj26_Indexo
@@ -217,15 +217,15 @@ Monitor_GiveContent:
 		jmp	Monitor_Subroutines(pc,d0.w)
 ; ===========================================================================
 	IndexStart	Monitor_Subroutines
-	GenerateIndex	2, Monitor, SonicLife
-	GenerateIndex	2, Monitor, Tails
-	GenerateIndex	2, Monitor, Eggman
-	GenerateIndex	2, Monitor, Rigns
-	GenerateIndex	2, Monitor, Shoes
-	GenerateIndex	2, Monitor, Boomer
-	GenerateIndex	2, Monitor, Invincibility
-	GenerateIndex	2, Monitor, Tammy
-	GenerateIndex	2, Monitor, Hops
+	GenerateIndex	 Monitor, SonicLife
+	GenerateIndex	 Monitor, Tails
+	GenerateIndex	 Monitor, Eggman
+	GenerateIndex	 Monitor, Rigns
+	GenerateIndex	 Monitor, Shoes
+	GenerateIndex	 Monitor, Boomer
+	GenerateIndex	 Monitor, Invincibility
+	GenerateIndex	 Monitor, Tammy
+	GenerateIndex	 Monitor, Hops
 ; ===========================================================================
 Monitor_Eggman:
 		move.l	a0,-(sp)

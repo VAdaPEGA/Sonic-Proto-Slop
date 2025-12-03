@@ -8,10 +8,10 @@ buzzer_parent:	equ $2A
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Obj4B, Init
-	GenerateIndex	2, Obj4B, Main
-	GenerateIndex	2, Obj4B, Flame
-	GenerateIndex	2, Obj4B, Projectile
+	GenerateIndex	 Obj4B, Init
+	GenerateIndex	 Obj4B, Main
+	GenerateIndex	 Obj4B, Flame
+	GenerateIndex	 Obj4B, Projectile
 ; ===========================================================================
 ; loc_167AA:
 Obj4B_Projectile:

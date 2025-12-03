@@ -7,9 +7,9 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Obj44, Init
-	GenerateIndex	2, Obj44, Main
-	GenerateIndex	2, Obj44, Display
+	GenerateIndex	 Obj44, Init
+	GenerateIndex	 Obj44, Main
+	GenerateIndex	 Obj44, Display
 ; ===========================================================================
 Obj44_Init:
 		addq.b	#2,routine(a0)

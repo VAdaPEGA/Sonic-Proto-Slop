@@ -8,9 +8,9 @@
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, loc_141C8
-	GenerateIndex	2, loc_1421C
-	GenerateIndex	2, loc_1422A
+	GenerateIndex	 loc_141C8
+	GenerateIndex	 loc_1421C
+	GenerateIndex	 loc_1422A
 ; ===========================================================================
 loc_141C8:	
 		addq.b	#2,routine(a0)

@@ -12,9 +12,9 @@ Obj4E:
 		jmp	MarkObjGone
 ; ===========================================================================
 		IndexStart	
-	GenerateIndex	2, Obj4E_Init
-	GenerateIndex	2, Obj4E_Main
-	GenerateIndex	2, loc_1727E
+	GenerateIndex	 Obj4E_Init
+	GenerateIndex	 Obj4E_Main
+	GenerateIndex	 loc_1727E
 ; ===========================================================================
 Obj4E_Init:	
 		move.l	#Map_Gator,mappings(a0)

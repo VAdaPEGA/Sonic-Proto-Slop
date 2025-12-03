@@ -10,12 +10,12 @@ S1Obj64:
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-		GenerateIndex	2, Bub, Main		; 0
-		GenerateIndex	2, Bub, Animate		; 2
-		GenerateIndex	2, Bub, ChkWater	; 4
-		GenerateIndex	2, Bub, Display		; 6
-		GenerateIndex	2, Bub, Delete		; 8
-		GenerateIndex	2, Bub, BblMaker	; $A
+		GenerateIndex	 Bub, Main		; 0
+		GenerateIndex	 Bub, Animate		; 2
+		GenerateIndex	 Bub, ChkWater	; 4
+		GenerateIndex	 Bub, Display		; 6
+		GenerateIndex	 Bub, Delete		; 8
+		GenerateIndex	 Bub, BblMaker	; $A
 
 bub_inhalable	= $2E		; flag set when bubble is collectable
 bub_origX	= $30		; original x-axis position

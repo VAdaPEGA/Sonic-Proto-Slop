@@ -14,10 +14,10 @@ Obj01_Normal:
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 	IndexStart	
-	GenerateIndex	2, Obj01, Init
-	GenerateIndexID	2, Obj01, Control
-	GenerateIndexID	2, Obj01, Hurt
-	GenerateIndexID	2, Obj01, Dead
+	GenerateIndex	 Obj01, Init
+	GenerateIndexID	 Obj01, Control
+	GenerateIndexID	 Obj01, Hurt
+	GenerateIndexID	 Obj01, Dead
 ; ===========================================================================
 ; Obj01_Main:
 Obj01_Init:
@@ -25,6 +25,7 @@ Obj01_Init:
 		move.b	#$13,y_radius(a0)	; this sets Sonic's collision height (2*pixels)
 		move.b	#9,x_radius(a0)
 		move.l	#Map_Sonic,mappings(a0)
+		;move.l	#Map_Tails,mappings(a0)
 		move.w	#VRAM_Plr1/$20,art_tile(a0)
 		jsr	Adjust2PArtPointer
 		move.b	#2,priority(a0)
@@ -104,10 +105,10 @@ loc_FAFE:
 ; ===========================================================================
 ; secondary states under state Obj01_Control
 	IndexStart	Obj01_Modes
-	GenerateIndex	2, Obj01, MdNormal
-	GenerateIndex	2, Obj01, MdAir
-	GenerateIndex	2, Obj01, MdRoll
-	GenerateIndex	2, Obj01, MdJump
+	GenerateIndex	 Obj01, MdNormal
+	GenerateIndex	 Obj01, MdAir
+	GenerateIndex	 Obj01, MdRoll
+	GenerateIndex	 Obj01, MdJump
 ; ===========================================================================
 Obj01_WaterResumeMusic:
 		cmpi.b	#12,air_left(a0)
@@ -1688,6 +1689,7 @@ locret_108B4:
 
 Sonic_Animate:
 		lea	(SonicAniData).l,a1
+		;lea	(TailsAniData).l,a1
 		moveq	#0,d0
 		move.b	anim(a0),d0
 		cmp.b	prev_anim(a0),d0
@@ -1914,6 +1916,7 @@ LoadSonicDynPLC:
 		beq.s	locret_10C34
 		move.b	d0,(Sonic_LastLoadedDPLC).w
 		lea	(SonicDynPLC).l,a2
+		;lea	(TailsDynPLC).l,a2
 		add.w	d0,d0
 		adda.w	(a2,d0.w),a2
 		move.w	(a2)+,d5
@@ -1931,6 +1934,7 @@ SPLC_ReadEntry:
 		andi.w	#$FFF,d1
 		lsl.l	#5,d1
 		addi.l	#Art_Sonic,d1
+		;addi.l	#Art_Tails,d1
 		move.w	d4,d2
 		add.w	d3,d4
 		add.w	d3,d4

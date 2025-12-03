@@ -3,8 +3,8 @@
 	Nem_Add	HPZ_Diamond,	\_ObjLoc, 	HPZ_Diamond
 ; ---------------------------------------------------------------------------
 	IndexStart	Map_DecorationSolid
-	GenerateLocalIndex	2,	GHZRock
-	GenerateLocalIndex	2,	HPZEmerald
+	GenerateLocalIndex	GHZRock
+	GenerateLocalIndex	HPZEmerald
 @GHZRock:	dc.w	(@GHZRock_End-@GHZRock)/8
 	MAP_Entry	-24, -16, $0B,	0,	0, 0, 0, 0
 	MAP_Entry	  0, -16, $0B,	$C,	0, 0, 0, 0

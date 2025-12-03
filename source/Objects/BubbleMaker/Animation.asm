@@ -1,12 +1,12 @@
 Ani_S1Obj64:
-	IndexStart	Ani_Bub
-	GenerateLocalIndex	2, small
-	GenerateLocalIndex	2, medium
-	GenerateLocalIndex	2, large
-	GenerateLocalIndex	2, incroutine
-	GenerateLocalIndex	2, incroutine
-	GenerateLocalIndex	2, burst
-	GenerateLocalIndex	2, bubmaker
+	IndexStart	Ani_Bub,	1
+	GenerateLocalIndex	small
+	GenerateLocalIndex	medium
+	GenerateLocalIndex	large
+	GenerateLocalIndex	incroutine
+	GenerateLocalIndex	incroutine,1
+	GenerateLocalIndex	burst
+	GenerateLocalIndex	bubmaker
 ; ===========================================================================
 @small:		dc.b $E,	0, 1, 2, afRoutine		; small bubble forming
 @medium:	dc.b $E,	1, 2, 3, 4, afRoutine		; medium bubble forming

@@ -8,15 +8,15 @@ Obj0A:		moveq	#0,d0
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Obj0A, Init
-	GenerateIndex	2, Obj0A, Animate
-	GenerateIndex	2, Obj0A, ChkWater
-	GenerateIndex	2, Obj0A, Display
-	GenerateIndex	2, Obj0A, Delete
-	GenerateIndex	2, Obj0A, Countdown
-	GenerateIndex	2, Obj0A, AirLeft
-	GenerateIndex	2, Obj0A, Display
-	GenerateIndex	2, Obj0A, Delete
+	GenerateIndex	 Obj0A, Init
+	GenerateIndex	 Obj0A, Animate
+	GenerateIndex	 Obj0A, ChkWater
+	GenerateIndex	 Obj0A, Display
+	GenerateIndex	 Obj0A, Delete
+	GenerateIndex	 Obj0A, Countdown
+	GenerateIndex	 Obj0A, AirLeft
+	GenerateIndex	 Obj0A, Display
+	GenerateIndex	 Obj0A, Delete
 ; ===========================================================================
 Obj0A_AirCountdown			=	$32	; (1 byte)
 Obj0A_ResetForAirCountdown		=	$33	; (1 byte) set by Subtype, not used in practice

@@ -2,39 +2,39 @@
 ; Animation script - Tails
 ; TO DO : AUTOMATE PROCESS (This is BAD)
 ; ---------------------------------------------------------------------------
-	IndexStart	TailsAniData
-	GenerateIndexID	1, TailsAni, Walk
-	GenerateIndex	1, TailsAni, Run
-	GenerateIndex	1, TailsAni, Roll
-	GenerateIndex	1, TailsAni, Roll2
-	GenerateIndex	1, TailsAni, Push
-	GenerateIndexID	1, TailsAni, Wait
-	GenerateIndex	1, TailsAni, Balance
-	GenerateIndex	1, TailsAni, LookUp
-	GenerateIndex	1, TailsAni, Duck
-	GenerateIndex	1, TailsAni, Spindash
-	GenerateIndex	1, TailsAni, 0A
-	GenerateIndex	1, TailsAni, 0B
-	GenerateIndex	1, TailsAni, 0C
-	GenerateIndex	1, TailsAni, Stop
-	GenerateIndex	1, TailsAni, Float1
-	GenerateIndex	1, TailsAni, Float2
-	GenerateIndex	1, TailsAni, Spring
-	GenerateIndex	1, TailsAni, Hang
-	GenerateIndex	1, TailsAni, 12
-	GenerateIndex	1, TailsAni, 13
-	GenerateIndex	1, TailsAni, 14
-	GenerateIndex	1, TailsAni, 14
-	GenerateIndex	1, TailsAni, Death1
-	GenerateIndex	1, TailsAni, Drown
-	GenerateIndex	1, TailsAni, Death2
-	GenerateIndex	1, TailsAni, Bubble
-	GenerateIndex	1, TailsAni, Hurt
-	GenerateIndex	1, TailsAni, Balance2
-	GenerateIndex	1, TailsAni, 1C
-	GenerateIndex	1, TailsAni, 1D
-	GenerateIndex	1, TailsAni, 1E
-	GenerateIndexID	1, TailsAni, Fly
+	IndexStart	TailsAniData, 1
+	GenerateIndexID	TailsAni, Walk
+	GenerateIndex	TailsAni, Run
+	GenerateIndex	TailsAni, Roll
+	GenerateIndex	TailsAni, Roll2
+	GenerateIndex	TailsAni, Push
+	GenerateIndexID	TailsAni, Wait
+	GenerateIndex	TailsAni, Balance
+	GenerateIndex	TailsAni, LookUp
+	GenerateIndex	TailsAni, Duck
+	GenerateIndex	TailsAni, Spindash
+	GenerateIndex	TailsAni, 0A
+	GenerateIndex	TailsAni, 0B
+	GenerateIndex	TailsAni, 0C
+	GenerateIndex	TailsAni, Stop
+	GenerateIndex	TailsAni, Float1
+	GenerateIndex	TailsAni, Float2
+	GenerateIndex	TailsAni, Spring
+	GenerateIndex	TailsAni, Hang
+	GenerateIndex	TailsAni, 12
+	GenerateIndex	TailsAni, 13
+	GenerateIndex	TailsAni, 14
+	GenerateIndex	TailsAni, 14
+	GenerateIndex	TailsAni, Death1
+	GenerateIndex	TailsAni, Drown
+	GenerateIndex	TailsAni, Death2
+	GenerateIndex	TailsAni, Bubble
+	GenerateIndex	TailsAni, Hurt
+	GenerateIndex	TailsAni, Balance2
+	GenerateIndex	TailsAni, 1C
+	GenerateIndex	TailsAni, 1D
+	GenerateIndex	TailsAni, 1E
+	GenerateIndexID	TailsAni, Fly
 ; ---------------------------------------------------------------------------
 TailsAni_Walk:		dc.b	-1
 			dc.b	$10,$11,$12,$13,$14,$15, $E, $F

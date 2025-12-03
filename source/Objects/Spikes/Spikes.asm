@@ -9,11 +9,11 @@ Obj36:					; DATA XREF: ROM:Obj_Indexo
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, Spikes, Init
-	GenerateIndexID	2, Spikes, Upright
-	GenerateIndexID	2, Spikes, Sideways
-	GenerateIndexID	2, Spikes, DiagonalLeft
-	GenerateIndexID	2, Spikes, DiagonalRight
+	GenerateIndex	 Spikes, Init
+	GenerateIndexID	 Spikes, Upright
+	GenerateIndexID	 Spikes, Sideways
+	GenerateIndexID	 Spikes, DiagonalLeft
+	GenerateIndexID	 Spikes, DiagonalRight
 
 Spik_OrigX:		equ $30		; start X position
 Spik_OrigY:		equ $32		; start Y position
@@ -126,10 +126,10 @@ Spike_Movement:
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart	
-		GenerateIndex	2, Spike_Type00
-		GenerateIndex	2, Spike_Type01
-		GenerateIndex	2, Spike_Type02
-		GenerateIndex	2, Spike_Type03
+		GenerateIndex	 Spike_Type00
+		GenerateIndex	 Spike_Type01
+		GenerateIndex	 Spike_Type02
+		GenerateIndex	 Spike_Type03
 ; ===========================================================================
 Spike_Type01:	; Vertical Movement
 		bsr.w	Spike_Timing

@@ -5,9 +5,9 @@ Obj1A:					; DATA XREF: ROM:Obj_Indexo
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex	2, loc_8C58
-	GenerateIndex	2, loc_8CCA
-	GenerateIndex	2, loc_8D02
+	GenerateIndex	 loc_8C58
+	GenerateIndex	 loc_8CCA
+	GenerateIndex	 loc_8D02
 ; ===========================================================================
 
 loc_8C58:	
