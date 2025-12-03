@@ -42,7 +42,19 @@ loc_7586:
 		move.b	#1,(Camera_Max_Y_pos_Changing).w
 		rts
 ; End of function DynScreenResizeLoad
-
+; ===========================================================================
+; Useful macro set for Resize events
+; ----
+; Change Height after X position is past
+ResizeHeightAfterX	macro	file, return
+	dc.w	$0C78	; cmpi.w
+	incbin	"Level/\file\.bin", 0,2
+	dc.w	$FFFF&Camera_X_pos
+	bcs	return
+	dc.w	$31FC	; move.w
+	incbin	"Level/\file\.bin", 2,2
+	dc.w	$FFFF&Camera_Max_Y_pos
+	endm
 ; ===========================================================================
 		IndexStart	DynResize_Index	
 	GenerateIndex	DynResize_GHZ
@@ -66,11 +78,9 @@ DynResize_GHZ:
 	GenerateIndex	DynResize_GHZ3
 	GenerateIndex	DynResize_GHZ_DoNothing
 ; ===========================================================================
-DynResize_GHZ1:				
+DynResize_GHZ1:	
 		move.w	#$300,(Camera_Max_Y_pos).w
-		cmpi.w	#$1780,(Camera_X_pos).w
-		bcs.s	DynResize_GHZ_DoNothing
-		move.w	#$400,(Camera_Max_Y_pos).w
+		ResizeHeightAfterX	GHZ\DynResize\1_1, DynResize_GHZ_DoNothing		
 
 DynResize_GHZ_DoNothing:	
 		rts
