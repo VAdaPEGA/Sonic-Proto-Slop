@@ -45,13 +45,13 @@ loc_7586:
 
 ; ===========================================================================
 		IndexStart	DynResize_Index	
-	GenerateIndex 2,	DynResize_GHZ
-	GenerateIndex 2,	DynResize_CPZ
-	GenerateIndex 2,	DynResize_MMZ
-	GenerateIndex 2,	DynResize_EHZ
-	GenerateIndex 2,	DynResize_HPZ
-	GenerateIndex 2,	DynResize_HTZ
-	GenerateIndex 2,	DynResize_CNZ
+	GenerateIndex	DynResize_GHZ
+	GenerateIndex	DynResize_CPZ
+	GenerateIndex	DynResize_MMZ
+	GenerateIndex	DynResize_EHZ
+	GenerateIndex	DynResize_HPZ
+	GenerateIndex	DynResize_HTZ
+	GenerateIndex	DynResize_CNZ
 ; ===========================================================================
 DynResize_GHZ:	
 		moveq	#0,d0
@@ -61,10 +61,10 @@ DynResize_GHZ:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_GHZ1
-	GenerateIndex 2,	DynResize_GHZ2
-	GenerateIndex 2,	DynResize_GHZ3
-	GenerateIndex 2,	DynResize_GHZ_DoNothing
+	GenerateIndex	DynResize_GHZ1
+	GenerateIndex	DynResize_GHZ2
+	GenerateIndex	DynResize_GHZ3
+	GenerateIndex	DynResize_GHZ_DoNothing
 ; ===========================================================================
 DynResize_GHZ1:				
 		move.w	#$300,(Camera_Max_Y_pos).w
@@ -96,9 +96,9 @@ DynResize_GHZ3:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_GHZ3_Main
-	GenerateIndex 2,	DynResize_GHZ3_Boss
-	GenerateIndex 2,	DynResize_GHZ3_End
+	GenerateIndex	DynResize_GHZ3_Main
+	GenerateIndex	DynResize_GHZ3_Boss
+	GenerateIndex	DynResize_GHZ3_End
 ; ===========================================================================
 DynResize_GHZ3_Main:	
 		move.w	#$300,(Camera_Max_Y_pos).w
@@ -162,10 +162,10 @@ DynResize_MMZ:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_MMZ_Null
-	GenerateIndex 2,	DynResize_MMZ_Null
-	GenerateIndex 2,	DynResize_MMZ3
-	GenerateIndex 2,	DynResize_MMZ4
+	GenerateIndex	DynResize_MMZ_Null
+	GenerateIndex	DynResize_MMZ_Null
+	GenerateIndex	DynResize_MMZ3
+	GenerateIndex	DynResize_MMZ4
 ; ===========================================================================
 
 DynResize_MMZ_Null:
@@ -231,10 +231,10 @@ DynResize_CPZ:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_CPZ1
-	GenerateIndex 2,	DynResize_CPZ2
-	GenerateIndex 2,	DynResize_CPZ3
-	GenerateIndex 2,	DynResize_CPZBoss
+	GenerateIndex	DynResize_CPZ1
+	GenerateIndex	DynResize_CPZ2
+	GenerateIndex	DynResize_CPZ3
+	GenerateIndex	DynResize_CPZBoss
 ; ===========================================================================
 DynResize_CPZ1:	
 		rts
@@ -252,8 +252,8 @@ DynResize_CPZBoss:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_CPZBoss_BossCheck
-	GenerateIndex 2,	DynResize_CPZBoss_Null
+	GenerateIndex	DynResize_CPZBoss_BossCheck
+	GenerateIndex	DynResize_CPZBoss_Null
 ; ===========================================================================
 DynResize_CPZBoss_BossCheck:
 		cmpi.w	#$480,(Camera_X_pos).w
@@ -287,10 +287,10 @@ DynResize_EHZ:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_EHZ1
-	GenerateIndex 2,	DynResize_EHZ2
-	GenerateIndex 2,	DynResize_EHZ3
-	GenerateIndex 2,	DynResize_EHZBoss
+	GenerateIndex	DynResize_EHZ1
+	GenerateIndex	DynResize_EHZ2
+	GenerateIndex	DynResize_EHZ3
+	GenerateIndex	DynResize_EHZBoss
 ; ===========================================================================
 
 DynResize_EHZ1:	
@@ -312,9 +312,9 @@ DynResize_EHZBoss:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_EHZBoss_01
-	GenerateIndex 2,	DynResize_EHZBoss_02
-	GenerateIndex 2,	DynResize_EHZBoss_03
+	GenerateIndex	DynResize_EHZBoss_01
+	GenerateIndex	DynResize_EHZBoss_02
+	GenerateIndex	DynResize_EHZBoss_03
 ; ===========================================================================
 DynResize_EHZBoss_01:
 		rts
@@ -368,10 +368,10 @@ DynResize_HPZ:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_HPZ1
-	GenerateIndex 2,	DynResize_HPZ2
-	GenerateIndex 2,	DynResize_HPZ3
-	GenerateIndex 2,	DynResize_HPZ1
+	GenerateIndex	DynResize_HPZ1
+	GenerateIndex	DynResize_HPZ2
+	GenerateIndex	DynResize_HPZ3
+	GenerateIndex	DynResize_HPZ1
 ; ===========================================================================
 DynResize_HPZ1:	
 		rts
@@ -399,9 +399,9 @@ DynResize_HPZBoss:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	loc_7A30
-	GenerateIndex 2,	loc_7A48
-	GenerateIndex 2,	loc_7A7A
+	GenerateIndex	loc_7A30
+	GenerateIndex	loc_7A48
+	GenerateIndex	loc_7A7A
 ; ===========================================================================
 
 loc_7A30:	
@@ -449,10 +449,10 @@ DynResize_HTZ:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	DynResize_HTZ1
-	GenerateIndex 2,	DynResize_HTZ2
-	GenerateIndex 2,	DynResize_HTZ3
-	GenerateIndex 2,	DynResize_HTZBoss
+	GenerateIndex	DynResize_HTZ1
+	GenerateIndex	DynResize_HTZ2
+	GenerateIndex	DynResize_HTZ3
+	GenerateIndex	DynResize_HTZBoss
 ; ===========================================================================
 
 DynResize_HTZ1:		
@@ -474,10 +474,10 @@ DynResize_HTZ2:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	loc_7AD2
-	GenerateIndex 2,	loc_7AF4
-	GenerateIndex 2,	loc_7B12
-	GenerateIndex 2,	loc_7B3A
+	GenerateIndex	loc_7AD2
+	GenerateIndex	loc_7AF4
+	GenerateIndex	loc_7B12
+	GenerateIndex	loc_7B3A
 ; ===========================================================================
 
 loc_7AD2:	
@@ -543,11 +543,11 @@ DynResize_HTZBoss:
 		jmp	@Index(pc,d0.w)
 ; ===========================================================================
 		IndexStart
-	GenerateIndex 2,	loc_7B5A
-	GenerateIndex 2,	loc_7B6E
-	GenerateIndex 2,	loc_7B8C
-	GenerateIndex 2,	locret_7B9A
-	GenerateIndex 2,	loc_7B3A
+	GenerateIndex	loc_7B5A
+	GenerateIndex	loc_7B6E
+	GenerateIndex	loc_7B8C
+	GenerateIndex	locret_7B9A
+	GenerateIndex	loc_7B3A
 ; ===========================================================================
 
 loc_7B5A:	

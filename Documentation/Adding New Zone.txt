@@ -50,6 +50,9 @@
 	This is where dynamic events such as camera boundary changes
 	 and boss spawns happen.
 
+	"VWrap#.asm"
+	This is an empty file, but if it exists, the act will have vertical wrapping.
+
 
 ; -------- If Your Zone has Water --------
 
@@ -82,15 +85,19 @@
 	Object layout Act 1:		ObjPos_1.bin*
 	Object layout Act 2:		ObjPos_2.bin
 	Object layout Act 3:		ObjPos_3.bin
-	Object layout Boss Act:		ObjPos_B.bin
+	Object layout Boss Act:		ObjPos_Boss.bin
 	Ring layout Act 1:		RingPos_1.bin*
 	Ring layout Act 2:		RingPos_2.bin
 	Ring layout Act 3:		RingPos_3.bin
-	Ring layout Boss Act:		RingPos_B.bin
+	Ring layout Boss Act:		RingPos_Boss.bin
 	Start Position Act 1:		StartPos_1.bin*
 	Start Position Act 2:		StartPos_2.bin
 	Start Position Act 3:		StartPos_3.bin
-	Start Position Boss Act:	StartPos_B.bin
+	Start Position Boss Act:	StartPos_Boss.bin
+	Initial Size Act 1:		SizeTopLeft_1.bin | SizeBottomRight_1.bin
+	Initial Size Act 2:		SizeTopLeft_2.bin | SizeBottomRight_2.bin
+	Initial Size Act 3:		SizeTopLeft_3.bin | SizeBottomRight_3.bin
+	Initial Size Boss Act:		SizeTopLeft_Boss.bin | SizeBottomRight_Boss.bin
 
 		-DeathPit Folder- contains Individual files 
 	for the respawn points for death pits

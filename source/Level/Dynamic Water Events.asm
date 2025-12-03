@@ -25,34 +25,34 @@ locret_40C6:
 ; ===========================================================================
 	IndexStart	DynWater_Index	
 	; GHZ
-	GenerateIndex	2, DynWater_NoChanges	; Act 1
-	GenerateIndex	2, DynWater_NoChanges	; Act 2
-	GenerateIndex	2, DynWater_NoChanges	; Act 3
-	GenerateIndex	2, DynWater_NoChanges	; Act Boss
+	GenerateIndex	 DynWater_NoChanges	; Act 1
+	GenerateIndex	 DynWater_NoChanges	; Act 2
+	GenerateIndex	 DynWater_NoChanges	; Act 3
+	GenerateIndex	 DynWater_NoChanges	; Act Boss
 
 	; CPZ
-	GenerateIndex	2, DynWater_HPZ1	; Act 1
-	GenerateIndex	2, DynWater_HPZ2	; Act 2
-	GenerateIndex	2, DynWater_HPZ3	; Act 3
-	GenerateIndex	2, DynWater_HPZ4	; Act Boss
+	GenerateIndex	 DynWater_HPZ1	; Act 1
+	GenerateIndex	 DynWater_HPZ2	; Act 2
+	GenerateIndex	 DynWater_HPZ3	; Act 3
+	GenerateIndex	 DynWater_HPZ4	; Act Boss
 
 	; MMZ
-	GenerateIndex	2, DynWater_NoChanges	; Act 1
-	GenerateIndex	2, DynWater_NoChanges	; Act 2
-	GenerateIndex	2, DynWater_NoChanges	; Act 3
-	GenerateIndex	2, DynWater_NoChanges	; Act Boss
+	GenerateIndex	 DynWater_NoChanges	; Act 1
+	GenerateIndex	 DynWater_NoChanges	; Act 2
+	GenerateIndex	 DynWater_NoChanges	; Act 3
+	GenerateIndex	 DynWater_NoChanges	; Act Boss
 
 	; EHZ
-	GenerateIndex	2, DynWater_NoChanges	; Act 1
-	GenerateIndex	2, DynWater_NoChanges	; Act 2
-	GenerateIndex	2, DynWater_NoChanges	; Act 3
-	GenerateIndex	2, DynWater_NoChanges	; Act Boss
+	GenerateIndex	 DynWater_NoChanges	; Act 1
+	GenerateIndex	 DynWater_NoChanges	; Act 2
+	GenerateIndex	 DynWater_NoChanges	; Act 3
+	GenerateIndex	 DynWater_NoChanges	; Act Boss
 
 	; HPZ
-	GenerateIndex	2, DynWater_HPZ1	; Act 1
-	GenerateIndex	2, DynWater_HPZ2	; Act 2
-	GenerateIndex	2, DynWater_HPZ3	; Act 3
-	GenerateIndex	2, DynWater_HPZ4	; Act Boss
+	GenerateIndex	 DynWater_HPZ1	; Act 1
+	GenerateIndex	 DynWater_HPZ2	; Act 2
+	GenerateIndex	 DynWater_HPZ3	; Act 3
+	GenerateIndex	 DynWater_HPZ4	; Act Boss
 ; ===========================================================================
 
 DynWater_HPZ1:
