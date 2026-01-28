@@ -2513,52 +2513,48 @@ Level_StartGame:
 ; ---------------------------------------------------------------------------
 
 Level_MainLoop:
-		bsr.w	PauseGame
-		move.b	#VintID_Level,(Vint_routine).w
-		bsr.w	WaitForVint
-		addq.w	#1,(Level_Counter).w
-		bsr.w	MoveSonicInDemo
-		bsr.w	WaterEffects
-		jsr	(RunObjects).l
-		tst.b	(Level_Reload).w
-		bne.w	Level
+	bsr.w	PauseGame
+	move.b	#VintID_Level,(Vint_routine).w
+	bsr.w	WaitForVint
+	addq.w	#1,(Level_Counter).w
+	bsr.w	MoveSonicInDemo
+	bsr.w	WaterEffects
+	jsr	(RunObjects).l
+	tst.b	(Level_Reload).w
+	bne.w	Level
 		tst.w	(Debug_placement_mode).w
-		bne.s	loc_3F50
-		cmpi.b	#6,(MainCharacter+routine).w
-		bcc.s	loc_3F54
-
-loc_3F50:
-		bsr.w	DeformBGLayer
-
-loc_3F54:
-		bsr.w	ChangeWaterSurfacePos
-		jsr	(RingsManager).l
-		jsr	(AniArt_Load).l
-		bsr.w	PalCycle_Load
-		bsr.w	RunPLC_RAM
-		bsr.w	OscillateNumDo
-		bsr.w	ChangeRingFrame
+		bne.s	@ObjectPlace
+			cmpi.b	#ObjPlayerID_Dead,(MainCharacter+routine).w	; has player 1 died?
+			bcc.s	@StopScreenScroll
+	@ObjectPlace:
+	bsr.w	DeformBGLayer
+	@StopScreenScroll:
+	bsr.w	ChangeWaterSurfacePos
+	jsr	(RingsManager).l
+	jsr	(AniArt_Load).l
+	bsr.w	PalCycle_Load
+	bsr.w	RunPLC_RAM
+	bsr.w	OscillateNumDo
+	bsr.w	ChangeRingFrame
 
 	; Signpost Load routine
-		tst.w	(Debug_placement_mode).w
-		bne.w	@NoSignpostArt
-		cmpi.b	#3,(Current_Act).w	; No Signpost art on Boss acts
-		beq.s	@NoSignpostArt
+	tst.w	(Debug_placement_mode).w
+	bne.w	@NoSignpostArt
+	cmpi.b	#3,(Current_Act).w	; No Signpost art on Boss acts
+	beq.s	@NoSignpostArt
 		move.w	(Camera_X_pos).w,d0
 		move.w	(Camera_Max_X_pos).w,d1
 		subi.w	#$100,d1
 		cmp.w	d1,d0
 		blt.s	@NoSignpostArt
-		tst.b	(Update_HUD_timer).w
-		beq.s	@NoSignpostArt
-		cmp.w	(Camera_Min_X_pos).w,d1
-		beq.s	@NoSignpostArt
-		move.w	d1,(Camera_Min_X_pos).w
-		moveq	#PLCID_Signpost,d0
-		bsr.w	LoadPLC2
+			tst.b	(Update_HUD_timer).w
+			beq.s	@NoSignpostArt
+				cmp.w	(Camera_Min_X_pos).w,d1
+				beq.s	@NoSignpostArt
+					move.w	d1,(Camera_Min_X_pos).w
+					moveq	#PLCID_Signpost,d0
+					bsr.w	LoadPLC2
 	@NoSignpostArt:
-
-
 
 		jsr	(BuildSprites).l
 		jsr	(ObjectsManager).l

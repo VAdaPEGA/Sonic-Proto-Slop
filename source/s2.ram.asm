@@ -78,7 +78,7 @@ collision_flags:	equ $20
 collision_property:	equ $21
 respawn_index:		equ $23
 subtype:		equ $28
-; conventions mostly shared by Player Objects (Obj01, Obj02, and Obj09).
+; conventions mostly shared by Player Objects (ObjPlayer, Obj02, and Obj09).
 ; Special Stage Sonic uses some different conventions
 ground_speed:		equ $14		; 2 bytes ; directionless representation of speed... not updated in the air
 obj_control:		equ $27		; 0 for normal, 1 for hanging or for resting on a flipper, $81 for going through CNZ/OOZ/MTZ tubes or stopped in CNZ cages or stoppers or flying if Tails

@@ -98,7 +98,7 @@ Bub_ChkWater:	; Routine 4
 
 		move.l	a0,-(sp)	; The only proto-slop change so far
 		move.l	a1,a0
-		jsr	Obj01_WaterResumeMusic	; cancel countdown music
+		jsr	ObjPlayer_WaterResumeMusic	; cancel countdown music
 		movea.l	(sp)+,a0
 
 		clr.w	x_vel(a1)

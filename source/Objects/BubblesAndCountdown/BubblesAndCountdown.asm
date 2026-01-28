@@ -188,7 +188,7 @@ Obj0A_CountAirDown:
 		move.w	#120,Obj0A_CountdownForAirCountdown(a0)
 		move.l	a0,-(sp)
 		lea	(MainCharacter).w,a0
-		jsr	Obj01_WaterResumeMusic
+		jsr	ObjPlayer_WaterResumeMusic
 		jsr	Sonic_ResetOnFloor
 		move.b	#$17,anim(a0)
 		bset	#1,status(a0)

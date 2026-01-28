@@ -1,27 +1,27 @@
 ; ---------------------------------------------------------------------------
 ; Object 01 - Sonic
 ; ---------------------------------------------------------------------------
-Obj01:	
+ObjPlayer:	
 		tst.w	(Debug_placement_mode).w	; is debug mode being used?
-		beq.s	Obj01_Normal			; if not, branch
+		beq.s	ObjPlayer_Normal			; if not, branch
 		jmp	(DebugMode).l
 ; ===========================================================================
 
-Obj01_Normal:
+ObjPlayer_Normal:
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	@Index(pc,d0.w),d1
 		jmp	@Index(pc,d1.w)
 ; ===========================================================================
 	IndexStart	
-	GenerateIndex	 Obj01, Init
-	GenerateIndexID	 Obj01, Control
-	GenerateIndexID	 Obj01, Hurt
-	GenerateIndexID	 Obj01, Dead
+	GenerateIndex	 ObjPlayer, Init
+	GenerateIndexID	 ObjPlayer, Control
+	GenerateIndexID	 ObjPlayer, Hurt
+	GenerateIndexID	 ObjPlayer, Dead
 ; ===========================================================================
-; Obj01_Main:
-Obj01_Init:
-		addq.b	#Obj01ID_Control,routine(a0)
+; ObjPlayer_Main:
+ObjPlayer_Init:
+		addq.b	#ObjPlayerID_Control,routine(a0)
 		move.b	#$13,y_radius(a0)	; this sets Sonic's collision height (2*pixels)
 		move.b	#9,x_radius(a0)
 		move.l	#Map_Sonic,mappings(a0)
@@ -54,7 +54,7 @@ loc_FA88:
 ; Normal state for Sonic
 ; ---------------------------------------------------------------------------
 
-Obj01_Control:
+ObjPlayer_Control:
 		tst.w	(Debug_mode_flag).w		; is debug cheat enabled?
 		beq.s	loc_FAB0			; if not, branch
 		btst	#4,(Ctrl_1_Press).w		; is button B pressed?
@@ -70,19 +70,19 @@ loc_FAB0:
 
 loc_FABC:
 		btst	#0,obj_control(a0)	; is Sonic interacting with another object that holds him in place or controls his movement somehow?
-		bne.s	Obj01_ControlsLock	; if yes, branch to skip Sonic's control
+		bne.s	ObjPlayer_ControlsLock	; if yes, branch to skip Sonic's control
 		moveq	#0,d0
 		move.b	status(a0),d0
 		andi.w	#6,d0
-		move.w	Obj01_Modes(pc,d0.w),d1
-		jsr	Obj01_Modes(pc,d1.w)	; run Sonic's movement control code
+		move.w	ObjPlayer_Modes(pc,d0.w),d1
+		jsr	ObjPlayer_Modes(pc,d1.w)	; run Sonic's movement control code
 
 		tst.w	(Camera_Min_Y_pos).w	; is vertical wrapping enabled?
 		bpl.s	@NoVerticalWrap		; if not, branch
 		andi.w	#$7FF,y_pos(a0) 	; perform wrapping of Sonic's y position
 	@NoVerticalWrap:
 
-Obj01_ControlsLock:
+ObjPlayer_ControlsLock:
 		bsr.w	Sonic_Display
 		bsr.w	Sonic_RecordPos
 		bsr.w	Sonic_Water
@@ -103,19 +103,19 @@ loc_FAFE:
 		bsr.w	Player_CheckChunk
 		bra.w	LoadSonicDynPLC
 ; ===========================================================================
-; secondary states under state Obj01_Control
-	IndexStart	Obj01_Modes
-	GenerateIndex	 Obj01, MdNormal
-	GenerateIndex	 Obj01, MdAir
-	GenerateIndex	 Obj01, MdRoll
-	GenerateIndex	 Obj01, MdJump
+; secondary states under state ObjPlayer_Control
+	IndexStart	ObjPlayer_Modes
+	GenerateIndex	 ObjPlayer, MdNormal
+	GenerateIndex	 ObjPlayer, MdAir
+	GenerateIndex	 ObjPlayer, MdRoll
+	GenerateIndex	 ObjPlayer, MdJump
 ; ===========================================================================
-Obj01_WaterResumeMusic:
+ObjPlayer_WaterResumeMusic:
 		cmpi.b	#12,air_left(a0)
 		bhi.s	@NotDrowning
 
 		tst.b	($FFFFFE2D).w
-		bne.s	Obj01_PlayZoneMusic
+		bne.s	ObjPlayer_PlayZoneMusic
 		move.w	#MusID_Invincible,d0
 		pea	(PlaySound).l
 	@NotDrowning:	
@@ -123,11 +123,11 @@ Obj01_WaterResumeMusic:
 ;		clr.b	(MainCharacter_Bubbles+$32).w	; commenting this not only benefits the player with some random extra time, it also saves me headaches :V
 		rts
 ; -----------------------------------------------------------------------
-Obj01_PlayZoneMusic:
+ObjPlayer_PlayZoneMusic:
 		tst.b	($FFFFF7AA).w
 		beq.s	@NotBoss
 		move.w	#MusID_Boss,d0
-		bra.s	Obj01_PlaySound
+		bra.s	ObjPlayer_PlaySound
 	@NotBoss:
 		moveq	#0,d0
 		move.b	(Current_Zone).w,d0
@@ -137,37 +137,37 @@ Obj01_PlayZoneMusic:
 	@NotSBZ3:
 		lea	MusicList,a1
 		move.b	(a1,d0.w),d0
-Obj01_PlaySound:
+ObjPlayer_PlaySound:
 		jmp	(PlaySound).l
 ; ===========================================================================
 
 Sonic_Display:
 		move.w	invulnerable_time(a0),d0
-		beq.s	Obj01_Display
+		beq.s	ObjPlayer_Display
 		subq.w	#1,invulnerable_time(a0)
 		lsr.w	#3,d0
-		bcc.s	Obj01_ChkInvin
+		bcc.s	ObjPlayer_ChkInvin
 ; loc_FB2E:
-Obj01_Display:
+ObjPlayer_Display:
 		jsr	(DisplaySprite).l
 ; loc_FB34:
-Obj01_ChkInvin:		; Checks if invincibility has expired
+ObjPlayer_ChkInvin:		; Checks if invincibility has expired
 		tst.b	($FFFFFE2D).w
-		beq.s	Obj01_ChkShoes
+		beq.s	ObjPlayer_ChkShoes
 		tst.w	invincibility_time(a0)
-		beq.s	Obj01_ChkShoes
+		beq.s	ObjPlayer_ChkShoes
 		subq.w	#1,invincibility_time(a0)
-		bne.s	Obj01_ChkShoes
+		bne.s	ObjPlayer_ChkShoes
 		tst.b	($FFFFF7AA).w
-		bne.s	Obj01_RmvInvin
+		bne.s	ObjPlayer_RmvInvin
 		cmpi.b	#12,air_left(a0)
-		bcs.s	Obj01_RmvInvin
-		bsr.s	Obj01_PlayZoneMusic
+		bcs.s	ObjPlayer_RmvInvin
+		bsr.s	ObjPlayer_PlayZoneMusic
 ; loc_FB74:
-Obj01_RmvInvin:
+ObjPlayer_RmvInvin:
 		move.b	#0,($FFFFFE2D).w
 ; loc_FB7A:
-Obj01_ChkShoes:	; Checks if Speed Shoes have expired and disables them if they have.
+ObjPlayer_ChkShoes:	; Checks if Speed Shoes have expired and disables them if they have.
 		tst.b	($FFFFFE2E).w
 		beq.s	@DoNothing
 		tst.w	speedshoes_time(a0)
@@ -242,21 +242,21 @@ locret_FC02:
 ; loc_FC06:
 Sonic_Water:
 		tst.b	(Water_flag).w
-		bne.s	Obj01_InWater
+		bne.s	ObjPlayer_InWater
 
 locret_FC0A:
 		rts
 ; ---------------------------------------------------------------------------
-; loc_FC0E: Obj01_InLevelWithWater:
-Obj01_InWater:
+; loc_FC0E: ObjPlayer_InLevelWithWater:
+ObjPlayer_InWater:
 		move.w	(Water_Level_1).w,d0
 		cmp.w	y_pos(a0),d0	; is Sonic above water?
-		bge.s	Obj01_OutWater	; if yes, branch
+		bge.s	ObjPlayer_OutWater	; if yes, branch
 
 		bset	#6,status(a0)	; set underwater flag
 		bne.s	locret_FC0A	; if already underwater, branch
 
-		bsr.w	Obj01_WaterResumeMusic
+		bsr.w	ObjPlayer_WaterResumeMusic
 		move.b	#ObjID_BubblesAndCountdown,(MainCharacter_Bubbles).w
 		move.b	#$80+1,(MainCharacter_Bubbles+subtype).w	; Countdown Subtype
 		move.w	#$300,(Sonic_top_speed).w
@@ -271,12 +271,12 @@ Obj01_InWater:
 		jmp	(PlaySound_Special).l
 
 ; ---------------------------------------------------------------------------
-; Obj01_NotInWater:
-Obj01_OutWater:
+; ObjPlayer_NotInWater:
+ObjPlayer_OutWater:
 		bclr	#6,status(a0)	; unset underwater flag
 		beq.s	locret_FC0A	; if already unset, branch
 
-		bsr.w	Obj01_WaterResumeMusic
+		bsr.w	ObjPlayer_WaterResumeMusic
 		move.w	#$600,(Sonic_top_speed).w
 		move.w	#$C,(Sonic_acceleration).w
 		move.w	#$80,(Sonic_deceleration).w
@@ -294,11 +294,11 @@ loc_FC98:
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Start of subroutine Obj01_MdNormal
+; Start of subroutine ObjPlayer_MdNormal
 ; Called if Sonic is neither airborne nor rolling this frame
 ; ---------------------------------------------------------------------------
 
-Obj01_MdNormal:
+ObjPlayer_MdNormal:
 		bsr.w	Sonic_CheckSpindash
 		bsr.w	Sonic_Jump
 		bsr.w	Sonic_SlopeResist
@@ -309,13 +309,13 @@ Obj01_MdNormal:
 		bsr.w	AnglePos
 		bsr.w	Sonic_SlopeRepel
 		rts
-; End of subroutine Obj01_MdNormal
+; End of subroutine ObjPlayer_MdNormal
 
 ; ===========================================================================
-; Start of subroutine Obj01_MdAir
+; Start of subroutine ObjPlayer_MdAir
 ; Called if Sonic is airborne, but not in a ball (thus, probably not jumping)
-; Obj01_MdJump:
-Obj01_MdAir:
+; ObjPlayer_MdJump:
+ObjPlayer_MdAir:
 		bsr.w	Sonic_JumpHeight
 		bsr.w	Sonic_ChgJumpDir
 		bsr.w	Sonic_LevelBound
@@ -328,13 +328,13 @@ loc_FCEA:
 		bsr.w	Sonic_JumpAngle
 		bsr.w	Sonic_DoLevelCollision
 		rts
-; End of subroutine Obj01_MdAir
+; End of subroutine ObjPlayer_MdAir
 
 ; ===========================================================================
-; Start of subroutine Obj01_MdRoll
+; Start of subroutine ObjPlayer_MdRoll
 ; Called if Sonic is in a ball, but not airborne (thus, probably rolling)
 
-Obj01_MdRoll:
+ObjPlayer_MdRoll:
 		bsr.w	Sonic_Jump
 		bsr.w	Sonic_RollRepel
 		bsr.w	Sonic_RollSpeed
@@ -343,15 +343,15 @@ Obj01_MdRoll:
 		bsr.w	AnglePos
 		bsr.w	Sonic_SlopeRepel
 		rts
-; End of subroutine Obj01_MdRoll
+; End of subroutine ObjPlayer_MdRoll
 
 ; ===========================================================================
-; Start of subroutine Obj01_MdJump
+; Start of subroutine ObjPlayer_MdJump
 ; Called if Sonic is in a ball and airborne (he could be jumping but not necessarily)
-; Notes: This is identical to Obj01_MdAir, at least at this outer level.
+; Notes: This is identical to ObjPlayer_MdAir, at least at this outer level.
 ;        Why they gave it a separate copy of the code, I don't know.
-; Obj01_MdJump2:
-Obj01_MdJump:
+; ObjPlayer_MdJump2:
+ObjPlayer_MdJump:
 		bsr.w	Sonic_JumpHeight
 		bsr.w	Sonic_ChgJumpDir
 		bsr.w	Sonic_LevelBound
@@ -364,7 +364,7 @@ loc_FD34:
 		bsr.w	Sonic_JumpAngle
 		bsr.w	Sonic_DoLevelCollision
 		rts
-; End of subroutine Obj01_MdJump
+; End of subroutine ObjPlayer_MdJump
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to make Sonic walk/run
@@ -378,9 +378,9 @@ Sonic_Move:
 		move.w	(Sonic_acceleration).w,d5
 		move.w	(Sonic_deceleration).w,d4
 		tst.b	($FFFFF7CA).w
-		bne.w	Obj01_Traction
+		bne.w	ObjPlayer_Traction
 		tst.w	move_lock(a0)
-		bne.w	Obj01_UpdateSpeedOnGround
+		bne.w	ObjPlayer_UpdateSpeedOnGround
 		btst	#bitL,(Ctrl_1_Held_Logical).w	; is left being pressed?
 		beq.s	loc_FD66		; if not, branch
 		bsr.w	Sonic_MoveLeft
@@ -394,9 +394,9 @@ loc_FD72:
 		move.b	angle(a0),d0
 		addi.b	#$20,d0
 		andi.b	#$C0,d0				; is Sonic on a slope?
-		bne.w	Obj01_UpdateSpeedOnGround	; if yes, branch
+		bne.w	ObjPlayer_UpdateSpeedOnGround	; if yes, branch
 		tst.w	ground_speed(a0)			; is Sonic moving?
-		bne.w	Obj01_UpdateSpeedOnGround	; if yes, branch
+		bne.w	ObjPlayer_UpdateSpeedOnGround	; if yes, branch
 		bclr	#5,status(a0)
 		cmpi.b	#$B,anim(a0)	; use "standing" animation
 		beq.s	Sonic_Balance
@@ -439,9 +439,9 @@ Sonic_Balance:
 		subq.w	#5,d3
 		jsr	(ChkFloorEdge_Part2).l
 		cmpi.w	#$C,d1
-		blt.s	Obj01_UpdateSpeedOnGround
+		blt.s	ObjPlayer_UpdateSpeedOnGround
 		move.b	#SonicAniID_Balance2,anim(a0)
-		bra.s	Obj01_UpdateSpeedOnGround
+		bra.s	ObjPlayer_UpdateSpeedOnGround
 ; ---------------------------------------------------------------------------
 	@BalanceCheckLeft:
 		cmpi.b	#3,tilt(a0)
@@ -454,48 +454,48 @@ Sonic_Balance:
 		addq.w	#5,d3
 		jsr	(ChkFloorEdge_Part2).l
 		cmpi.w	#$C,d1
-		blt.s	Obj01_UpdateSpeedOnGround
+		blt.s	ObjPlayer_UpdateSpeedOnGround
 		move.b	#SonicAniID_Balance2,anim(a0)
-		bra.s	Obj01_UpdateSpeedOnGround
+		bra.s	ObjPlayer_UpdateSpeedOnGround
 ; ---------------------------------------------------------------------------
 
 Sonic_LookUp:
 		btst	#bitUp,(Ctrl_1_Held_Logical).w	; is up being pressed?
 		beq.s	Sonic_Duck		; if not, branch
 		move.b	#SonicAniID_LookUp,anim(a0)	; use "looking up" animation
-		bra.s	Obj01_UpdateSpeedOnGround
+		bra.s	ObjPlayer_UpdateSpeedOnGround
 ; ---------------------------------------------------------------------------
 
 Sonic_Duck:
 		btst	#bitDn,(Ctrl_1_Held_Logical).w		; is down being pressed?
-		beq.s	Obj01_UpdateSpeedOnGround	; if not, branch
+		beq.s	ObjPlayer_UpdateSpeedOnGround	; if not, branch
 		move.b	#SonicAniID_Duck,anim(a0)	; use "ducking" animation
 
 ; ---------------------------------------------------------------------------
 ; updates Sonic's speed on the ground
 ; ---------------------------------------------------------------------------
 ; loc_FE2C:
-Obj01_UpdateSpeedOnGround:
+ObjPlayer_UpdateSpeedOnGround:
 		move.b	(Ctrl_1_Held_Logical).w,d0
 		andi.b	#btnL+btnR,d0		; is left/right being pressed?
-		bne.s	Obj01_Traction	; if yes, branch
+		bne.s	ObjPlayer_Traction	; if yes, branch
 		move.w	ground_speed(a0),d0
-		beq.s	Obj01_Traction
-		bmi.s	Obj01_SettleLeft
+		beq.s	ObjPlayer_Traction
+		bmi.s	ObjPlayer_SettleLeft
 
 ; slow down when facing right and not pressing a direction
-; Obj01_SettleRight:
+; ObjPlayer_SettleRight:
 		sub.w	d5,d0
 		bcc.s	loc_FE46
 		move.w	#0,d0
 
 loc_FE46:
 		move.w	d0,ground_speed(a0)
-		bra.s	Obj01_Traction
+		bra.s	ObjPlayer_Traction
 ; ---------------------------------------------------------------------------
 ; slow down when facing left and not pressing a direction
 ; loc_FE4C:
-Obj01_SettleLeft:
+ObjPlayer_SettleLeft:
 		add.w	d5,d0
 		bcc.s	loc_FE54
 		move.w	#0,d0
@@ -505,7 +505,7 @@ loc_FE54:
 
 ; increase or decrease speed on the ground
 ; loc_FE58:
-Obj01_Traction:
+ObjPlayer_Traction:
 		move.b	angle(a0),d0
 		jsr	(CalcSine).l
 		muls.w	ground_speed(a0),d0
@@ -517,7 +517,7 @@ Obj01_Traction:
 
 ; stops Sonic from running through walls that meet the ground
 ; loc_FE76:
-Obj01_CheckWallsOnGround:
+ObjPlayer_CheckWallsOnGround:
 		move.b	angle(a0),d0
 		addi.b	#$40,d0
 		bmi.s	locret_FEF6
@@ -811,7 +811,7 @@ loc_100AE:
 
 loc_100B8:
 		move.w	d0,x_vel(a0)
-		bra.w	Obj01_CheckWallsOnGround
+		bra.w	ObjPlayer_CheckWallsOnGround
 ; End of function Sonic_RollSpeed
 
 
@@ -989,31 +989,31 @@ Sonic_Boundary_Sides:
 
 Sonic_Roll:
 		tst.b	($FFFFF7CA).w
-		bne.s	Obj01_NoRoll
+		bne.s	ObjPlayer_NoRoll
 		move.w	ground_speed(a0),d0
 		bpl.s	loc_10220
 		neg.w	d0
 
 loc_10220:
 		cmpi.w	#$80,d0
-		bcs.s	Obj01_NoRoll
+		bcs.s	ObjPlayer_NoRoll
 		move.b	(Ctrl_1_Held_Logical).w,d0
 		andi.b	#btnL+btnR,d0
-		bne.s	Obj01_NoRoll
+		bne.s	ObjPlayer_NoRoll
 		btst	#bitDn,(Ctrl_1_Held_Logical).w
 		bne.s	loc_1023A
 
-Obj01_NoRoll:
+ObjPlayer_NoRoll:
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_1023A:
 		btst	#PlayerStatusBitSpin,status(a0)
-		beq.s	Obj01_DoRoll
+		beq.s	ObjPlayer_DoRoll
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-Obj01_DoRoll:
+ObjPlayer_DoRoll:
 		bset	#2,status(a0)
 		move.b	#$E,y_radius(a0)
 		move.b	#7,x_radius(a0)
@@ -1550,7 +1550,7 @@ loc_10748:
 
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-Obj01_Hurt:
+ObjPlayer_Hurt:
 		tst.b	routine_secondary(a0)
 		bmi.w	loc_107E8
 		jsr	(ObjectMove).l
@@ -1619,17 +1619,17 @@ loc_10804:
 		bsr.w	LoadSonicDynPLC
 		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-; Obj01_Death:
-Obj01_Dead:
+; ObjPlayer_Death:
+ObjPlayer_Dead:
 	cmpi.b	#$39,(Game_Over).w	; is game over text present?
-	beq.s	Obj01_ResetLevel	; if so, branch
+	beq.s	ObjPlayer_ResetLevel	; if so, branch
 		bsr.w	Sonic_GameOver
 		jsr	(ObjectMoveAndFall).l
 		bsr.w	Sonic_RecordPos
 		bsr.w	Sonic_Animate
 		bsr.w	LoadSonicDynPLC
 		jmp	(DisplaySprite).l
-Obj01_ResetLevel:
+ObjPlayer_ResetLevel:
 	tst.w	$3A(a0)
 	beq.s	locret_108C8
 	subq.w	#1,$3A(a0)
@@ -1648,7 +1648,7 @@ Sonic_GameOver:
 		cmp.w	y_pos(a0),d0	; has player fallen off the bottom of the screen
 		bcc.w	locret_108B4
 		move.w	#$FFC8,y_vel(a0)
-		pea	Obj01_ResetLevel
+		pea	ObjPlayer_ResetLevel
 		clr.b	(Update_HUD_timer).w
 		addq.b	#1,(Update_HUD_lives).w
 		subq.b	#1,(Life_count).w
