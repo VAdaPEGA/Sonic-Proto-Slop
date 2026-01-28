@@ -2555,7 +2555,7 @@ loc_3F54:
 		beq.s	@NoSignpostArt
 		move.w	d1,(Camera_Min_X_pos).w
 		moveq	#PLCID_Signpost,d0
-		bra.w	LoadPLC2
+		bsr.w	LoadPLC2
 	@NoSignpostArt:
 
 
