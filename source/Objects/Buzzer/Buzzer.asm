@@ -16,7 +16,6 @@ buzzer_parent:	equ $2A
 ; loc_167AA:
 Obj4B_Projectile:
 		bsr	ObjectMove
-		lea	(Ani_obj4B).l,a1
 		bra.w	Obj4B_Draw
 ; ===========================================================================
 ; loc_167BC:
@@ -36,7 +35,6 @@ loc_167CE:
 		move.w	y_pos(a1),y_pos(a0)
 		move.b	status(a1),status(a0)
 		move.b	render_flags(a1),render_flags(a0)
-		lea	(Ani_obj4B).l,a1
 		bra.w	Obj4B_Draw
 ; ===========================================================================
 
@@ -85,8 +83,9 @@ Obj4B_Main:
 		move.b	routine_secondary(a0),d0
 		move.w	Obj4B_Main_Index(pc,d0.w),d1
 		jsr	Obj4B_Main_Index(pc,d1.w)
-		lea	(Ani_obj4B).l,a1
 Obj4B_Draw:
+		lea	(Ani_obj4B).l,a1
+		jsr	AnimateSprite
 		jsr	(Adjust2PArtPointer2).l
 		jmp	(MarkObjGone_P1).l
 ; ===========================================================================
@@ -178,7 +177,7 @@ Obj4B_ShootProjectile:
 		jsr	(SingleObjLoad2).l
 		bne.s	locret_169D8
 
-		move.b	#$4B,id(a1) ; load obj4B
+		move.b	#ObjID_Buzzer,id(a1) ; load obj4B
 		move.b	#6,routine(a1)	; => Obj4B_Projectile
 		move.l	#Map_Buzzer,mappings(a1)
 		move.w	#$3E6,art_tile(a1)
@@ -206,9 +205,14 @@ Ani_obj4B:	dc.w byte_169E2-Ani_obj4B
 		dc.w byte_169E5-Ani_obj4B
 		dc.w byte_169E9-Ani_obj4B
 		dc.w byte_169ED-Ani_obj4B
-byte_169E2:	dc.b  $F,  0,$FF
-byte_169E5:	dc.b   2,  3,  4,$FF
-byte_169E9:	dc.b   3,  5,  6,$FF
-byte_169ED:	dc.b   9,  1,  1,  1,  1,  1,$FD,  0,  0
+byte_169E2:	dc.b	15
+		dc.b	0,	afEnd
+byte_169E5:	dc.b	2
+		dc.b	3,  4,	afEnd
+byte_169E9:	dc.b	3
+		dc.b	5,  6,	afEnd
+byte_169ED:	dc.b	9
+		dc.b	1,  1,  1,  1,  1, afChange, 0
+		even
 
 		
