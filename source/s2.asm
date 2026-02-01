@@ -13,7 +13,7 @@
 Devmode		=	1   ; Development mode, enables all cheats by default
 DevHitboxes	=	1   ; Show Hitboxes of everything that's parsed in "TouchResponses"
 Lagometer	=	1   ; Lagometer (uses window layer to show lag)
-RecordDemoMode	=	1   ; 
+RecordDemoMode	=	0   ; Records demo (also corrupts level layout since that's where it outputs)
 ; Build Features
 Lockon		=	1   ; Lock-on Support
 NESROMSupport	=	1   ; Support for NES compatability via Vector Table Hijack
