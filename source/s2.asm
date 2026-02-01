@@ -2460,7 +2460,7 @@ loc_3E00:
 		movea.l	(a1,d0.w),a1
 		tst.w	(Demo_Mode_Flag).w
 		bpl.s	loc_3E78
-		lea	(Demo_S1EndIndex).l,a1 ; garbage, leftover from	Sonic 1's ending sequence demos
+	;	lea	(Demo_S1EndIndex).l,a1 ; garbage, leftover from	Sonic 1's ending sequence demos
 		move.w	($FFFFFFF4).w,d0
 		subq.w	#1,d0
 		lsl.w	#2,d0
