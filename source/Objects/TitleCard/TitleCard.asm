@@ -1,8 +1,8 @@
 ;----------------------------------------------------
-; Object 34 - leftover Sonic 1 title cards
+; Title cards, Game Over and results screen
 ;----------------------------------------------------
 
-Obj34:					; DATA XREF: ROM:Obj_Indexo
+Obj34:	
 		moveq	#0,d0
 		move.b	routine(a0),d0
 		move.w	Obj34_Index(pc,d0.w),d1
@@ -12,6 +12,13 @@ Obj34_Index:	dc.w Obj34_CheckLZ4-Obj34_Index
 		dc.w Obj34_CheckPos-Obj34_Index
 		dc.w Obj34_Wait-Obj34_Index
 		dc.w Obj34_Wait-Obj34_Index
+
+		dc.w Obj3A_ChkPLC-Obj34_Index
+		dc.w Obj3A_ChkPos-Obj34_Index
+		dc.w Obj3A_Wait-Obj34_Index
+		dc.w Obj3A_TimeBonus-Obj34_Index
+		dc.w Obj3A_Wait-Obj34_Index
+		dc.w Obj3A_NextLevel-Obj34_Index
 
 Obj34_card_mainX:	equ $30		; position for card to display on
 Obj34_card_finalX:	equ $32		; position for card to finish on
@@ -23,7 +30,6 @@ Obj34_CheckLZ4:
 		moveq	#0,d0
 		move.b	(Current_Zone).w,d0
 		move.w	d0,d2
-Obj34_CheckConfig:			
 		lea	(Obj34_Config).l,a3
 		lsl.w	#4,d0
 		adda.w	d0,a3
@@ -35,14 +41,16 @@ Obj34_Loop:
 		move.w	(a3),x_pixel(a1)
 		move.w	(a3)+,Obj34_card_finalX(a1)
 		move.w	(a3)+,Obj34_card_mainX(a1)
+
 		move.w	(a2)+,y_pixel(a1)
 		move.b	(a2)+,routine(a1)
 		move.b	(a2)+,d0
+		cmpi.b	#$12,d0
 		bne.s	Obj34_ActNumber
-		move.b	d2,d0
+		add.b	d2,d0
 
 Obj34_ActNumber:			
-		cmpi.b	#7,d0
+		tst.b	d0
 		bne.s	Obj34_MakeSprite
 		add.b	(Current_Act).w,d0
 		cmpi.b	#3,(Current_Act).w
@@ -51,13 +59,13 @@ Obj34_ActNumber:
 
 Obj34_MakeSprite:	
 		move.b	d0,mapping_frame(a1)
-		move.l	#Map_Obj34,mappings(a1)
+		move.l	#Map_TitleCard,mappings(a1)
 		move.w	#$8580,art_tile(a1)
 		jsr	Adjust2PArtPointer2
-		move.b	#$78,width_pixels(a1) ; 'x'
+		move.b	#$78,width_pixels(a1)
 		move.b	#0,render_flags(a1)
 		move.b	#0,priority(a1)
-		move.w	#$3C,anim_frame_duration(a1) ; '<'
+		move.w	#$3C,anim_frame_duration(a1)
 		lea	$40(a1),a1
 		dbf	d1,Obj34_Loop
 
@@ -125,127 +133,11 @@ Obj34_ChangeArt:
 
 Obj34_Delete:				
 		jmp	DeleteObject
-; ===========================================================================
-Obj34_ItemData:	dc.w $D0		
-		dc.b   2,  0		; 0
-		dc.w $E4
-		dc.b   2,  6		; 0
-		dc.w $EA
-		dc.b   2,  7		; 0
-		dc.w $E0
-		dc.b   2, $A		; 0
-Obj34_Config:	dc.w	 0, $120,$FEFC,	$13C, $414, $154, $214,	$154; 0
-					; DATA XREF: ROM:Obj34_CheckConfigo
-		dc.w	 0, $120,$FEF4,	$134, $40C, $14C, $20C,	$14C; 8
-		dc.w	 0, $120,$FEE0,	$120, $3F8, $138, $1F8,	$138; 16
-		dc.w	 0, $120,$FEFC,	$13C, $414, $154, $214,	$154; 24
-		dc.w	 0, $120,$FF04,	$144, $41C, $15C, $21C,	$15C; 32
-		dc.w	 0, $120,$FF04,	$144, $41C, $15C, $21C,	$15C; 40
-		dc.w	 0, $120,$FEE4,	$124, $3EC, $3EC, $1EC,	$12C; 48
-; ===========================================================================
-;----------------------------------------------------
-; Object 39 - Game over	/ time over
-;----------------------------------------------------
 
-Obj39:					; DATA XREF: ROM:Obj_Indexo
-		moveq	#0,d0
-		move.b	routine(a0),d0
-		move.w	Obj39_Index(pc,d0.w),d1
-		jmp	Obj39_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj39_Index:	dc.w loc_BA98-Obj39_Index ; DATA XREF: ROM:Obj39_Indexo
-					; ROM:0000BA94o ...
-		dc.w loc_BADC-Obj39_Index
-		dc.w loc_BAFE-Obj39_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
-loc_BA98:				; DATA XREF: ROM:Obj39_Indexo
-		tst.l	(Plc_Buffer).w
-		beq.s	loc_BAA0
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_BAA0:				; CODE XREF: ROM:0000BA9Cj
-		addq.b	#2,routine(a0)
-		move.w	#$50,x_pixel(a0) ; 'P'
-		btst	#0,mapping_frame(a0)
-		beq.s	loc_BAB8
-		move.w	#$1F0,8(a0)
-
-loc_BAB8:				; CODE XREF: ROM:0000BAB0j
-		move.w	#$F0,y_pixel(a0) ; 'ð'
-		move.l	#Map_Obj39,mappings(a0)
-		move.w	#$855E,art_tile(a0)
-		jsr	Adjust2PArtPointer
-		move.b	#0,render_flags(a0)
-		move.b	#0,priority(a0)
-
-loc_BADC:				; DATA XREF: ROM:0000BA94o
-		moveq	#$10,d1
-		cmpi.w	#$120,x_pixel(a0)
-		beq.s	loc_BAF2
-		bcs.s	loc_BAEA
-		neg.w	d1
-
-loc_BAEA:				; CODE XREF: ROM:0000BAE6j
-		add.w	d1,x_pixel(a0)
-		jmp	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_BAF2:				; CODE XREF: ROM:0000BAE4j
-		move.w	#$2D0,anim_frame_duration(a0)
-		addq.b	#2,routine(a0)
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_BAFE:				; DATA XREF: ROM:0000BA96o
-		move.b	(Ctrl_1_Press).w,d0
-		andi.b	#$70,d0	; 'p'
-		bne.s	loc_BB1E
-		btst	#0,mapping_frame(a0)
-		bne.s	loc_BB42
-		tst.w	anim_frame_duration(a0)
-		beq.s	loc_BB1E
-		subq.w	#1,anim_frame_duration(a0)
-		jmp	DisplaySprite
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_BB1E:				; CODE XREF: ROM:0000BB06j
-					; ROM:0000BB14j
-		tst.b	($FFFFFE1A).w
-		bne.s	loc_BB38
-		move.b	#GameModeID_Logo,(Game_Mode).w	; Normally Continue Screen
-		tst.b	($FFFFFE18).w
-		bne.s	loc_BB42
-		move.b	#GameModeID_Logo,(Game_Mode).w
-		bra.s	loc_BB42
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_BB38:				; CODE XREF: ROM:0000BB22j
-		clr.l	($FFFFFE38).w
-		move.b	#1,(Level_Reload).w
-
-loc_BB42:	
-		jmp	DisplaySprite
-; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Object 3A - End of level results screen
 ; ---------------------------------------------------------------------------
-
-Obj3A:
-		moveq	#0,d0
-		move.b	routine(a0),d0
-		move.w	Obj3A_Index(pc,d0.w),d1
-		jmp	Obj3A_Index(pc,d1.w)
-; ===========================================================================
-Obj3A_Index:	dc.w Obj3A_ChkPLC-Obj3A_Index
-		dc.w Obj3A_ChkPos-Obj3A_Index
-		dc.w Obj3A_Wait-Obj3A_Index
-		dc.w Obj3A_TimeBonus-Obj3A_Index
-		dc.w Obj3A_Wait-Obj3A_Index
-		dc.w Obj3A_NextLevel-Obj3A_Index
-; ===========================================================================
-; loc_BB5C:
 Obj3A_ChkPLC:
 		tst.l	(Plc_Buffer).w
 		beq.s	Obj3A_Config
@@ -254,11 +146,11 @@ Obj3A_ChkPLC:
 ; loc_BB64:
 Obj3A_Config:
 		movea.l	a0,a1
-		lea	(Obj3A_Conf).l,a2
+		lea	(Obj34_GotConfig).l,a2
 		moveq	#7-1,d1
 ; loc_BB6E:
 Obj3A_Init:
-		move.b	#$3A,id(a1)
+		move.b	#ObjID_TitleCard,id(a1)
 		move.w	(a2),x_pixel(a1)
 		move.w	(a2)+,$32(a1)
 		move.w	(a2)+,$30(a1)
@@ -271,7 +163,7 @@ Obj3A_Init:
 
 loc_BB94:
 		move.b	d0,mapping_frame(a1)
-		move.l	#Map_Obj3A,mappings(a1)
+		move.l	#Map_TitleCard,mappings(a1)
 		move.w	#$8580,art_tile(a1)
 		jsr	Adjust2PArtPointer2
 		move.b	#0,render_flags(a1)
@@ -430,30 +322,142 @@ loc_BD1E:				; CODE XREF: ROM:0000BD02j
 		beq.w	Obj34_Delete
 		rts
 ; ===========================================================================
-Obj3A_Conf:	
+
+
+; ===========================================================================
+Obj34_ItemData:	; y-axis position, 	frame number (changes)
+		dc.w $D0,		$0212	; Actual Stage Name
+		dc.w $E4,		$0211	; Zone
+		dc.w $EA,		$0200	; Act number
+		dc.w $E0,		$0203	; Oval
+; ---------------------------------------------------------------------------
+; Title	card configuration data
+; Format:
+; 4 bytes per item (SSSS EEEE) Start and End X positions
+; 4 items per level (GREEN HILL, ZONE, ACT X, oval)
+; ---------------------------------------------------------------------------
+Obj34_Config:	dc.w 0,	$120, $FEFC, $13C, $414, $154, $214, $154 ; GHZ
+		dc.w 0,	$120, $FEF4, $134, $40C, $14C, $20C, $14C ; LZ
+		dc.w 0,	$100, $FEE0, $120, $3F8, $138, $1F8, $138 ; MZ
+		dc.w 0,	$120, $FEFC, $13C, $414, $154, $214, $154 ; SLZ
+		dc.w 0,	$120, $FF04, $144, $41C, $15C, $21C, $15C ; SYZ
+		dc.w 0,	$120, $FF04, $144, $41C, $15C, $21C, $15C ; SBZ
+		dc.w 0,	$120, $FEE4, $124, $3EC, $3EC, $1EC, $12C ; FZ
+; ---------------------------------------------------------------------------
+; Results Title Card configuration Data
+; ---------------------------------------------------------------------------
+Obj34_GotConfig:	
 		;    x-start,	x-main,	y-main,
 		;				routine, frame number
 
-Got_Config:	dc.w 4,		$124,	$BC			; "SONIC HAS"
-		dc.b 				2,	0
+		dc.w 4,		$124,	$BC			; "SONIC HAS"
+		dc.b 				(2+8),	0
 
 		dc.w -$120,	$120,	$D0			; "PASSED"
-		dc.b 				2,	1
+		dc.b 				(2+8),	1
 
 		dc.w $40C,	$14C,	$D6			; "ACT" 1/2/3
-		dc.b 				2,	6
+		dc.b 				(2+8),	6
 
 		dc.w $520,	$120,	$EC			; score
-		dc.b 				2,	2
+		dc.b 				(2+8),	2
 
 		dc.w $540,	$120,	$FC			; time bonus
-		dc.b 				2,	3
+		dc.b 				(2+8),	3
 
 		dc.w $560,	$120,	$10C			; ring bonus
-		dc.b 				2,	4
+		dc.b 				(2+8),	4
 
 		dc.w $20C,	$14C,	$CC			; oval
-		dc.b 				2,	5
+		dc.b 				(2+8),	5
+
+
+
+; ===========================================================================
+;----------------------------------------------------
+; Object 39 - Game over	/ time over
+;----------------------------------------------------
+
+Obj39:					; DATA XREF: ROM:Obj_Indexo
+		moveq	#0,d0
+		move.b	routine(a0),d0
+		move.w	Obj39_Index(pc,d0.w),d1
+		jmp	Obj39_Index(pc,d1.w)
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Obj39_Index:	dc.w loc_BA98-Obj39_Index 
+		dc.w loc_BADC-Obj39_Index
+		dc.w loc_BAFE-Obj39_Index
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_BA98:				; DATA XREF: ROM:Obj39_Indexo
+		tst.l	(Plc_Buffer).w
+		beq.s	loc_BAA0
+		rts
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_BAA0:				; CODE XREF: ROM:0000BA9Cj
+		addq.b	#2,routine(a0)
+		move.w	#$50,x_pixel(a0) ; 'P'
+		btst	#0,mapping_frame(a0)
+		beq.s	loc_BAB8
+		move.w	#$1F0,8(a0)
+
+loc_BAB8:				; CODE XREF: ROM:0000BAB0j
+		move.w	#$F0,y_pixel(a0) ; 'ð'
+		move.l	#Map_Obj39,mappings(a0)
+		move.w	#$855E,art_tile(a0)
+		jsr	Adjust2PArtPointer
+		move.b	#0,render_flags(a0)
+		move.b	#0,priority(a0)
+
+loc_BADC:				; DATA XREF: ROM:0000BA94o
+		moveq	#$10,d1
+		cmpi.w	#$120,x_pixel(a0)
+		beq.s	loc_BAF2
+		bcs.s	loc_BAEA
+		neg.w	d1
+
+loc_BAEA:				; CODE XREF: ROM:0000BAE6j
+		add.w	d1,x_pixel(a0)
+		jmp	DisplaySprite
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_BAF2:				; CODE XREF: ROM:0000BAE4j
+		move.w	#$2D0,anim_frame_duration(a0)
+		addq.b	#2,routine(a0)
+		rts
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_BAFE:				; DATA XREF: ROM:0000BA96o
+		move.b	(Ctrl_1_Press).w,d0
+		andi.b	#$70,d0	; 'p'
+		bne.s	loc_BB1E
+		btst	#0,mapping_frame(a0)
+		bne.s	loc_BB42
+		tst.w	anim_frame_duration(a0)
+		beq.s	loc_BB1E
+		subq.w	#1,anim_frame_duration(a0)
+		jmp	DisplaySprite
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_BB1E:				; CODE XREF: ROM:0000BB06j
+					; ROM:0000BB14j
+		tst.b	($FFFFFE1A).w
+		bne.s	loc_BB38
+		move.b	#GameModeID_Logo,(Game_Mode).w	; Normally Continue Screen
+		tst.b	($FFFFFE18).w
+		bne.s	loc_BB42
+		move.b	#GameModeID_Logo,(Game_Mode).w
+		bra.s	loc_BB42
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+loc_BB38:				; CODE XREF: ROM:0000BB22j
+		clr.l	($FFFFFE38).w
+		move.b	#1,(Level_Reload).w
+
+loc_BB42:	
+		jmp	DisplaySprite
+
 ; ===========================================================================
 ;----------------------------------------------------
 ; Sonic	1 Object 7E - leftover S1 Special Stage	results
@@ -500,7 +504,7 @@ loc_BDC2:				; CODE XREF: ROM:0000BDBEj
 		move.w	(a2)+,y_pixel(a1)
 		move.b	(a2)+,routine(a1)
 		move.b	(a2)+,mapping_frame(a1)
-		move.l	#Map_S1Obj7E,mappings(a1)
+		move.l	#Map_TitleCard,mappings(a1)
 		move.w	#$8580,art_tile(a1)
 		jsr	Adjust2PArtPointer2
 		move.b	#0,render_flags(a1)

@@ -126,7 +126,8 @@ Load_EndOfAct:
 		move.w	(Camera_Max_X_pos).w,(Camera_Min_X_pos).w
 		clr.b	($FFFFFE2D).w
 		clr.b	(Update_HUD_timer).w
-		move.b	#$3A,(End_Of_act_Title_Card).w
+		move.b	#ObjID_TitleCard,(End_Of_act_Title_Card).w
+		move.b	#8,(End_Of_act_Title_Card+routine).w
 		moveq	#PLCID_S1TitleCard,d0
 		jsr	(LoadPLC2).l
 		move.b	#1,(Update_Bonus_score).w
