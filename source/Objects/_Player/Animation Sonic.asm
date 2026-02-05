@@ -6,7 +6,7 @@
 	GenerateIndexID	SonicAni, Walk
 	GenerateIndex	SonicAni, Run
 	GenerateIndexID	SonicAni, Roll
-	GenerateIndexID	SonicAni, Roll2
+	GenerateIndexID	SonicAni, Roll2	; this is a free slot
 	GenerateIndexID	SonicAni, Push
 	GenerateIndexID	SonicAni, Wait
 	GenerateIndexID	SonicAni, Balance
@@ -65,6 +65,16 @@ SonicAni_Roll:		dc.b 	-2
 
 SonicAni_Roll2:		dc.b 	-2
 			dc.b 	$6C,$70,$6D,$70,$6E,$70,$6F,$70
+			dc.b	afEnd
+
+SonicAni_Roll3:		dc.b 	-2
+			rept	2
+			dc.b 	$6C,$6F,$6E,$6D
+			endr
+			dc.b	afEnd
+
+SonicAni_Roll4:		dc.b 	-2
+			dc.b 	$6C,$70,$6F,$70,$6E,$70,$6D,$70
 			dc.b	afEnd
 
 SonicAni_Push:		dc.b 	-3

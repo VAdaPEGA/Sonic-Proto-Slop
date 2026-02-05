@@ -134,13 +134,13 @@ loc_198C0:				; CODE XREF: TouchResponse+CCj
 		cmpi.b	#$C0,d1
 		beq.w	Touch_Special
 		tst.b	d1
-		bmi.w	loc_199F2
+		bmi.w	Hurt_Player
 		move.b	collision_flags(a1),d0
-		andi.b	#$3F,d0	; '?'
+		andi.b	#$3F,d0
 		cmpi.b	#6,d0
 		beq.s	loc_198FA
-		cmpi.w	#$5A,invulnerable_time(a0) ; 'Z'
-		bcc.w	locret_198F8
+		cmpi.w	#-$5A,invincibility_time(a0) ; check invulnerability
+		blt.w	locret_198F8
 		move.b	#4,routine(a1)
 
 locret_198F8:				; CODE XREF: TouchResponse+106j
@@ -175,33 +175,30 @@ loc_19926:				; CODE XREF: TouchResponse+116j
 locret_19938:				; CODE XREF: TouchResponse+124j
 					; TouchResponse+134j ...
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_1993A:				; CODE XREF: TouchResponse+E0j
-					; TouchResponse:loc_19B56j
-		tst.b	($FFFFFE2D).w
-		bne.s	loc_19952
-		cmpi.b	#9,anim(a0)
-		beq.s	loc_19952
-		cmpi.b	#2,anim(a0)
-		bne.w	loc_199F2
-
-loc_19952:				; CODE XREF: TouchResponse+156j
-					; TouchResponse+15Ej
-		tst.b	collision_property(a1)
-		beq.s	Touch_KillEnemy
-		neg.w	x_vel(a0)
+loc_1993A:	; Hitting Boss / enemy
+	tst.w	invincibility_time(a0)
+	bmi.s	@DoNothing	; Sloppy implementation where if you're not visible, you don't hurt a boss
+	bne.s	@HurtEnemy
+		cmpi.b	#SonicAniID_Spindash,anim(a0)
+		beq.s	@HurtEnemy
+			cmpi.b	#SonicAniID_Roll,anim(a0)
+			bne.w	Hurt_Player
+	@HurtEnemy:	
+	tst.b	collision_property(a1)		; Check if there are any more hitpoints left
+	beq.s	Touch_KillEnemy
+		neg.w	x_vel(a0)	; rebound
 		neg.w	y_vel(a0)
-		asr	x_vel(a0)
+		asr	x_vel(a0)	; reduce speed
 		asr	y_vel(a0)
-		move.b	#0,collision_flags(a1)
-		subq.b	#1,collision_property(a1)
-		bne.s	locret_1997A
-		bset	#7,status(a1)
-
-locret_1997A:				; CODE XREF: TouchResponse+18Aj
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		move.b	#0,collision_flags(a1)		; Make enemy invulnerable
+		subq.b	#1,collision_property(a1)	; deduct 1 hitpoint from Boss
+		bne.s	@DoNothing
+			bset	#7,status(a1)		; Boss defeat state
+	@DoNothing:		
+	rts
+; ===========================================================================
 
 Touch_KillEnemy:			; CODE XREF: TouchResponse+16Ej
 		bset	#7,status(a1)
@@ -244,31 +241,19 @@ loc_199DC:				; CODE XREF: TouchResponse+1E4j
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 Enemy_Points:
 		dc.w	10,   20,   50,	 100; 0
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
-loc_199EC:				; CODE XREF: TouchResponse:Touch_Caterkillerj
+loc_199EC:				; Touch_Caterkiller related
 		bset	#7,status(a1)
-
-loc_199F2:				; CODE XREF: TouchResponse+EEj
-					; TouchResponse+166j ...
-		tst.b	($FFFFFE2D).w
+Hurt_Player:	
+		tst.w	invincibility_time(a0)	; check invulnerability
 		beq.s	Touch_Hurt
-
-loc_199F8:				; CODE XREF: TouchResponse+21Aj
 		moveq	#-1,d0
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 Touch_Hurt:	
-		tst.w	invulnerable_time(a0)
-		bne.s	loc_199F8
 		movea.l	a1,a2
-; End of function TouchResponse
-
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
 HurtSonic:				; CODE XREF: ROM:0000C75Ep
 		tst.b	(Partner).w
 		bne.s	HurtShield
@@ -304,7 +289,7 @@ Hurt_Reverse:
 Hurt_ChkSpikes:		
 		move.w	#0,ground_speed(a0)
 		move.b	#$1A,anim(a0)
-		move.w	#$78,invulnerable_time(a0)
+		move.w	#-$78,invincibility_time(a0)
 		move.w	#$A3,d0
 		cmpi.b	#$36,(a2)
 		bne.s	loc_19A98
@@ -399,7 +384,7 @@ loc_19B4E:				; CODE XREF: TouchResponse+35Cj
 		bhi.s	loc_19B56
 
 loc_19B52:				; CODE XREF: TouchResponse+362j
-		bra.w	loc_199F2
+		bra.w	Hurt_Player
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 loc_19B56:				; CODE XREF: TouchResponse+346j
@@ -443,8 +428,8 @@ Touch_Rings:
 	@Player1:
 		cmpa.l	a1,a2
 		beq.w	locret_DA36
-		cmpi.w	#$5A,invulnerable_time(a0)
-		bcc.s	locret_DA36
+		cmpi.w	#-$5A,invincibility_time(a0)	; check invulnerability
+		blt.s	locret_DA36
 		move.w	x_pos(a0),d2
 		move.w	y_pos(a0),d3
 		subi.w	#8,d2

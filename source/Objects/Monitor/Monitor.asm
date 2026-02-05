@@ -234,19 +234,23 @@ Monitor_Eggman:
 		move.l	(sp)+,a0
 		rts
 ; ===========================================================================
-Monitor_Tails:	
-
+Monitor_Tails:
+		moveq	#8*2,d0
+		bra.s	MonitorCharPlaySnd
 ; ===========================================================================
-Monitor_Tammy:	
-
+Monitor_Tammy:
+		moveq	#8*4,d0
+		bra.s	MonitorCharPlaySnd
 ; ===========================================================================
-Monitor_Hops:	
-
+Monitor_Hops:
+		moveq	#8*3,d0
+		bra.s	MonitorCharPlaySnd
 ; ===========================================================================
 Monitor_Boomer:	
-		move.b	#1,($FFFFFE2C).w
-		move.b	#$38,(MainCharacter+$180).w
-		move.w	#$AF,d0
+		moveq	#8,d0
+MonitorCharPlaySnd:
+		move.b	d0,(MainCharacter+Character).w
+		move.b	#$AF,d0
 		jmp	(PlaySound).l
 ; ===========================================================================
 Monitor_SonicLife:
@@ -274,7 +278,6 @@ loc_B130:
 ; ===========================================================================
 
 Monitor_Shoes:	
-		move.b	#1,($FFFFFE2E).w
 		move.w	#$4B0,(MainCharacter+speedshoes_time).w
 		move.w	#$C00,(Sonic_top_speed).w
 		move.w	#$18,(Sonic_acceleration).w
@@ -284,11 +287,10 @@ Monitor_Shoes:
 ; ===========================================================================
 
 Monitor_Invincibility:			; DATA XREF: ROM:0000B0D4o
-		move.b	#1,($FFFFFE2D).w
-		move.w	#$4B0,(MainCharacter+invincibility_time).w
-		move.b	#$38,(Object_Space+$200).w
+		move.w	#$4B0+60,(MainCharacter+invincibility_time).w
+		move.b	#ObjID_Invincibility,(Object_Space+$200).w
 		move.b	#1*4,(Object_Space+$200+anim).w
-		move.b	#$38,(Object_Space+$240).w
+		move.b	#ObjID_Invincibility,(Object_Space+$240).w
 		move.b	#2*4,(Object_Space+$240+anim).w
 		tst.b	($FFFFF7AA).w
 		bne.s	@NoMusic

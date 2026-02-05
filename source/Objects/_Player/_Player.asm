@@ -51,7 +51,7 @@ loc_FA88:
 		dbf	d2,loc_FA88
 
 ; ---------------------------------------------------------------------------
-; Normal state for Sonic
+; Normal state for Player
 ; ---------------------------------------------------------------------------
 
 ObjPlayer_Control:
@@ -59,7 +59,7 @@ ObjPlayer_Control:
 		beq.s	loc_FAB0			; if not, branch
 		btst	#4,(Ctrl_1_Press).w		; is button B pressed?
 		beq.s	loc_FAB0			; if not, branch
-		move.w	#1,(Debug_placement_mode).w	; change Sonic into ring/item
+		move.w	#1,(Debug_placement_mode).w	; change Player into ring/item
 		clr.b	($FFFFF7CC).w			; unlock control
 		rts
 ; -----------------------------------------------------------------------
@@ -70,16 +70,17 @@ loc_FAB0:
 
 loc_FABC:
 		btst	#0,obj_control(a0)	; is Sonic interacting with another object that holds him in place or controls his movement somehow?
-		bne.s	ObjPlayer_ControlsLock	; if yes, branch to skip Sonic's control
+		bne.s	ObjPlayer_ControlsLock	; if yes, branch to skip Player's control
 		moveq	#0,d0
 		move.b	status(a0),d0
 		andi.w	#6,d0
+		add.b	Character(a0),d0
 		move.w	ObjPlayer_Modes(pc,d0.w),d1
-		jsr	ObjPlayer_Modes(pc,d1.w)	; run Sonic's movement control code
+		jsr	ObjPlayer_Modes(pc,d1.w)	; run Player Control code
 
 		tst.w	(Camera_Min_Y_pos).w	; is vertical wrapping enabled?
 		bpl.s	@NoVerticalWrap		; if not, branch
-		andi.w	#$7FF,y_pos(a0) 	; perform wrapping of Sonic's y position
+		andi.w	#$7FF,y_pos(a0) 	; perform wrapping of Player's y position
 	@NoVerticalWrap:
 
 ObjPlayer_ControlsLock:
@@ -105,6 +106,27 @@ loc_FAFE:
 ; ===========================================================================
 ; secondary states under state ObjPlayer_Control
 	IndexStart	ObjPlayer_Modes
+	; Sonic
+	GenerateIndex	ObjPlayer, MdNormal
+	GenerateIndex	ObjPlayer, MdAir
+	GenerateIndex	ObjPlayer, MdRoll
+	GenerateIndex	ObjPlayer, MdJump
+	; Boom
+	GenerateIndex	ObjPlayer, MdNormal
+	GenerateIndex	ObjPlayer, MdAir
+	GenerateIndex	ObjPlayer, MdRoll
+	GenerateIndex	ObjPlayer, MdJump
+	; Tails
+	GenerateIndex	ObjPlayer, MdNormal
+	GenerateIndex	ObjPlayer, MdAir
+	GenerateIndex	ObjPlayer, MdRoll
+	GenerateIndex	ObjPlayer, MdJump
+	; Hops
+	GenerateIndex	ObjPlayer, MdNormal
+	GenerateIndex	ObjPlayer, MdAir
+	GenerateIndex	ObjPlayer, MdRoll
+	GenerateIndex	ObjPlayer, MdJump
+	; Tammy
 	GenerateIndex	ObjPlayer, MdNormal
 	GenerateIndex	ObjPlayer, MdAir
 	GenerateIndex	ObjPlayer, MdRoll
@@ -142,46 +164,36 @@ ObjPlayer_PlaySound:
 ; ===========================================================================
 
 Sonic_Display:
-		move.w	invulnerable_time(a0),d0
-		beq.s	ObjPlayer_Display
-		subq.w	#1,invulnerable_time(a0)
-		lsr.w	#3,d0
-		bcc.s	ObjPlayer_ChkInvin
-; loc_FB2E:
-ObjPlayer_Display:
-		jsr	(DisplaySprite).l
-; loc_FB34:
-ObjPlayer_ChkInvin:		; Checks if invincibility has expired
-		tst.b	($FFFFFE2D).w
-		beq.s	ObjPlayer_ChkShoes
-		tst.w	invincibility_time(a0)
-		beq.s	ObjPlayer_ChkShoes
-		subq.w	#1,invincibility_time(a0)
-		bne.s	ObjPlayer_ChkShoes
-		tst.b	($FFFFF7AA).w
-		bne.s	ObjPlayer_RmvInvin
-		cmpi.b	#12,air_left(a0)
-		bcs.s	ObjPlayer_RmvInvin
-		bsr.s	ObjPlayer_PlayZoneMusic
-; loc_FB74:
-ObjPlayer_RmvInvin:
-		move.b	#0,($FFFFFE2D).w
-; loc_FB7A:
-ObjPlayer_ChkShoes:	; Checks if Speed Shoes have expired and disables them if they have.
-		tst.b	($FFFFFE2E).w
-		beq.s	@DoNothing
+	move.w	invincibility_time(a0),d0	; check invulnerability
+	bpl.s	@ChkInv			; if positive, branch
+		addq.w	#1,invincibility_time(a0)	; count up (invulnerability is a negative number)
+		btst	#2,d0		; is a invulnerability frame to be undisplayed?
+		bne.s	@ChkShoes	; if not, branch
+		rts	; no display (also no speed shoes check, meaning extra speed time when invulnerability frames happen)
+	@ChkInv:
+		tst.w	d0	; Checks if invincibility has expired
+		beq.s	@ChkShoes
+			subq.w	#1,invincibility_time(a0)
+			cmpi.w	#60,d0
+			bne.s	@ChkShoes
+				tst.b	($FFFFF7AA).w	; Boss / right side boundary flag
+				bne.s	@ChkShoes
+					cmpi.b	#12,air_left(a0)
+					bcs.s	@ChkShoes
+						bsr.s	ObjPlayer_PlayZoneMusic
+		@ChkShoes:	; Checks if Speed Shoes have expired and disables them if they have.
 		tst.w	speedshoes_time(a0)
 		beq.s	@DoNothing
-		subq.w	#1,speedshoes_time(a0)
-		bne.s	@DoNothing
-		move.w	#$600,(Sonic_top_speed).w
-		move.w	#$C,(Sonic_acceleration).w
-		move.w	#$80,(Sonic_deceleration).w
-		move.b	#0,($FFFFFE2E).w
-		move.w	#$E3,d0
-		jmp	(PlaySound).l
+			subq.w	#1,speedshoes_time(a0)
+			bne.s	@DoNothing
+			inform	1, "TO DO : Expand Speed shoes related stuff for different characters"
+				move.w	#$600,(Sonic_top_speed).w
+				move.w	#$C,(Sonic_acceleration).w
+				move.w	#$80,(Sonic_deceleration).w
+				move.w	#$E3,d0
+				jmp	(PlaySound).l
 	@DoNothing:
-		rts
+		jmp	(DisplaySprite).l
 ; End of function Sonic_Display
 
 ; ---------------------------------------------------------------------------
@@ -253,7 +265,7 @@ ObjPlayer_InWater:
 		cmp.w	y_pos(a0),d0	; is Sonic above water?
 		bge.s	ObjPlayer_OutWater	; if yes, branch
 
-		bset	#6,status(a0)	; set underwater flag
+		bset	#PlayerStatusBitWater,status(a0)	; set underwater flag
 		bne.s	locret_FC0A	; if already underwater, branch
 
 		bsr.w	ObjPlayer_WaterResumeMusic
@@ -273,7 +285,7 @@ ObjPlayer_InWater:
 ; ---------------------------------------------------------------------------
 ; ObjPlayer_NotInWater:
 ObjPlayer_OutWater:
-		bclr	#6,status(a0)	; unset underwater flag
+		bclr	#PlayerStatusBitWater,status(a0)	; unset underwater flag
 		beq.s	locret_FC0A	; if already unset, branch
 
 		bsr.w	ObjPlayer_WaterResumeMusic
@@ -298,9 +310,13 @@ loc_FC98:
 ; Called if Sonic is neither airborne nor rolling this frame
 ; ---------------------------------------------------------------------------
 
+ObjPlayer_MdNormalNoRoll:
+		bsr.w	Sonic_Jump
+		bra.s	ObjPlayer_MdNormalReturn
 ObjPlayer_MdNormal:
 		bsr.w	Sonic_CheckSpindash
 		bsr.w	Sonic_Jump
+ObjPlayer_MdNormalReturn:
 		bsr.w	Sonic_SlopeResist
 		bsr.w	Sonic_Move
 		bsr.w	Sonic_Roll
@@ -320,7 +336,7 @@ ObjPlayer_MdAir:
 		bsr.w	Sonic_ChgJumpDir
 		bsr.w	Sonic_LevelBound
 		jsr	(ObjectMoveAndFall).l
-		btst	#6,status(a0)	; is Sonic underwater?
+		btst	#PlayerStatusBitWater,status(a0)	; is Sonic underwater?
 		beq.s	loc_FCEA	; if not, branch
 		subi.w	#$28,y_vel(a0)	; reduce gravity by $28 ($38-$28=$10)
 
@@ -356,7 +372,7 @@ ObjPlayer_MdJump:
 		bsr.w	Sonic_ChgJumpDir
 		bsr.w	Sonic_LevelBound
 		jsr	(ObjectMoveAndFall).l
-		btst	#6,status(a0)	; is Sonic underwater?
+		btst	#PlayerStatusBitWater,status(a0)	; is Sonic underwater?
 		beq.s	loc_FD34	; if not, branch
 		subi.w	#$28,y_vel(a0)	; reduce gravity by $28 ($38-$28=$10)
 
@@ -397,7 +413,7 @@ loc_FD72:
 		bne.w	ObjPlayer_UpdateSpeedOnGround	; if yes, branch
 		tst.w	ground_speed(a0)			; is Sonic moving?
 		bne.w	ObjPlayer_UpdateSpeedOnGround	; if yes, branch
-		bclr	#5,status(a0)
+		bclr	#PlayerStatusBitPush,status(a0)
 		cmpi.b	#$B,anim(a0)	; use "standing" animation
 		beq.s	Sonic_Balance
 		move.b	#5,anim(a0)
@@ -546,7 +562,7 @@ loc_FE8E:
 		cmpi.w	#$600,x_vel(a0)		; is Sonic at max speed?
 		bge.s	Sonic_WallRecoil	; if yes, branch
 		add.w	d1,x_vel(a0)
-		bset	#5,status(a0)
+		bset	#PlayerStatusBitPush,status(a0)
 		move.w	#0,ground_speed(a0)
 		rts
 ; ---------------------------------------------------------------------------
@@ -560,7 +576,7 @@ loc_FED8:
 		cmpi.w	#$FA00,x_vel(a0)	; is Sonic at max speed?
 		ble.s	Sonic_WallRecoil	; if yes, branch
 		sub.w	d1,x_vel(a0)
-		bset	#5,status(a0)
+		bset	#PlayerStatusBitPush,status(a0)
 		move.w	#0,ground_speed(a0)
 		rts
 ; ---------------------------------------------------------------------------
@@ -582,7 +598,7 @@ Sonic_WallRecoil:
 		move.b	#$A3,d2
 		move.b	#4,routine(a0)
 		bsr.w	Sonic_ResetOnFloor
-		bset	#1,status(a0)
+		bset	#PlayerStatusBitAir,status(a0)
 		move.w	#-$200,d0
 		tst.w	x_vel(a0)
 		bpl.s	@Right
@@ -613,9 +629,9 @@ Sonic_MoveLeft:
 		bpl.s	Sonic_TurnLeft
 
 loc_FF44:
-		bset	#0,status(a0)
+		bset	#PlayerStatusBitHFlip,status(a0)
 		bne.s	loc_FF58
-		bclr	#5,status(a0)
+		bclr	#PlayerStatusBitPush,status(a0)
 		cmpi.b	#$D,anim(a0)
 		bne.s	@NotSkid
 		move.b	#$13,anim(a0)
@@ -664,7 +680,7 @@ loc_FF78:
 		cmpi.w	#$400,d0
 		blt.s	locret_FFA6
 		move.b	#$D,anim(a0)
-		bclr	#0,status(a0)
+		bclr	#PlayerStatusBitHFlip,status(a0)
 		move.w	#$A4,d0
 		jsr	(PlaySound_Special).l
 
@@ -679,9 +695,9 @@ locret_FFA6:
 Sonic_MoveRight:
 		move.w	ground_speed(a0),d0
 		bmi.s	Sonic_TurnRight
-		bclr	#0,status(a0)
+		bclr	#PlayerStatusBitHFlip,status(a0)
 		beq.s	loc_FFC2
-		bclr	#5,status(a0)
+		bclr	#PlayerStatusBitPush,status(a0)
 		cmpi.b	#$D,anim(a0)
 		bne.s	@NotSkid
 		move.b	#$13,anim(a0)
@@ -730,7 +746,7 @@ loc_FFDE:
 		move.b	#$D,anim(a0)
 
 loc_FFFC:
-		bset	#0,status(a0)
+		bset	#PlayerStatusBitHFlip,status(a0)
 		move.w	#$A4,d0
 		jsr	(PlaySound_Special).l
 
@@ -786,7 +802,7 @@ loc_10064:
 loc_10068:
 		tst.w	ground_speed(a0)
 		bne.s	loc_1008A
-		bclr	#2,status(a0)
+		bclr	#PlayerStatusBitSpin,status(a0)
 		move.b	#$13,y_radius(a0)
 		move.b	#9,x_radius(a0)
 		move.b	#5,anim(a0)
@@ -824,7 +840,7 @@ Sonic_RollLeft:
 		bpl.s	loc_100D6
 
 loc_100C8:
-		bset	#0,status(a0)
+		bset	#PlayerStatusBitHFlip,status(a0)
 		move.b	#2,anim(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
@@ -846,7 +862,7 @@ loc_100DE:
 Sonic_RollRight:
 		move.w	ground_speed(a0),d0
 		bmi.s	loc_100F8
-		bclr	#0,status(a0)
+		bclr	#PlayerStatusBitHFlip,status(a0)
 		move.b	#2,anim(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
@@ -866,26 +882,60 @@ loc_10100:
 
 
 Sonic_ChgJumpDir:
-		move.w	(Sonic_top_speed).w,d6
-		move.w	(Sonic_acceleration).w,d5
-		asl.w	#1,d5
-		btst	#4,status(a0)
-		bne.s	loc_10150
+	move.w	(Sonic_top_speed).w,d6
+	move.w	(Sonic_acceleration).w,d5
+	asl.w	#1,d5
+	btst	#PlayerStatusBitRollLock,status(a0)	; Roll Lock >:C
+	bne.s	loc_10150
 		move.w	x_vel(a0),d0
 		btst	#bitL,(Ctrl_1_Held_Logical).w
 		beq.s	loc_10136
-		bset	#0,status(a0)
+
+		btst	#PlayerStatusBitHFlip,status(a0)
+		beq.s	@CheckSpeedRev
+			tst.w	ground_speed(a0)
+			beq.s	@JumpNormal
+			bmi.s	@JumpNormal
+			addq.w	#5,d5
+			add.w	d6,d6
+			bra.s	@JumpNormal
+	@CheckSpeedRev:
+		tst.w	ground_speed(a0)
+		bpl.s	@JumpNormal
+		addq.w	#5,d5
+		add.w	d6,d6
+	@JumpNormal:
+
+
+		;bset	#PlayerStatusBitHFlip,status(a0)
 		sub.w	d5,d0
 		move.w	d6,d1
 		neg.w	d1
 		cmp.w	d1,d0
 		bgt.s	loc_10136
 		move.w	d1,d0
-
-loc_10136:
+	loc_10136:
 		btst	#bitR,(Ctrl_1_Held_Logical).w
 		beq.s	loc_1014C
-		bclr	#0,status(a0)
+
+		btst	#PlayerStatusBitHFlip,status(a0)
+		bne.s	@CheckSpeedRev
+			tst.w	ground_speed(a0)
+			bpl.s	@JumpNormal
+			addq.w	#5,d5
+			add.w	d6,d6
+			bra.s	@JumpNormal
+			
+	@CheckSpeedRev:
+		tst.w	ground_speed(a0)
+		beq.s	@JumpNormal
+		bmi.s	@JumpNormal
+		addq.w	#5,d5
+		add.w	d6,d6
+	@JumpNormal:
+
+
+		;bclr	#PlayerStatusBitHFlip,status(a0)
 		add.w	d5,d0
 		cmp.w	d6,d0
 		blt.s	loc_1014C
@@ -1014,7 +1064,7 @@ loc_1023A:
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
 ObjPlayer_DoRoll:
-		bset	#2,status(a0)
+		bset	#PlayerStatusBitSpin,status(a0)
 		move.b	#$E,y_radius(a0)
 		move.b	#7,x_radius(a0)
 		move.b	#2,anim(a0)
@@ -1034,52 +1084,49 @@ locret_10276:
 
 
 Sonic_Jump:
-		move.b	(Ctrl_1_Press_Logical).w,d0
-		andi.b	#btnABC,d0
-		beq.w	locret_1031C
+	move.b	(Ctrl_1_Press_Logical).w,d0
+	andi.b	#btnABC,d0
+	beq.w	@DoNothing
 		moveq	#0,d0
 		move.b	angle(a0),d0
 		addi.b	#$80,d0
 		bsr.w	sub_13102
 		cmpi.w	#6,d1
-		blt.w	locret_1031C	; Do nothing if ceiling is too low
-		move.w	#$680,d2	; Jump height
-		btst	#PlayerStatusBitWater,status(a0)
-		beq.s	@NotUnderwater
-		move.w	#$380,d2	; Jump Height underwater
-	@NotUnderwater:
-		moveq	#0,d0
-		move.b	angle(a0),d0
-		subi.b	#$40,d0
-		jsr	(CalcSine).l
-		muls.w	d2,d0
-		asr.l	#8,d0
-		add.w	d0,x_vel(a0)
-		muls.w	d2,d1
-		asr.l	#8,d1
-		add.w	d1,y_vel(a0)
-		bset	#PlayerStatusBitAir,status(a0)
-		bclr	#PlayerStatusBitPush,status(a0)
-		move.l	#ObjectMove,(sp)
-		move.b	#1,jumping(a0)
-		clr.b	stick_to_convex(a0)
-		move.w	#$A0,d0
-		jsr	(PlaySound_Special).l	; Play Jump Sound
-		move.b	#$13,y_radius(a0)
-		move.b	#9,x_radius(a0)
-		btst	#PlayerStatusBitSpin,status(a0)
-		bne.s	loc_1031E
-		move.b	#$E,y_radius(a0)
-		move.b	#7,x_radius(a0)
-		move.b	#2,anim(a0)
-		bset	#PlayerStatusBitSpin,status(a0)
-		addq.w	#5,y_pos(a0)
-
-locret_1031C:
+		blt.w	@DoNothing	; Do nothing if ceiling is too low
+			move.w	#$680,d2	; Jump height
+			btst	#PlayerStatusBitWater,status(a0)
+			beq.s	@NotUnderwater
+				move.w	#$380,d2	; Jump Height underwater
+		@NotUnderwater:
+			moveq	#0,d0
+			move.b	angle(a0),d0
+			subi.b	#$40,d0
+			jsr	(CalcSine).l
+			muls.w	d2,d0
+			asr.l	#8,d0
+			add.w	d0,x_vel(a0)
+			muls.w	d2,d1
+			asr.l	#8,d1
+			add.w	d1,y_vel(a0)
+			bset	#PlayerStatusBitAir,status(a0)
+			bclr	#PlayerStatusBitPush,status(a0)
+			move.l	#ObjectMove,(sp)
+			move.b	#1,jumping(a0)
+			clr.b	stick_to_convex(a0)
+			move.w	#$A0,d0
+			jsr	(PlaySound_Special).l	; Play Jump Sound
+			move.b	#$13,y_radius(a0)
+			move.b	#9,x_radius(a0)
+			btst	#PlayerStatusBitSpin,status(a0)
+			bne.s	@AlreadySpinning
+				move.b	#$E,y_radius(a0)
+				move.b	#7,x_radius(a0)
+				move.b	#SonicAniID_Roll,anim(a0)
+				bset	#PlayerStatusBitSpin,status(a0)
+				addq.w	#5,y_pos(a0)
+	@DoNothing:
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_1031E:
+	@AlreadySpinning:
 		bset	#PlayerStatusBitRollLock,status(a0)
 		rts
 ; End of function Sonic_Jump
@@ -1152,12 +1199,12 @@ Sonic_UpdateSpindash:
 		move.b	#0,spindash_flag(a0)
 		move.w	#$2000,(Horiz_scroll_delay_val).w
 		move.w	#$800,ground_speed(a0)
-		btst	#0,status(a0)
+		btst	#PlayerStatusBitHFlip,status(a0)
 		beq.s	loc_103D4
 		neg.w	ground_speed(a0)
 
 loc_103D4:
-		bset	#2,status(a0)
+		bset	#PlayerStatusBitSpin,status(a0)
 		rts
 ; ===========================================================================
 ; loc_103DC:
@@ -1243,7 +1290,7 @@ loc_10484:
 		cmpi.w	#$280,d0
 		bcc.s	locret_1049A
 		clr.w	ground_speed(a0)
-		bset	#1,status(a0)
+		bset	#PlayerStatusBitAir,status(a0)
 		move.w	#$1E,move_lock(a0)
 
 locret_1049A:
@@ -1523,25 +1570,23 @@ locret_10702:
 
 
 Sonic_ResetOnFloor:
-		btst	#4,status(a0)
-		beq.s	loc_10712
-		nop
-		nop
-		nop
-
-loc_10712:
-		bclr	#5,status(a0)
-		bclr	#1,status(a0)
-		bclr	#4,status(a0)
-		btst	#2,status(a0)
-		beq.s	loc_10748
-		bclr	#2,status(a0)
-		move.b	#$13,y_radius(a0)
-		move.b	#9,x_radius(a0)
-		move.b	#0,anim(a0)
-		subq.w	#5,y_pos(a0)
-
-loc_10748:
+;		btst	#PlayerStatusBitRollLock,status(a0)
+;		beq.s	loc_10712
+;		nop
+;		nop
+;		nop
+;
+;loc_10712:
+		bclr	#PlayerStatusBitPush,status(a0)
+		bclr	#PlayerStatusBitAir,status(a0)
+		bclr	#PlayerStatusBitRollLock,status(a0)
+		bclr	#PlayerStatusBitSpin,status(a0)
+		beq.s	@NotRolling
+			move.b	#$13,y_radius(a0)
+			move.b	#9,x_radius(a0)
+			move.b	#0,anim(a0)
+			subq.w	#5,y_pos(a0)
+		@NotRolling:
 		move.b	#0,jumping(a0)
 		move.w	#0,($FFFFF7D0).w
 		move.b	#0,flip_angle(a0)
@@ -1555,7 +1600,7 @@ ObjPlayer_Hurt:
 		bmi.w	loc_107E8
 		jsr	(ObjectMove).l
 		addi.w	#$30,y_vel(a0)
-		btst	#6,status(a0)
+		btst	#PlayerStatusBitWater,status(a0)
 		beq.s	loc_1077E
 		subi.w	#$20,y_vel(a0)
 
@@ -1578,7 +1623,7 @@ Sonic_HurtStop:
 		bcs.w	JmpTo_KillSonic
 	@LevelWrap:
 		bsr.w	Sonic_DoLevelCollision
-		btst	#1,status(a0)
+		btst	#PlayerStatusBitAir,status(a0)
 		bne.s	locret_107E6
 		moveq	#0,d0
 		move.w	d0,y_vel(a0)
@@ -1594,7 +1639,7 @@ Sonic_HurtStop:
 loc_107D6:
 		move.b	#0,anim(a0)
 		subq.b	#2,routine(a0)
-		move.w	#$78,invulnerable_time(a0)
+		move.w	#-$78,invincibility_time(a0)
 
 locret_107E6:
 		rts
@@ -1777,7 +1822,7 @@ loc_1098C:
 		andi.b	#$FC,render_flags(a0)
 		eor.b	d1,d2
 		or.b	d2,render_flags(a0)
-		btst	#5,status(a0)
+		btst	#PlayerStatusBitPush,status(a0)
 		bne.w	SonicAnimate_Push
 		lsr.b	#4,d0
 		andi.b	#6,d0
@@ -1852,13 +1897,26 @@ SonicAnimate_TumbleLeft:
 ; ===========================================================================
 ; loc_10A44:
 SonicAnimate_Roll:
-		addq.b	#1,d0
-		bne.s	SonicAnimate_Push
+	addq.b	#1,d0
+	bne.s	SonicAnimate_Push
+		btst	#PlayerStatusBitHFlip,status(a0)
+		beq.s	@CheckSpeedRev
 		move.w	ground_speed(a0),d2
-		bpl.s	loc_10A50
+		bpl.s	@RollReverse
 		neg.w	d2
+		bra.s	@RollNormal
+	@CheckSpeedRev:
+		move.w	ground_speed(a0),d2
+		bpl.s	@RollNormal
+		neg.w	d2
+	@RollReverse:
+		lea	(SonicAni_Roll4).l,a1
+		cmpi.w	#$600,d2
+		bcc.s	loc_10A62
+		lea	(SonicAni_Roll3).l,a1
+		bra.s	loc_10A62
 
-loc_10A50:
+	@RollNormal:
 		lea	(SonicAni_Roll2).l,a1
 		cmpi.w	#$600,d2
 		bcc.s	loc_10A62

@@ -34,10 +34,10 @@ loc_1240C:
 ; ===========================================================================
 
 Obj38_Shield:
-		tst.b	($FFFFFE2D).w	; is Sonic invincible?
-		bne.s	locret_1245A	; if yes, branch
-		tst.b	($FFFFFE2C).w	; does Sonic have a shield?
-		beq.s	Obj38_Delete	; if not, branch
+	;	tst.b	($FFFFFE2D).w	; is Sonic invincible?
+	;	bne.s	locret_1245A	; if yes, branch
+	;	tst.b	($FFFFFE2C).w	; does Sonic have a shield?
+	;	beq.s	Obj38_Delete	; if not, branch
 		move.w	(MainCharacter+x_pos).w,x_pos(a0)
 		move.w	(MainCharacter+y_pos).w,y_pos(a0)
 		move.b	(MainCharacter+status).w,status(a0)
@@ -57,8 +57,8 @@ Obj38_Delete:
 ; position buffer for something
 
 Obj38_Stars:
-		tst.b	($FFFFFE2D).w	; is Sonic invincible?
-		beq.s	Obj38_Delete	; if not, branch
+	;	tst.b	($FFFFFE2D).w	; is Sonic invincible?
+	;	beq.s	Obj38_Delete	; if not, branch
 		move.w	(Sonic_Pos_Record_Index).w,d0
 		move.b	anim(a0),d1
 		move.b	d0,d2
