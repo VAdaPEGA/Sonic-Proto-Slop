@@ -60,7 +60,7 @@ Level Design : StaticJ3ff
 Programming : VAdaPEGA
 Sprites : Beta, ChrisFurry, Sharb, VAdaPEGA
 Critter Naming Ideas : Luminator, RoundCritterGang
-Special Thanks : Arrietty, kakalakola
+Special Thanks : Arrietty, kakalakola, Luminator
 ---  
 Template 
 Template 

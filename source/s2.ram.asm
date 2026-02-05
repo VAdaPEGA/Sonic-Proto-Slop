@@ -83,14 +83,16 @@ subtype:		equ $28
 ground_speed:		equ $14		; 2 bytes ; directionless representation of speed... not updated in the air
 obj_control:		equ $27		; 0 for normal, 1 for hanging or for resting on a flipper, $81 for going through CNZ/OOZ/MTZ tubes or stopped in CNZ cages or stoppers or flying if Tails
 air_left:		equ $28		; Drowning countdown
+
 flip_type:		equ $2A		; Type of Flipma animation
 flip_angle:		equ $2B		; angle about the x axis (360 degrees = 256) (twist/tumble/corkscrew)
 flips_remaining:	equ $2C		; number of flip revolutions remaining
 flip_speed:		equ $2D		; number of flip revolutions per frame / 256
 
 move_lock:		equ $2E		; 2 bytes ; horizontal control lock, counts down to 0
-invulnerable_time:	equ $30		; 2 bytes ; time remaining until you stop blinking
-invincibility_time:	equ $32		; 2 bytes ; remaining
+Character:		equ $30		; Player Character
+;		equ $31		; FREE RAM
+invincibility_time:	equ $32		; 2 bytes ; Invincible if positive, invulnerability frames if negative
 speedshoes_time:	equ $34		; 2 bytes ; remaining
 
 next_tilt:		equ $36		; angle on ground in front of sprite
@@ -481,6 +483,10 @@ Timer_frame:			equ Timer+3
 
 Score:				equ $FFFFFE26
 Partner:			equ $FFFFFE2C
+
+; $FFFFFE2C Shield
+; $FFFFFE2D free RAM, previously used as flags for invincibility
+; $FFFFFE2E and speed shoes
 
 
 
