@@ -105,10 +105,10 @@ loc_FAFE:
 ; ===========================================================================
 ; secondary states under state ObjPlayer_Control
 	IndexStart	ObjPlayer_Modes
-	GenerateIndex	 ObjPlayer, MdNormal
-	GenerateIndex	 ObjPlayer, MdAir
-	GenerateIndex	 ObjPlayer, MdRoll
-	GenerateIndex	 ObjPlayer, MdJump
+	GenerateIndex	ObjPlayer, MdNormal
+	GenerateIndex	ObjPlayer, MdAir
+	GenerateIndex	ObjPlayer, MdRoll
+	GenerateIndex	ObjPlayer, MdJump
 ; ===========================================================================
 ObjPlayer_WaterResumeMusic:
 		cmpi.b	#12,air_left(a0)
