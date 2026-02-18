@@ -1683,9 +1683,9 @@ TitleScreen:
 		lea		(ArtNem_Title).l,a0
 		bsr.w		NemDec
 
-		locVRAM		$4000
-		lea		(ArtNem_TitleSonicTails).l,a0
-		bsr.w		NemDec
+	;	locVRAM		$4000
+	;	lea		(ArtNem_TitleSonicTails).l,a0
+	;	bsr.w		NemDec
 
 ; --- Loading Level Select Art
 VRAMLevSelTextArt	=	$A000
@@ -1778,9 +1778,9 @@ loc_339A:
 		move.l	d0,(a1)+
 		dbf	d1,loc_339A
 
-		move.b	#ObjID_TitleObject,(Object_Space+$40).w
-		move.b	#ObjID_TitleObject,(Object_Space+$80).w
-		move.b	#1,(Object_Space+$80+mapping_frame).w
+	;	move.b	#ObjID_TitleObject,(Object_Space+$40).w
+	;	move.b	#ObjID_TitleObject,(Object_Space+$80).w
+	;	move.b	#1,(Object_Space+$80+mapping_frame).w
 		jsr	(RunObjects).l
 		jsr	(BuildSprites).l
 		moveq	#PLCID_Main,d0
