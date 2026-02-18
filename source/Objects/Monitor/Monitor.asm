@@ -235,19 +235,19 @@ Monitor_Eggman:
 		rts
 ; ===========================================================================
 Monitor_Tails:
-		moveq	#8*2,d0
+		moveq	#16*2,d0
 		bra.s	MonitorCharPlaySnd
 ; ===========================================================================
 Monitor_Tammy:
-		moveq	#8*4,d0
+		moveq	#16*4,d0
 		bra.s	MonitorCharPlaySnd
 ; ===========================================================================
 Monitor_Hops:
-		moveq	#8*3,d0
+		moveq	#16*3,d0
 		bra.s	MonitorCharPlaySnd
 ; ===========================================================================
 Monitor_Boomer:	
-		moveq	#8,d0
+		moveq	#16,d0
 MonitorCharPlaySnd:
 		move.b	d0,(MainCharacter+Character).w
 		move.b	#$AF,d0

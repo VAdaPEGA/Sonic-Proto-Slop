@@ -1968,21 +1968,27 @@ loc_10A98:
 
 
 LoadSonicDynPLC:
-		moveq	#0,d0
-		move.b	mapping_frame(a0),d0
-		cmp.b	(Sonic_LastLoadedDPLC).w,d0
-		beq.s	locret_10C34
+	moveq	#0,d0
+	move.b	mapping_frame(a0),d0
+	cmp.b	(Sonic_LastLoadedDPLC).w,d0
+	beq.s	@DoNothing
 		move.b	d0,(Sonic_LastLoadedDPLC).w
-		lea	(SonicDynPLC).l,a2
-		;lea	(TailsDynPLC).l,a2
+
+		moveq	#0,d3
+		move.b	Character(a0),d3	; get entry
+		lea	@Values(pc,d3.w),a2
+		move.l	(a2)+,d4		; load VRAM location
+		move.l	(a2)+,mappings(a0)	; Load Mapping
+		move.l	(a2)+,a3		; Load Art
+		move.l	(a2),a2 		; load PLC script
+
+		moveq	#0,d3
 		add.w	d0,d0
 		adda.w	(a2,d0.w),a2
 		move.w	(a2)+,d5
 		subq.w	#1,d5
-		bmi.s	locret_10C34
-		move.w	#VRAM_Plr1,d4
-; loc_10C08:
-SPLC_ReadEntry:
+		bmi.s	@DoNothing
+	@ReadEntry:
 		moveq	#0,d1
 		move.w	(a2)+,d1
 		move.w	d1,d3
@@ -1991,17 +1997,28 @@ SPLC_ReadEntry:
 		addi.w	#$10,d3
 		andi.w	#$FFF,d1
 		lsl.l	#5,d1
-		addi.l	#Art_Sonic,d1
-		;addi.l	#Art_Tails,d1
+
+		add.l	a3,d1
+
 		move.w	d4,d2
 		add.w	d3,d4
 		add.w	d3,d4
 		jsr	(QueueDMATransfer).l
-		dbf	d5,SPLC_ReadEntry
-
-locret_10C34:
+	dbf	d5,@ReadEntry
+	@DoNothing:
 		rts
 ; End of function LoadSonicDynPLC
+; ===========================================================================
+@macro	macro	VRAM, VRAM2, map, art, dplc
+	dc.w	VRAM2, VRAM
+	dc.l	map, art, dplc
+	endm
+@Values:;	VRAM Player 1	VRAM Player 2	Sprite Map data		Uncompressed Art	DPLC
+	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Sonic,		Art_Sonic,	SonicDynPLC
+	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC ; Boomer
+	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC
+	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC ; Hops
+	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC ; Tammy
 
 ; ===========================================================================
 

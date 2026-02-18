@@ -5,7 +5,9 @@
 		include	"Objects/_Player/Animation Tails.asm"
 
 Map_Sonic:	incbin	"Objects/_Player/Sonic.SprMap"
+		even
 Map_Tails:	incbin	"Objects/_Player/Tails.SprMap"
+		even
 
 SonicDynPLC:	incbin	"Objects/_Player/Sonic.DPLC"
 		even
