@@ -71,7 +71,7 @@ loc_FAB0:
 loc_FABC:
 		btst	#0,obj_control(a0)	; is Sonic interacting with another object that holds him in place or controls his movement somehow?
 		bne.s	ObjPlayer_ControlsLock	; if yes, branch to skip Player's control
-		moveq	#0,d0
+	;	moveq	#0,d0	I'm sure we'll be fiiiiine without this
 		move.b	status(a0),d0
 		andi.w	#6,d0
 		add.b	Character(a0),d0
@@ -111,26 +111,31 @@ loc_FAFE:
 	GenerateIndex	ObjPlayer, MdAir
 	GenerateIndex	ObjPlayer, MdRoll
 	GenerateIndex	ObjPlayer, MdJump
+	dc.b	"I made a"
 	; Boom
 	GenerateIndex	ObjPlayer, MdNormal
 	GenerateIndex	ObjPlayer, MdAir
 	GenerateIndex	ObjPlayer, MdRoll
 	GenerateIndex	ObjPlayer, MdJump
+	dc.b	"mistake "
 	; Tails
 	GenerateIndex	ObjPlayer, MdNormal
 	GenerateIndex	ObjPlayer, MdAir
 	GenerateIndex	ObjPlayer, MdRoll
 	GenerateIndex	ObjPlayer, MdJump
+	dc.b	"and this"
 	; Hops
 	GenerateIndex	ObjPlayer, MdNormal
 	GenerateIndex	ObjPlayer, MdAir
 	GenerateIndex	ObjPlayer, MdRoll
 	GenerateIndex	ObjPlayer, MdJump
+	dc.b	" is my  "
 	; Tammy
 	GenerateIndex	ObjPlayer, MdNormal
 	GenerateIndex	ObjPlayer, MdAir
 	GenerateIndex	ObjPlayer, MdRoll
 	GenerateIndex	ObjPlayer, MdJump
+	dc.b	"fix! x.x"
 ; ===========================================================================
 ObjPlayer_WaterResumeMusic:
 		cmpi.b	#12,air_left(a0)
