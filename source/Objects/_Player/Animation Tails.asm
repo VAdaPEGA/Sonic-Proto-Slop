@@ -131,15 +131,15 @@ TailsAni_Hang:		dc.b	4
 
 TailsAni_TurnAround:	dc.b	$F	;S1 Unused Leap
 			dc.b	1,  2
-			dc.b	afChange, SonicAniID_Walk	; Turning around
+			dc.b	afChange, TailsAniID_Walk	; Turning around
 
 TailsAni_13:		dc.b	$F	;S1 Unused Leap2
 			dc.b	1
-			dc.b	afChange, SonicAniID_Walk
+			dc.b	afChange, TailsAniID_Walk
 
 TailsAni_14:		dc.b	$3F	;S1 unused Slide
 			dc.b	1
-			dc.b	afChange, SonicAniID_Walk	
+			dc.b	afChange, TailsAniID_Walk	
 
 TailsAni_Bubble:	dc.b	$B
 			dc.b	$74,$74,$12,$13
