@@ -1956,8 +1956,8 @@ loc_10A6C:
 ; ===========================================================================
 ; loc_10A88:
 SonicAnimate_Push:
-		addq.b	#1,d0
-		bne.w	TailsAnimate_Walk
+	addq.b	#1,d0
+	bmi.s	TailsAnimate_Walk
 		move.w	ground_speed(a0),d2
 		bmi.s	loc_10A90
 		neg.w	d2
