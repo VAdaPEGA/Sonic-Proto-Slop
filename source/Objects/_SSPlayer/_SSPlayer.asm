@@ -46,7 +46,8 @@ Obj09_Main:
 		andi.w	#2,d0
 		move.w	@Index(pc,d0.w),d1
 		jsr	@Index(pc,d1.w)
-		jsr	(LoadSonicDynPLC).l
+		jsr	(Player_Animate).l
+		jsr	(LoadPlayerDynPLC).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 		IndexStart
@@ -74,7 +75,7 @@ Obj09_Display:
 		move.w	(Special_Stage_Angle).w,d0
 		add.w	(Special_Stage_Speed).w,d0
 		move.w	d0,(Special_Stage_Angle).w
-		jmp	(Sonic_Animate).l
+		rts
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -314,8 +315,8 @@ Obj09_ExitTransition:
 		move.w	(Special_Stage_Angle).w,d0
 		add.w	(Special_Stage_Speed).w,d0
 		move.w	d0,(Special_Stage_Angle).w
-		jsr	(Sonic_Animate).l
-		jsr	(LoadSonicDynPLC).l
+		jsr	(Player_Animate).l
+		jsr	(LoadPlayerDynPLC).l
 		bsr.w	S1SS_FixCamera
 		jmp	(DisplaySprite).l
 ; ===========================================================================
@@ -325,8 +326,8 @@ Obj09_ExitSpecialStage:
 		move.b	#GameModeID_Level,(Game_Mode).w
 
 @TimerNotExpired:	
-		jsr	(Sonic_Animate).l
-		jsr	(LoadSonicDynPLC).l
+		jsr	(Player_Animate).l
+		jsr	(LoadPlayerDynPLC).l
 		bsr.w	S1SS_FixCamera
 		jmp	(DisplaySprite).l
 

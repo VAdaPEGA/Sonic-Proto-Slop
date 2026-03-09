@@ -87,22 +87,24 @@ ObjPlayer_ControlsLock:
 		bsr.w	Sonic_Display
 		bsr.w	Sonic_RecordPos
 		bsr.w	Sonic_Water
+
+		tst.b	obj_control(a0)
+		bmi.s	@IgnoreCollisionWhenPlayerIsLocked
+			jsr	TouchResponse
+	@IgnoreCollisionWhenPlayerIsLocked:
+		bsr.w	Player_CheckChunk
+
+		; flipma related?
 		move.b	($FFFFF768).w,next_tilt(a0)
 		move.b	($FFFFF76A).w,tilt(a0)
 		tst.b	($FFFFF7C7).w
 		beq.s	loc_FAFE
 		tst.b	anim(a0)
 		bne.s	loc_FAFE
-		move.b	prev_anim(a0),anim(a0)
-
-loc_FAFE:
-		bsr.w	Sonic_Animate
-		tst.b	obj_control(a0)
-		bmi.s	@IgnoreCollisionWhenPlayerIsLocked
-			jsr	TouchResponse
-	@IgnoreCollisionWhenPlayerIsLocked:
-		bsr.w	Player_CheckChunk
-		bra.w	LoadSonicDynPLC
+			move.b	prev_anim(a0),anim(a0)
+loc_FAFE:	
+		bsr.w	Player_Animate
+		bra.w	LoadPlayerDynPLC
 ; ===========================================================================
 ; secondary states under state ObjPlayer_Control
 	IndexStart	ObjPlayer_Modes
@@ -1027,8 +1029,8 @@ Sonic_Boundary_Bottom:
 	@jmp:
 		moveq	#Err_DeathPit,d0
 		TRAP	#0
-		bra.w	JmpTo_KillSonic
-
+JmpTo_KillSonic:	; JmpTo
+		jmp	(KillSonic).l
 
 Sonic_Boundary_Sides:
 		move.w	d0,x_pos(a0)
@@ -1613,8 +1615,8 @@ loc_1077E:
 		bsr.w	Sonic_HurtStop
 		bsr.w	Sonic_LevelBound
 		bsr.w	Sonic_RecordPos
-		bsr.w	Sonic_Animate
-		bsr.w	LoadSonicDynPLC
+		bsr.w	Player_Animate
+		bsr.w	LoadPlayerDynPLC
 		jmp	(DisplaySprite).l
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
@@ -1665,8 +1667,8 @@ loc_107FA:
 
 loc_10804:
 		bsr.w	Sonic_RecordPos
-		bsr.w	Sonic_Animate
-		bsr.w	LoadSonicDynPLC
+		bsr.w	Player_Animate
+		bsr.w	LoadPlayerDynPLC
 		jmp	(DisplaySprite).l
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 ; ObjPlayer_Death:
@@ -1676,8 +1678,8 @@ ObjPlayer_Dead:
 		bsr.w	Sonic_GameOver
 		jsr	(ObjectMoveAndFall).l
 		bsr.w	Sonic_RecordPos
-		bsr.w	Sonic_Animate
-		bsr.w	LoadSonicDynPLC
+		bsr.w	Player_Animate
+		bsr.w	LoadPlayerDynPLC
 		jmp	(DisplaySprite).l
 ObjPlayer_ResetLevel:
 	tst.w	$3A(a0)
@@ -1730,17 +1732,27 @@ locret_108B4:
 		rts
 ; End of function Sonic_GameOver
 ; ===========================================================================
+Player_Art:
+@macro	macro	map, art, dplc, ani
+	dc.l	ani, map, art, dplc
+	endm
+	;	Mapping data	Uncompressed Art	DPLC	Animation
+	@macro	Map_Sonic,	Art_Sonic,	SonicDynPLC,	SonicAniData	
+	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData 	; Boomer
+	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData
+	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData 	; Hops
+	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData 	; Tammy
+; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Subroutine to animate Sonic's sprites
+; Animate Player sprite subroutine
 ; ---------------------------------------------------------------------------
-
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-
-Sonic_Animate:
-		lea	(SonicAniData).l,a1
-		;lea	(TailsAniData).l,a1
+Player_Animate:
 		moveq	#0,d0
+		move.b	Character(a0),d0	; get entry
+		lea	Player_Art(pc,d0.w),a2	; get right index and keep for later use for loading dynamic player art
+		move.l	(a2)+,a1		; load animation script
+		; This is likely going to cause problems... but that's not my problem atm so I'll let it slide for now
+
 		move.b	anim(a0),d0
 		cmp.b	prev_anim(a0),d0
 		beq.s	SonicAnimate_Do
@@ -1944,6 +1956,8 @@ loc_10A6C:
 ; ===========================================================================
 ; loc_10A88:
 SonicAnimate_Push:
+		addq.b	#1,d0
+		bne.w	TailsAnimate_Walk
 		move.w	ground_speed(a0),d2
 		bmi.s	loc_10A90
 		neg.w	d2
@@ -1962,27 +1976,136 @@ loc_10A98:
 		andi.b	#$FC,render_flags(a0)
 		or.b	d1,render_flags(a0)
 		bra.w	SonicAnimate_Do2
-; End of function Sonic_Animate
+; ===========================================================================
+TailsAnimate_Walk:	; yup, ported it over to Sonic's object
+	addq.b	#1,d0
+	bne.s	TailsAnimate_Roll
+		moveq	#0,d0
+		move.b	flip_angle(a0),d0
+		bne.w	loc_11AB4
+		moveq	#0,d1
+		move.b	angle(a0),d0
+		move.b	status(a0),d2
+		andi.b	#1,d2
+		bne.s	loc_11A56
+		not.b	d0
 
+loc_11A56:				; CODE XREF: Tails_Animate+B6j
+		addi.b	#$10,d0
+		bpl.s	loc_11A5E
+		moveq	#3,d1
+
+loc_11A5E:				; CODE XREF: Tails_Animate+BEj
+		andi.b	#$FC,render_flags(a0)
+		eor.b	d1,d2
+		or.b	d2,render_flags(a0)
+		lsr.b	#4,d0
+		andi.b	#6,d0
+		move.w	ground_speed(a0),d2
+		bpl.s	loc_11A78
+		neg.w	d2
+
+loc_11A78:				; CODE XREF: Tails_Animate+D8j
+		move.b	d0,d3
+		add.b	d3,d3
+		add.b	d3,d3
+		lea	(TailsAni_Walk).l,a1
+		cmpi.w	#$600,d2
+		bcs.s	loc_11A9A
+		lea	(TailsAni_Run).l,a1
+		move.b	d0,d1
+		lsr.b	#1,d1
+		add.b	d1,d0
+		add.b	d0,d0
+		move.b	d0,d3
+
+loc_11A9A:				; CODE XREF: Tails_Animate+ECj
+		neg.w	d2
+		addi.w	#$800,d2
+		bpl.s	loc_11AA4
+		moveq	#0,d2
+
+loc_11AA4:				; CODE XREF: Tails_Animate+104j
+		lsr.w	#8,d2
+		move.b	d2,anim_frame_duration(a0)
+		bsr.w	SonicAnimate_Do2
+		add.b	d3,mapping_frame(a0)
+		rts
+; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+
+
+
+
+TailsAnimate_Roll:
+		move.w	ground_speed(a0),d2
+		bpl.s	loc_11B1A
+		neg.w	d2
+
+loc_11B1A:				; CODE XREF: Tails_Animate+17Aj
+		lea	(TailsAni_Roll2).l,a1
+		cmpi.w	#$600,d2
+		bcc.s	loc_11B2C
+		lea	(TailsAni_Roll).l,a1
+
+loc_11B2C:				; CODE XREF: Tails_Animate+188j
+		neg.w	d2
+		addi.w	#$400,d2
+		bpl.s	loc_11B36
+		moveq	#0,d2
+
+loc_11B36:				; CODE XREF: Tails_Animate+196j
+		lsr.w	#8,d2
+		move.b	d2,anim_frame_duration(a0)
+		move.b	status(a0),d1
+		andi.b	#1,d1
+		andi.b	#$FC,render_flags(a0)
+		or.b	d1,render_flags(a0)
+		bra.w	SonicAnimate_Do2
+; ===========================================================================
+loc_11AB4:				; CODE XREF: Tails_Animate+A4j
+		move.b	flip_angle(a0),d0
+		moveq	#0,d1
+		move.b	status(a0),d2
+		andi.b	#1,d2
+		bne.s	loc_11AE8
+		andi.b	#$FC,render_flags(a0)
+		moveq	#0,d2
+		or.b	d2,render_flags(a0)
+		addi.b	#$B,d0
+		divu.w	#$16,d0
+		addi.b	#$75,d0	; 'u'
+		move.b	d0,mapping_frame(a0)
+		move.b	#0,anim_frame_duration(a0)
+		rts
+; ---------------------------------------------------------------------------
+loc_11AE8:				; CODE XREF: Tails_Animate+126j
+		moveq	#3,d2
+		andi.b	#$FC,render_flags(a0)
+		or.b	d2,render_flags(a0)
+		neg.b	d0
+		addi.b	#$8F,d0
+		divu.w	#$16,d0
+		addi.b	#$75,d0	; 'u'
+		move.b	d0,mapping_frame(a0)
+		move.b	#0,anim_frame_duration(a0)
+		rts
+; End of function Player_Animate
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Sonic pattern loading subroutine
+; Player pattern loading subroutine
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 
-LoadSonicDynPLC:
+LoadPlayerDynPLC:
 	moveq	#0,d0
 	move.b	mapping_frame(a0),d0
 	cmp.b	(Sonic_LastLoadedDPLC).w,d0
 	beq.s	@DoNothing
 		move.b	d0,(Sonic_LastLoadedDPLC).w
 
-		moveq	#0,d3
-		move.b	Character(a0),d3	; get entry
-		lea	@Values(pc,d3.w),a2
-		move.l	(a2)+,d4		; load VRAM location
+		move.l	#VRAM_Plr1,d4		; load VRAM location
 		move.l	(a2)+,mappings(a0)	; Load Mapping
 		move.l	(a2)+,a3		; Load Art
 		move.l	(a2),a2 		; load PLC script
@@ -2012,23 +2135,7 @@ LoadSonicDynPLC:
 	dbf	d5,@ReadEntry
 	@DoNothing:
 		rts
-; End of function LoadSonicDynPLC
-; ===========================================================================
-@macro	macro	VRAM, VRAM2, map, art, dplc
-	dc.w	VRAM2, VRAM
-	dc.l	map, art, dplc
-	endm
-@Values:;	VRAM Player 1	VRAM Player 2	Sprite Map data		Uncompressed Art	DPLC
-	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Sonic,		Art_Sonic,	SonicDynPLC
-	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC ; Boomer
-	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC
-	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC ; Hops
-	@macro	VRAM_Plr1,	VRAM_Plr2,	Map_Tails,		Art_Tails,	TailsDynPLC ; Tammy
-
-; ===========================================================================
-
-JmpTo_KillSonic:	; JmpTo
-		jmp	(KillSonic).l
+; End of function LoadPlayerDynPLC
 ; ===========================================================================
 Player_CheckChunk:
 		include	"Level/Level Chunks Effects.asm"

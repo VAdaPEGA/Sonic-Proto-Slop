@@ -137,7 +137,7 @@ SonicAni_Float2:	dc.b	7
 
 SonicAni_Spring:	dc.b	$2F
 			dc.b	$7E
-			dc.b	afChange,  0	; Spring up
+			dc.b	afChange, SonicAniID_Walk	; Spring up
 
 SonicAni_Hang:		dc.b	5
 			dc.b	$8F,$90

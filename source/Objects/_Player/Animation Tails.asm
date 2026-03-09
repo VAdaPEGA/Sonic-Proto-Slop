@@ -21,7 +21,7 @@
 	GenerateIndex	TailsAni, Float2
 	GenerateIndex	TailsAni, Spring
 	GenerateIndex	TailsAni, Hang
-	GenerateIndex	TailsAni, 12
+	GenerateIndex	TailsAni, TurnAround
 	GenerateIndex	TailsAni, 13
 	GenerateIndex	TailsAni, 14
 	GenerateIndex	TailsAni, 14
@@ -36,21 +36,21 @@
 	GenerateIndex	TailsAni, 1E
 	GenerateIndexID	TailsAni, Fly
 ; ---------------------------------------------------------------------------
-TailsAni_Walk:		dc.b	-1
+TailsAni_Walk:		dc.b	-4
 			dc.b	$10,$11,$12,$13,$14,$15, $E, $F
 			dc.b	afEnd
 
-TailsAni_Run:		dc.b	-1
+TailsAni_Run:		dc.b	-4
 			rept	2
 			dc.b	$2E,$2F,$30,$31
 			endr
 			dc.b	afEnd
 
-TailsAni_Roll:		dc.b	-2
+TailsAni_Roll:		dc.b	-5
 			dc.b	$48,$47,$46
 			dc.b	afEnd
 
-TailsAni_Roll2:		dc.b	-2
+TailsAni_Roll2:		dc.b	-5
 			dc.b	$48,$47,$46
 			dc.b	afEnd
 
@@ -129,17 +129,17 @@ TailsAni_Hang:		dc.b	4
 			dc.b	@Fr,  @Fr+1
 			dc.b	afEnd
 
-TailsAni_12:		dc.b	$F	;S1 Unused Leap
+TailsAni_TurnAround:	dc.b	$F	;S1 Unused Leap
 			dc.b	1,  2
-			dc.b	3,afBack,  1
+			dc.b	afChange, SonicAniID_Walk	; Turning around
 
 TailsAni_13:		dc.b	$F	;S1 Unused Leap2
 			dc.b	1
-			dc.b	2,afBack,  1
+			dc.b	afChange, SonicAniID_Walk
 
 TailsAni_14:		dc.b	$3F	;S1 unused Slide
 			dc.b	1
-			dc.b	afEnd	
+			dc.b	afChange, SonicAniID_Walk	
 
 TailsAni_Bubble:	dc.b	$B
 			dc.b	$74,$74,$12,$13
