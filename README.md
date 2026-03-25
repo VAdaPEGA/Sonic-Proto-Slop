@@ -1,8 +1,23 @@
-A ROM Hack based on the Nick Arcade Prototype of S2.
+# A ROM Hack based on the Nick Arcade Prototype of S2.
 
-Many things planned, stay tunned.
+Many things planned, stay tunned!
 
-While working on this, here's a bunch of stuff we found:
+## Dependencies : 
+ - A US copy of Super Mario Bros. renamed as "SMB1.nes"
+ - DOSBox (don't worry about it unless you know what you're doing)
+
+# How to compile
+## Windows
+- Just double click "build.bat", that's it.
+  
+NOT "build-soup.bat" btw, that's if you have DOSBox and wanna make some very specific changes
+
+## Linux
+- I dunno, get wine or something and do the above.
+
+Someone really outta make ROM hacking more accessible for Linux cause tools don't run well on it :c
+
+# While working on this, here's a bunch of stuff we found
 
 - The leaning forward running animations for Sonic is a direct consequence of the 12 frame walk cycle to reallign the angled sprites without needing an extra routine (12/3 = 4, 3 running sets)
   - Undone after it's been readjusted to 8 frames (which dimplified the math compared to S1)
