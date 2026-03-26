@@ -1,0 +1,135 @@
+DPLC_Tammy:
+	dc.w	DPLC_Tammy-DPLC_Tammy
+	dc.w	DPLC_Tammy_0-DPLC_Tammy
+	dc.w	DPLC_Tammy_1-DPLC_Tammy
+	dc.w	DPLC_Tammy_2-DPLC_Tammy
+	dc.w	DPLC_Tammy_3-DPLC_Tammy
+	dc.w	DPLC_Tammy_4-DPLC_Tammy
+	dc.w	DPLC_Tammy_5-DPLC_Tammy
+	dc.w	DPLC_Tammy_6-DPLC_Tammy
+	dc.w	DPLC_Tammy_7-DPLC_Tammy
+	dc.w	DPLC_Tammy_8-DPLC_Tammy
+	dc.w	DPLC_Tammy_9-DPLC_Tammy
+	dc.w	DPLC_Tammy_10-DPLC_Tammy
+	dc.w	DPLC_Tammy_11-DPLC_Tammy
+	dc.w	DPLC_Tammy_12-DPLC_Tammy
+	dc.w	DPLC_Tammy_13-DPLC_Tammy
+	dc.w	DPLC_Tammy_14-DPLC_Tammy
+	dc.w	DPLC_Tammy_15-DPLC_Tammy
+	dc.w	DPLC_Tammy_16-DPLC_Tammy
+	dc.w	DPLC_Tammy_17-DPLC_Tammy
+	dc.w	DPLC_Tammy_18-DPLC_Tammy
+	dc.w	DPLC_Tammy_19-DPLC_Tammy
+	dc.w	DPLC_Tammy_20-DPLC_Tammy
+	dc.w	DPLC_Tammy_21-DPLC_Tammy
+	dc.w	DPLC_Tammy_22-DPLC_Tammy
+	dc.w	DPLC_Tammy_23-DPLC_Tammy
+	dc.w	DPLC_Tammy_24-DPLC_Tammy
+	dc.w	DPLC_Tammy_25-DPLC_Tammy
+	dc.w	DPLC_Tammy_26-DPLC_Tammy
+
+DPLC_Tammy_0:	dc.w 2
+	dc.w $F000
+	dc.w $3010
+
+DPLC_Tammy_1:	dc.w 2
+	dc.w $F014
+	dc.w $1024
+
+DPLC_Tammy_2:	dc.w 2
+	dc.w $F026
+	dc.w $5036
+
+DPLC_Tammy_3:	dc.w 3
+	dc.w $F03C
+	dc.w $104C
+	dc.w $304E
+
+DPLC_Tammy_4:	dc.w 2
+	dc.w $F052
+	dc.w $1062
+
+DPLC_Tammy_5:	dc.w 3
+	dc.w $F064
+	dc.w $1074
+	dc.w $3076
+
+DPLC_Tammy_6:	dc.w 2
+	dc.w $F07A
+	dc.w $108A
+
+DPLC_Tammy_7:	dc.w 2
+	dc.w $F08C
+	dc.w $109C
+
+DPLC_Tammy_8:	dc.w 3
+	dc.w $F09E
+	dc.w $10AE
+	dc.w $30B0
+
+DPLC_Tammy_9:	dc.w 2
+	dc.w $F0B4
+	dc.w $10C4
+
+DPLC_Tammy_10:	dc.w 3
+	dc.w $F0C6
+	dc.w $30D6
+	dc.w $30DA
+
+DPLC_Tammy_11:	dc.w 3
+	dc.w $F0DE
+	dc.w $30EE
+	dc.w $10F2
+
+DPLC_Tammy_12:	dc.w 3
+	dc.w $F0F4
+	dc.w $3104
+	dc.w $3108
+
+DPLC_Tammy_13:	dc.w 3
+	dc.w $F10C
+	dc.w $311C
+	dc.w $1120
+
+DPLC_Tammy_14:	dc.w 2
+	dc.w $B122
+	dc.w $312E
+
+DPLC_Tammy_15:	dc.w 1
+	dc.w $F132
+
+DPLC_Tammy_16:	dc.w 1
+	dc.w $F142
+
+DPLC_Tammy_17:	dc.w 2
+	dc.w $B152
+	dc.w $115E
+
+DPLC_Tammy_18:	dc.w 1
+	dc.w $F160
+
+DPLC_Tammy_19:	dc.w 1
+	dc.w $F170
+
+DPLC_Tammy_20:	dc.w 1
+	dc.w $F180
+
+DPLC_Tammy_21:	dc.w 1
+	dc.w $B190
+
+DPLC_Tammy_22:	dc.w 1
+	dc.w $519C
+
+DPLC_Tammy_23:	dc.w 1
+	dc.w $51A2
+
+DPLC_Tammy_24:	dc.w 1
+	dc.w $51A8
+
+DPLC_Tammy_25:	dc.w 1
+	dc.w $51AE
+
+DPLC_Tammy_26:	dc.w 1
+	dc.w $51B4
+
+	even

@@ -367,6 +367,14 @@ Map_\name:		include	'\path\\file\MAP.asm'
 			endcase
 			endm
 ; ---------------------------------------------------------------------------
+; Repeat number of frames
+AnimIncRept	macro	repeat, increment
+		rept	repeat
+			dc.b	f
+f	=		f+increment
+		endr
+		endm
+; ---------------------------------------------------------------------------
 ; Inflate / decompress zip
 ; ---------------------------------------------------------------------------
 LoadzipVRAM:	macro	art,location

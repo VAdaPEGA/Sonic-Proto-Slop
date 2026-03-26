@@ -1,0 +1,155 @@
+Map_Boom:
+	dc.w	Map_Boom-Map_Boom
+	dc.w	Map_Boom_0-Map_Boom
+	dc.w	Map_Boom_1-Map_Boom
+	dc.w	Map_Boom_2-Map_Boom
+	dc.w	Map_Boom_3-Map_Boom
+	dc.w	Map_Boom_4-Map_Boom
+	dc.w	Map_Boom_5-Map_Boom
+	dc.w	Map_Boom_6-Map_Boom
+	dc.w	Map_Boom_7-Map_Boom
+	dc.w	Map_Boom_8-Map_Boom
+	dc.w	Map_Boom_9-Map_Boom
+	dc.w	Map_Boom_10-Map_Boom
+	dc.w	Map_Boom_11-Map_Boom
+	dc.w	Map_Boom_12-Map_Boom
+	dc.w	Map_Boom_13-Map_Boom
+	dc.w	Map_Boom_14-Map_Boom
+	dc.w	Map_Boom_15-Map_Boom
+	dc.w	Map_Boom_16-Map_Boom
+	dc.w	Map_Boom_17-Map_Boom
+	dc.w	Map_Boom_18-Map_Boom
+	dc.w	Map_Boom_19-Map_Boom
+	dc.w	Map_Boom_20-Map_Boom
+	dc.w	Map_Boom_21-Map_Boom
+	dc.w	Map_Boom_22-Map_Boom
+	dc.w	Map_Boom_23-Map_Boom
+	dc.w	Map_Boom_24-Map_Boom
+	dc.w	Map_Boom_25-Map_Boom
+	dc.w	Map_Boom_26-Map_Boom
+	dc.w	Map_Boom_27-Map_Boom
+
+Map_Boom_0:	dc.w 3
+	dc.w $E70B, 0, 0, $FFF4
+	dc.w $709, $C, 6, $FFF4
+	dc.w $F01, $12, 9, $C
+
+Map_Boom_1:	dc.w 4
+	dc.w $E70B, 0, 0, $FFF3
+	dc.w $FF01, $C, 6, $B
+	dc.w $709, $E, 7, $FFF3
+	dc.w $F01, $14, $A, $B
+
+Map_Boom_2:	dc.w 4
+	dc.w $E70B, 0, 0, $FFF3
+	dc.w $F701, $C, 6, $B
+	dc.w $709, $E, 7, $FFF3
+	dc.w $F01, $14, $A, $B
+
+Map_Boom_3:	dc.w 3
+	dc.w $E70B, 0, 0, $FFF3
+	dc.w $F701, $C, 6, $B
+	dc.w $709, $E, 7, $FFF3
+
+Map_Boom_4:	dc.w 4
+	dc.w $E70D, 0, 0, $FFF1
+	dc.w $F709, 8, 4, $FFF9
+	dc.w $FF03, $E, 7, $FFF1
+	dc.w $705, $12, 9, $FFF9
+
+Map_Boom_5:	dc.w 3
+	dc.w $E70B, 0, 0, $FFF4
+	dc.w $709, $C, 6, $FFF4
+	dc.w $F01, $12, 9, $C
+
+Map_Boom_6:	dc.w 3
+	dc.w $FF0F, 0, 0, $FFEE
+	dc.w $FF01, $10, 8, $E
+	dc.w $701, $12, 9, $16
+
+Map_Boom_7:	dc.w 1
+	dc.w $EB0F, 0, 0, $FFF1
+
+Map_Boom_8:	dc.w 1
+	dc.w $EB0F, 0, 0, $FFF1
+
+Map_Boom_9:	dc.w 1
+	dc.w $EB0F, 0, 0, $FFF1
+
+Map_Boom_10:	dc.w 1
+	dc.w $EB0F, 0, 0, $FFF1
+
+Map_Boom_11:	dc.w 1
+	dc.w $EB0F, 0, 0, $FFF1
+
+Map_Boom_12:	dc.w 1
+	dc.w $EB0F, 0, 0, $FFF1
+
+Map_Boom_13:	dc.w 4
+	dc.w $E80B, 0, 0, $FFF6
+	dc.w $F003, $C, 6, $FFEE
+	dc.w $809, $10, 8, $FFF6
+	dc.w $1001, $16, $B, $FFEE
+
+Map_Boom_14:	dc.w 6
+	dc.w $E70B, 0, 0, $FFF5
+	dc.w $EF03, $C, 6, $FFED
+	dc.w $EF01, $10, 8, $D
+	dc.w $FF01, $12, 9, $D
+	dc.w $701, $14, $A, $FFF5
+	dc.w $701, $16, $B, 5
+
+Map_Boom_15:	dc.w 3
+	dc.w $E80B, 0, 0, $FFF6
+	dc.w $F003, $C, 6, $FFEE
+	dc.w $80D, $10, 8, $FFF6
+
+Map_Boom_16:	dc.w 2
+	dc.w $E90B, 0, 0, $FFF4
+	dc.w $909, $C, 6, $FFF4
+
+Map_Boom_17:	dc.w 3
+	dc.w $E90B, 0, 0, $FFF4
+	dc.w $905, $C, 6, $FFF4
+	dc.w $1101, $10, 8, 4
+
+Map_Boom_18:	dc.w 3
+	dc.w $E80D, 0, 0, $FFEF
+	dc.w $F80B, 8, 4, $FFEF
+	dc.w 1, $14, $A, 7
+
+Map_Boom_19:	dc.w 4
+	dc.w $E70B, 0, 0, $FFF3
+	dc.w $EF03, $C, 6, $FFEB
+	dc.w $EF03, $10, 8, $B
+	dc.w $709, $14, $A, $FFF3
+
+Map_Boom_20:	dc.w 3
+	dc.w $E80B, 0, 0, $FFF7
+	dc.w $F003, $C, 6, $FFEF
+	dc.w $809, $10, 8, $FFF7
+
+Map_Boom_21:	dc.w 2
+	dc.w $E90B, 0, 0, $FFF4
+	dc.w $90D, $C, 6, $FFF4
+
+Map_Boom_22:	dc.w 2
+	dc.w $E90B, 0, 0, $FFF4
+	dc.w $905, $C, 6, $FFF4
+
+Map_Boom_23:	dc.w 1
+	dc.w $F909, 0, 0, $FFF5
+
+Map_Boom_24:	dc.w 1
+	dc.w $F909, 0, 0, $FFF5
+
+Map_Boom_25:	dc.w 1
+	dc.w $F909, 0, 0, $FFF5
+
+Map_Boom_26:	dc.w 1
+	dc.w $F909, 0, 0, $FFF8
+
+Map_Boom_27:	dc.w 1
+	dc.w $F909, 0, 0, $FFF7
+
+	even

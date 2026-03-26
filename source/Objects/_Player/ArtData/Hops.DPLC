@@ -1,0 +1,256 @@
+DPLC_Hops:
+	dc.w	DPLC_Hops-DPLC_Hops
+	dc.w	DPLC_Hops_0-DPLC_Hops
+	dc.w	DPLC_Hops_1-DPLC_Hops
+	dc.w	DPLC_Hops_2-DPLC_Hops
+	dc.w	DPLC_Hops_3-DPLC_Hops
+	dc.w	DPLC_Hops_4-DPLC_Hops
+	dc.w	DPLC_Hops_5-DPLC_Hops
+	dc.w	DPLC_Hops_6-DPLC_Hops
+	dc.w	DPLC_Hops_7-DPLC_Hops
+	dc.w	DPLC_Hops_8-DPLC_Hops
+	dc.w	DPLC_Hops_9-DPLC_Hops
+	dc.w	DPLC_Hops_10-DPLC_Hops
+	dc.w	DPLC_Hops_11-DPLC_Hops
+	dc.w	DPLC_Hops_12-DPLC_Hops
+	dc.w	DPLC_Hops_13-DPLC_Hops
+	dc.w	DPLC_Hops_14-DPLC_Hops
+	dc.w	DPLC_Hops_15-DPLC_Hops
+	dc.w	DPLC_Hops_16-DPLC_Hops
+	dc.w	DPLC_Hops_17-DPLC_Hops
+	dc.w	DPLC_Hops_18-DPLC_Hops
+	dc.w	DPLC_Hops_19-DPLC_Hops
+	dc.w	DPLC_Hops_20-DPLC_Hops
+	dc.w	DPLC_Hops_21-DPLC_Hops
+	dc.w	DPLC_Hops_22-DPLC_Hops
+	dc.w	DPLC_Hops_23-DPLC_Hops
+	dc.w	DPLC_Hops_24-DPLC_Hops
+	dc.w	DPLC_Hops_25-DPLC_Hops
+	dc.w	DPLC_Hops_26-DPLC_Hops
+	dc.w	DPLC_Hops_27-DPLC_Hops
+
+DPLC_Hops_0:	dc.w 6
+	dc.w $7000
+	dc.w $1008
+	dc.w $B00A
+	dc.w $1016
+	dc.w $1018
+	dc.w $101A
+
+DPLC_Hops_1:	dc.w 6
+	dc.w $701C
+	dc.w $1024
+	dc.w $B026
+	dc.w $1032
+	dc.w $1034
+	dc.w $1036
+
+DPLC_Hops_2:	dc.w 6
+	dc.w $7038
+	dc.w $1040
+	dc.w $B042
+	dc.w $104E
+	dc.w $1050
+	dc.w $1052
+
+DPLC_Hops_3:	dc.w 6
+	dc.w $7054
+	dc.w $105C
+	dc.w $B05E
+	dc.w $106A
+	dc.w $106C
+	dc.w $106E
+
+DPLC_Hops_4:	dc.w 6
+	dc.w $7070
+	dc.w $1078
+	dc.w $B07A
+	dc.w $1086
+	dc.w $1088
+	dc.w $108A
+
+DPLC_Hops_5:	dc.w 6
+	dc.w $708C
+	dc.w $1094
+	dc.w $B096
+	dc.w $10A2
+	dc.w $10A4
+	dc.w $10A6
+
+DPLC_Hops_6:	dc.w 6
+	dc.w $70A8
+	dc.w $10B0
+	dc.w $B0B2
+	dc.w $10BE
+	dc.w $10C0
+	dc.w $10C2
+
+DPLC_Hops_7:	dc.w 6
+	dc.w $70C4
+	dc.w $10CC
+	dc.w $B0CE
+	dc.w $10DA
+	dc.w $10DC
+	dc.w $10DE
+
+DPLC_Hops_8:	dc.w 6
+	dc.w $70E0
+	dc.w $10E8
+	dc.w $B0EA
+	dc.w $10F6
+	dc.w $10F8
+	dc.w $10FA
+
+DPLC_Hops_9:	dc.w 6
+	dc.w $70FC
+	dc.w $1104
+	dc.w $B106
+	dc.w $1112
+	dc.w $1114
+	dc.w $1116
+
+DPLC_Hops_10:	dc.w 6
+	dc.w $7118
+	dc.w $1120
+	dc.w $B122
+	dc.w $112E
+	dc.w $1130
+	dc.w $1132
+
+DPLC_Hops_11:	dc.w 6
+	dc.w $7134
+	dc.w $113C
+	dc.w $B13E
+	dc.w $114A
+	dc.w $114C
+	dc.w $114E
+
+DPLC_Hops_12:	dc.w 6
+	dc.w $7150
+	dc.w $1158
+	dc.w $B15A
+	dc.w $1166
+	dc.w $1168
+	dc.w $116A
+
+DPLC_Hops_13:	dc.w 6
+	dc.w $716C
+	dc.w $1174
+	dc.w $B176
+	dc.w $1182
+	dc.w $1184
+	dc.w $1186
+
+DPLC_Hops_14:	dc.w 6
+	dc.w $7188
+	dc.w $1190
+	dc.w $B192
+	dc.w $119E
+	dc.w $11A0
+	dc.w $11A2
+
+DPLC_Hops_15:	dc.w 6
+	dc.w $71A4
+	dc.w $11AC
+	dc.w $B1AE
+	dc.w $11BA
+	dc.w $11BC
+	dc.w $11BE
+
+DPLC_Hops_16:	dc.w 6
+	dc.w $71C0
+	dc.w $11C8
+	dc.w $B1CA
+	dc.w $11D6
+	dc.w $11D8
+	dc.w $11DA
+
+DPLC_Hops_17:	dc.w 6
+	dc.w $71DC
+	dc.w $11E4
+	dc.w $B1E6
+	dc.w $11F2
+	dc.w $11F4
+	dc.w $11F6
+
+DPLC_Hops_18:	dc.w 6
+	dc.w $71F8
+	dc.w $1200
+	dc.w $B202
+	dc.w $120E
+	dc.w $1210
+	dc.w $1212
+
+DPLC_Hops_19:	dc.w 6
+	dc.w $7214
+	dc.w $121C
+	dc.w $B21E
+	dc.w $122A
+	dc.w $122C
+	dc.w $122E
+
+DPLC_Hops_20:	dc.w 6
+	dc.w $7230
+	dc.w $1238
+	dc.w $B23A
+	dc.w $1246
+	dc.w $1248
+	dc.w $124A
+
+DPLC_Hops_21:	dc.w 6
+	dc.w $724C
+	dc.w $1254
+	dc.w $B256
+	dc.w $1262
+	dc.w $1264
+	dc.w $1266
+
+DPLC_Hops_22:	dc.w 6
+	dc.w $7268
+	dc.w $1270
+	dc.w $B272
+	dc.w $127E
+	dc.w $1280
+	dc.w $1282
+
+DPLC_Hops_23:	dc.w 6
+	dc.w $7284
+	dc.w $128C
+	dc.w $B28E
+	dc.w $129A
+	dc.w $129C
+	dc.w $129E
+
+DPLC_Hops_24:	dc.w 6
+	dc.w $72A0
+	dc.w $12A8
+	dc.w $B2AA
+	dc.w $12B6
+	dc.w $12B8
+	dc.w $12BA
+
+DPLC_Hops_25:	dc.w 6
+	dc.w $72BC
+	dc.w $12C4
+	dc.w $B2C6
+	dc.w $12D2
+	dc.w $12D4
+	dc.w $12D6
+
+DPLC_Hops_26:	dc.w 6
+	dc.w $72D8
+	dc.w $12E0
+	dc.w $B2E2
+	dc.w $12EE
+	dc.w $12F0
+	dc.w $12F2
+
+DPLC_Hops_27:	dc.w 6
+	dc.w $72F4
+	dc.w $12FC
+	dc.w $B2FE
+	dc.w $130A
+	dc.w $130C
+	dc.w $130E
+
+	even

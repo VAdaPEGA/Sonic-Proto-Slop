@@ -1,0 +1,6 @@
+@echo off
+cd "..\..\Tools\SpritePlotter.Net" 
+SpritePlotter --format=ASM --game=S2 --center="..\..\Assets\Players\Spritesheets\Boom_center.png" --lowplane="..\..\Assets\Players\Spritesheets\Boom.png" --artfile="..\..\source\Objects\_Player\ArtData\Boom.artunc" --mapfile="..\..\source\Objects\_Player\ArtData\Boom.SprMap" --dplcfile="..\..\source\Objects\_Player\ArtData\Boom.DPLC" --nullfirst --twoplayer
+SpritePlotter --format=ASM --game=S2 --center="..\..\Assets\Players\Spritesheets\Tang_center.png" --lowplane="..\..\Assets\Players\Spritesheets\Tang.png" --artfile="..\..\source\Objects\_Player\ArtData\Tammy.artunc" --mapfile="..\..\source\Objects\_Player\ArtData\Tammy.SprMap" --dplcfile="..\..\source\Objects\_Player\ArtData\Tammy.DPLC" --nullfirst --twoplayer
+SpritePlotter --format=ASM --game=S2 --center="..\..\Assets\Players\Spritesheets\Hops_center.png" --lowplane="..\..\Assets\Players\Spritesheets\Hops.png" --artfile="..\..\source\Objects\_Player\ArtData\Hops.artunc" --mapfile="..\..\source\Objects\_Player\ArtData\Hops.SprMap" --dplcfile="..\..\source\Objects\_Player\ArtData\Hops.DPLC" --nullfirst --twoplayer
+pause

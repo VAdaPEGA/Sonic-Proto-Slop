@@ -1738,10 +1738,10 @@ Player_Art:
 	endm
 	;	Mapping data	Uncompressed Art	DPLC	Animation
 	@macro	Map_Sonic,	Art_Sonic,	SonicDynPLC,	SonicAniData	
-	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData 	; Boomer
+	@macro	Map_Boom,	Art_Boom,	BoomDynPLC,	BoomAniData 	; Boomer
 	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData
-	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData 	; Hops
-	@macro	Map_Tails,	Art_Tails,	TailsDynPLC,	TailsAniData 	; Tammy
+	@macro	Map_Hops,	Art_Hops,	HopsDynPLC,	HopsAniData 	; Hops
+	@macro	Map_Tammy,	Art_Tammy,	TammyDynPLC,	TammyAniData 	; Tammy
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Animate Player sprite subroutine
@@ -2042,10 +2042,10 @@ TailsAnimate_Roll:
 		neg.w	d2
 
 loc_11B1A:				; CODE XREF: Tails_Animate+17Aj
-		lea	(TailsAni_Roll2).l,a1
-		cmpi.w	#$600,d2
-		bcc.s	loc_11B2C
-		lea	(TailsAni_Roll).l,a1
+	;	lea	(TailsAni_Roll2).l,a1
+	;	cmpi.w	#$600,d2
+	;	bcc.s	loc_11B2C
+	;	lea	(TailsAni_Roll).l,a1
 
 loc_11B2C:				; CODE XREF: Tails_Animate+188j
 		neg.w	d2

@@ -1,0 +1,256 @@
+Map_Hops:
+	dc.w	Map_Hops-Map_Hops
+	dc.w	Map_Hops_0-Map_Hops
+	dc.w	Map_Hops_1-Map_Hops
+	dc.w	Map_Hops_2-Map_Hops
+	dc.w	Map_Hops_3-Map_Hops
+	dc.w	Map_Hops_4-Map_Hops
+	dc.w	Map_Hops_5-Map_Hops
+	dc.w	Map_Hops_6-Map_Hops
+	dc.w	Map_Hops_7-Map_Hops
+	dc.w	Map_Hops_8-Map_Hops
+	dc.w	Map_Hops_9-Map_Hops
+	dc.w	Map_Hops_10-Map_Hops
+	dc.w	Map_Hops_11-Map_Hops
+	dc.w	Map_Hops_12-Map_Hops
+	dc.w	Map_Hops_13-Map_Hops
+	dc.w	Map_Hops_14-Map_Hops
+	dc.w	Map_Hops_15-Map_Hops
+	dc.w	Map_Hops_16-Map_Hops
+	dc.w	Map_Hops_17-Map_Hops
+	dc.w	Map_Hops_18-Map_Hops
+	dc.w	Map_Hops_19-Map_Hops
+	dc.w	Map_Hops_20-Map_Hops
+	dc.w	Map_Hops_21-Map_Hops
+	dc.w	Map_Hops_22-Map_Hops
+	dc.w	Map_Hops_23-Map_Hops
+	dc.w	Map_Hops_24-Map_Hops
+	dc.w	Map_Hops_25-Map_Hops
+	dc.w	Map_Hops_26-Map_Hops
+	dc.w	Map_Hops_27-Map_Hops
+
+Map_Hops_0:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_1:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_2:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_3:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_4:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_5:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_6:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_7:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_8:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_9:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_10:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_11:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_12:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_13:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_14:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_15:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_16:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_17:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_18:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_19:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_20:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_21:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_22:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_23:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_24:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_25:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_26:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+Map_Hops_27:	dc.w 6
+	dc.w $E50D, 0, 0, $FFEA
+	dc.w $ED01, 8, 4, $A
+	dc.w $F50B, $A, 5, $FFF2
+	dc.w $501, $16, $B, $A
+	dc.w $D01, $18, $C, $FFEA
+	dc.w $D01, $1A, $D, $12
+
+	even

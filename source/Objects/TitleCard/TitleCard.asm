@@ -5,20 +5,26 @@
 Obj34:	
 		moveq	#0,d0
 		move.b	routine(a0),d0
-		move.w	Obj34_Index(pc,d0.w),d1
-		jmp	Obj34_Index(pc,d1.w)
+		move.w	@Index(pc,d0.w),d1
+		jmp	@Index(pc,d1.w)
 ; ===========================================================================
-Obj34_Index:	dc.w Obj34_CheckLZ4-Obj34_Index
-		dc.w Obj34_CheckPos-Obj34_Index
-		dc.w Obj34_Wait-Obj34_Index
-		dc.w Obj34_Wait-Obj34_Index
-
-		dc.w Obj3A_ChkPLC-Obj34_Index
-		dc.w Obj3A_ChkPos-Obj34_Index
-		dc.w Obj3A_Wait-Obj34_Index
-		dc.w Obj3A_TimeBonus-Obj34_Index
-		dc.w Obj3A_Wait-Obj34_Index
-		dc.w Obj3A_NextLevel-Obj34_Index
+		IndexStart
+	; Title Card
+	GenerateIndex	Obj34_CheckLZ4
+	GenerateIndex	Obj34_CheckPos
+	GenerateIndex	Obj34_Wait
+	GenerateIndex	Obj34_Wait
+	; Results Screen
+	GenerateIndex	Obj3A_ChkPLC
+	GenerateIndex	Obj3A_ChkPos
+	GenerateIndex	Obj3A_Wait
+	GenerateIndex	Obj3A_TimeBonus
+	GenerateIndex	Obj3A_Wait
+	GenerateIndex	Obj3A_NextLevel
+	; Game / Time Over
+	GenerateIndex	loc_BA98
+	GenerateIndex	loc_BADC
+	GenerateIndex	loc_BAFE
 
 Obj34_card_mainX:	equ $30		; position for card to display on
 Obj34_card_finalX:	equ $32		; position for card to finish on
@@ -378,16 +384,7 @@ Obj34_GotConfig:
 ; Object 39 - Game over	/ time over
 ;----------------------------------------------------
 
-Obj39:					; DATA XREF: ROM:Obj_Indexo
-		moveq	#0,d0
-		move.b	routine(a0),d0
-		move.w	Obj39_Index(pc,d0.w),d1
-		jmp	Obj39_Index(pc,d1.w)
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-Obj39_Index:	dc.w loc_BA98-Obj39_Index 
-		dc.w loc_BADC-Obj39_Index
-		dc.w loc_BAFE-Obj39_Index
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+Obj39:	
 
 loc_BA98:				; DATA XREF: ROM:Obj39_Indexo
 		tst.l	(Plc_Buffer).w
