@@ -1,0 +1,49 @@
+; ===========================================================================
+ This is a quick tutorial on how to export sprites from Aseprite
+; ===========================================================================
+; ---------------------------------------------------------------------------
+
+	Step 1 - Open the desired character aseprite 
+		file from within "Working Files"
+
+	Step 2 - Keep only the Spritesheet group visible
+
+	Step 3 - Go to File\Export\Export Sprite Sheet
+
+	Step 4 - Under the Output tab, 
+		select "Open Sprite Sheet" and hit "Export"
+
+	Step 5 - (Yes this is 100% required) 
+		Open the desired "[Character].png" 
+		from the Spritesheets folder
+
+	Step 6 - Remove content and replace 
+		by copying and pasting, then save
+
+	Step 7 - Do steps 2 through 6 but only with the "center" layer 
+		and opening the "[Character]_center.png" instead
+
+	Step 8 - Run "ArtData.bat"
+
+ NOTE : Exporting an indexed image file directly from aseprite doesn't work 
+	due to SpritePlotter.NET's very specific format, 
+	it needs to be done this way.
+
+; ===========================================================================
+ This is a quick tutorial on how edit sprites from MSPaint (and other tools?)
+; ===========================================================================
+ WARNING : This may not work with Windows 11's MSPaint
+ WARNING : definitely doesn't work with 3D Paint.
+; ---------------------------------------------------------------------------
+
+	Step 1 - Open the desired "[Character].png" 
+		from the Spritesheets folder
+
+	Step 2 - Edit directly, then save. 
+		(don't replace from a seperate instance)
+
+	Step 3 - Run "ArtData.bat"
+
+	If you need to add more sprites to the sheet, 
+	make sure to include the extra center point 
+	in the "[Character]_center.png" file.

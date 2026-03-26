@@ -11,6 +11,8 @@ Map_Sonic:	incbin	"Objects/_Player/ArtData/Sonic.SprMap"
 		even
 Map_Tails:	incbin	"Objects/_Player/ArtData/Tails.SprMap"
 		even
+	; These are asm files, not binary
+	; I'm sure this'll be a headache for someone, sorry bout that
 		include	"Objects/_Player/ArtData/Boom.SprMap"
 		even
 		include	"Objects/_Player/ArtData/Hops.SprMap"
