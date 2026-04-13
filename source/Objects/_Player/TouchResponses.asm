@@ -127,54 +127,45 @@ loc_198BA:				; CODE XREF: TouchResponse+C6j
 		cmp.w	d5,d0
 		bhi.w	Touch_Failed
 
-loc_198C0:				; CODE XREF: TouchResponse+CCj
-		move.b	collision_flags(a1),d1
-		andi.b	#$C0,d1
-		beq.w	loc_1993A
+loc_198C0:	
+	move.b	collision_flags(a1),d1
+	andi.b	#$C0,d1
+	beq.w	loc_1993A
 		cmpi.b	#$C0,d1
 		beq.w	Touch_Special
-		tst.b	d1
-		bmi.w	Hurt_Player
-		move.b	collision_flags(a1),d0
-		andi.b	#$3F,d0
-		cmpi.b	#6,d0
-		beq.s	loc_198FA
-		cmpi.w	#-$5A,invincibility_time(a0) ; check invulnerability
-		blt.w	locret_198F8
-		move.b	#4,routine(a1)
+			tst.b	d1
+			bmi.w	Hurt_Player
+				move.b	collision_flags(a1),d0
+				andi.b	#$3F,d0
+				cmpi.b	#6,d0	; this VERY SPECIFIC hitbox gets to have a very specific behaviour
+				beq.s	Touch_Monitor
+					cmpi.w	#-$5A,invincibility_time(a0) ; check invulnerability
+					blt.w	@DoNothing
+						move.b	#4,routine(a1)	; Set routine to 4 for rings
+					@DoNothing:
+					rts
+; ===========================================================================
 
-locret_198F8:				; CODE XREF: TouchResponse+106j
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_198FA:				; CODE XREF: TouchResponse+FEj
-		tst.w	y_vel(a0)
-		bpl.s	loc_19926
+Touch_Monitor:			
+	tst.w	y_vel(a0)
+	bpl.s	@MovingDownward
 		move.w	y_pos(a0),d0
-		subi.w	#$10,d0
+		subi.w	#32/2,d0
 		cmp.w	y_pos(a1),d0
-		bcs.s	locret_19938
-
-loc_1990E:
-		neg.w	y_vel(a0)
-
-loc_19912:
-		move.w	#$FE80,y_vel(a1)
-		tst.b	routine_secondary(a1)
-		bne.s	locret_19938
-		move.b	#4,routine_secondary(a1)
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_19926:				; CODE XREF: TouchResponse+116j
-		cmpi.b	#2,anim(a0)
-		bne.s	locret_19938
-		neg.w	y_vel(a0)
-		move.b	#4,routine(a1)
-
-locret_19938:				; CODE XREF: TouchResponse+124j
-					; TouchResponse+134j ...
-		rts
+		bcs.s	@DoNothing
+			neg.w	y_vel(a0)		; bounce player off
+			move.w	#-$180,y_vel(a1)	; make Monitor move up
+			tst.b	routine_secondary(a1)	; check routine
+			bne.s	@DoNothing
+				move.b	#4,routine_secondary(a1)
+				rts
+	@MovingDownward:		
+	cmpi.b	#2,anim(a0)	; check if player's rolling
+	bne.s	@DoNothing
+		neg.w	y_vel(a0)	; bounce player off
+		move.b	#MonitorID_BreakOpen,routine(a1)	; set routine for Monitor
+	@DoNothing:
+	rts
 ; ===========================================================================
 
 loc_1993A:	; Hitting Boss / enemy
