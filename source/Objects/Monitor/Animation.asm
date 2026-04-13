@@ -1,24 +1,34 @@
-; ===========================================================================
-; animation script
-Ani_obj26:	dc.w byte_B246-Ani_obj26
-		dc.w byte_B24A-Ani_obj26
-		dc.w byte_B252-Ani_obj26
-		dc.w byte_B25A-Ani_obj26
-		dc.w byte_B262-Ani_obj26
-		dc.w byte_B26A-Ani_obj26
-		dc.w byte_B272-Ani_obj26
-		dc.w byte_B27A-Ani_obj26
-		dc.w byte_B282-Ani_obj26
-		dc.w byte_B28A-Ani_obj26
-		dc.w byte_B292-Ani_obj26
-byte_B246:	dc.b   1,  0,  1,  1,  1, $FF
-byte_B24A:	dc.b   1,  0,  2,  2,  2, $FF
-byte_B252:	dc.b   1,  0,  3,  3,  3, $FF
-byte_B25A:	dc.b   1,  0,  4,  4,  4, $FF
-byte_B262:	dc.b   1,  0,  5,  5,  5, $FF
-byte_B26A:	dc.b   1,  0,  6,  6,  6, $FF
-byte_B272:	dc.b   1,  0,  7,  7,  7, $FF
-byte_B27A:	dc.b   1,  0,  8,  8,  8, $FF
-byte_B282:	dc.b   1,  0,  9,  9,  9, $FF
-byte_B28A:	dc.b   1,  0, $A, $A, $A, $A, $A,$FF
-byte_B292:	dc.b   2,  0,  1, $B,$FE,  1
+		IndexStart	@anim,1
+	GenerateLocalIndex	Random
+	GenerateLocalIndex	Sonic
+	GenerateLocalIndex	Tails
+	GenerateLocalIndex	Eggman
+	GenerateLocalIndex	Rigns
+	GenerateLocalIndex	Shoes
+	GenerateLocalIndex	Boomer
+	GenerateLocalIndex	Invincibility
+	GenerateLocalIndex	Tammy
+	GenerateLocalIndex	Hops
+	GenerateLocalIndex	Breaking
+@Random:	dc.b	1
+		dc.b	0,  1,  1,  1,  afEnd
+@Sonic:		dc.b	1
+		dc.b	0,  2,  2,  2,  2,  afEnd
+@Tails:		dc.b	1
+		dc.b	0,  3,  3,  3,  3,  afEnd
+@Eggman:	dc.b	1
+		dc.b	0,  4,  4,  4,  afEnd
+@Rigns:		dc.b	1
+		dc.b	0,  5,  5,  5,  afEnd
+@Shoes:		dc.b	1
+		dc.b	0,  6,  6,  6,  afEnd
+@Boomer:	dc.b	1
+		dc.b	0,  7,  7,  7,  7, afEnd
+@Invincibility:	dc.b	1
+		dc.b	0,  8,  8,  8,  afEnd
+@Tammy:		dc.b	1
+		dc.b	0,  9,  9,  9,  9, afEnd
+@Hops:		dc.b	1
+		dc.b	0, 10, 10, 10, 10, afEnd
+@Breaking:	dc.b	16
+		dc.b	0, 11, afRoutine

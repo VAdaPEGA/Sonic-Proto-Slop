@@ -7864,6 +7864,7 @@ SingleObjLoad:
 ; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
 
 ; loc_E198: S1SingleObjectLoad2:
+SingleNextObjLoad:
 SingleObjLoad2:
 		movea.l	a0,a1
 		move.w	#(Object_Space_End&$FFFF),d0 

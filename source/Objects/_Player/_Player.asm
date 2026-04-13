@@ -22,14 +22,14 @@ ObjPlayer_Normal:
 ; ObjPlayer_Main:
 ObjPlayer_Init:
 		addq.b	#ObjPlayerID_Control,routine(a0)
-		move.b	#$13,y_radius(a0)	; this sets Sonic's collision height (2*pixels)
-		move.b	#9,x_radius(a0)
+		move.b	#38/2,y_radius(a0)	; this sets Sonic's collision height (2*pixels)
+		move.b	#18/2,x_radius(a0)
 		move.l	#Map_Sonic,mappings(a0)
 		;move.l	#Map_Tails,mappings(a0)
 		move.w	#VRAM_Plr1/$20,art_tile(a0)
 		jsr	Adjust2PArtPointer
 		move.b	#2,priority(a0)
-		move.b	#$18,width_pixels(a0)
+		move.b	#24,width_pixels(a0)
 		move.b	#4,render_flags(a0)
 
 		move.b	#30,air_left(a0)
