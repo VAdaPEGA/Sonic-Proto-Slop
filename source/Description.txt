@@ -58,7 +58,7 @@ Directing : VAdaPEGA
 Palettes : StaticJ3ff, VAdaPEGA
 Level Design : StaticJ3ff
 Programming : VAdaPEGA
-Sprites : Beta, ChrisFurry, Sharb, VAdaPEGA
+Sprites : Beta, BlipShift, Sharb, VAdaPEGA
 Critter Naming Ideas : Luminator, RoundCritterGang
 Special Thanks : Arrietty, kakalakola, Luminator, mk_majro
 ---  
