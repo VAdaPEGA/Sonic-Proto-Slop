@@ -125,6 +125,7 @@ Anml_FromEnemy:
 		addq.b	#2,routine(a0)
 		jsr	RandomNumber
 		andi.w	#1,d0
+
 		moveq	#0,d1
 		move.b	(Current_Zone).w,d1
 		add.w	d1,d1
@@ -135,6 +136,7 @@ Anml_FromEnemy:
 		lsl.w	#3,d0
 		lea	Anml_Variables(pc),a1
 		adda.w	d0,a1
+
 		move.w	(a1)+,Anml_InitXVel(a0)
 		move.w	(a1)+,Anml_InitYVel(a0)
 		move.l	(a1)+,mappings(a0)
@@ -147,7 +149,7 @@ loc_9C4A:				; CODE XREF: ROM:00009C42j
 		bsr.w	Adjust2PArtPointer
 		move.b	#$C,y_radius(a0)
 		move.b	#4,render_flags(a0)
-		bset	#0,render_flags(a0)
+		;bset	#0,render_flags(a0)
 		move.b	#6,priority(a0)
 		move.b	#8,width_pixels(a0)
 		move.b	#7,anim_frame_duration(a0)
@@ -202,7 +204,7 @@ loc_9CB8:				; DATA XREF: ROM:off_9AB6o
 		addq.b	#4,d0			; 4 + 2*Animaltype
 		move.b	d0,routine(a0)
 		tst.b	($FFFFF7A7).w		; is this after a boss?
-		beq.s	loc_9D0E		; if not, branch
+		beq.s	Anml_FindPartner	; if not, branch
 		btst	#4,(Vint_runcount+3).w	; check bit from frame counter
 		beq.s	loc_9D0E
 		neg.w	x_vel(a0)		; turn animal around
