@@ -272,9 +272,6 @@ loc_B130:
 
 Monitor_Shoes:	
 	move.w	#$4B0,(MainCharacter+speedshoes_time).w
-	move.w	#$C00,(Sonic_top_speed).w
-	move.w	#$18,(Sonic_acceleration).w
-	move.w	#$80,(Sonic_deceleration).w
 	move.w	#$E2,d0
 	jmp	(PlaySound).l
 ; ===========================================================================

@@ -1,9 +1,18 @@
 ; ---------------------------------------------------------------------------
-; Object 01 - Sonic
+; Object 01 - Player
+SonicStandHeight	equ	38/2
+SonicStandWidth		equ	18/2
+SonicRollHeight		equ	28/2
+SonicRollWidth		equ	14/2
+
+TailsStandHeight	equ	30/2
+TailsStandWidth		equ	18/2
+TailsRollHeight		equ	28/2
+TailsRollWidth		equ	14/2
 ; ---------------------------------------------------------------------------
 ObjPlayer:	
 		tst.w	(Debug_placement_mode).w	; is debug mode being used?
-		beq.s	ObjPlayer_Normal			; if not, branch
+		beq.s	ObjPlayer_Normal		; if not, branch
 		jmp	(DebugMode).l
 ; ===========================================================================
 
@@ -19,13 +28,59 @@ ObjPlayer_Normal:
 	GenerateIndexID	 ObjPlayer, Hurt
 	GenerateIndexID	 ObjPlayer, Dead
 ; ===========================================================================
-; ObjPlayer_Main:
+PlayerSpeedTable:
+@Entry	macro	Top, Acc, Dec
+	dc.w	Top
+	dc.b	Acc, Dec
+	endm
+		@Entry	$600,	$C,	$80	; Sonic
+		@Entry	$C00,	$18,	$80	; + Speed Shoes
+		@Entry	$300,	$6,	$40	; UnderWater
+		@Entry	$600,	$C,	$40	; + Speed Shoes
+
+		@Entry	$600,	$6,	$80	; Boom
+		@Entry	$C00,	$C,	$80	; + Speed Shoes
+		@Entry	$500,	$8,	$80	; UnderWater
+		@Entry	$A00,	$E,	$80	; + Speed Shoes
+
+		@Entry	$600,	$C,	$80	; Tails
+		@Entry	$C00,	$18,	$80	; + Speed Shoes
+		@Entry	$300,	$6,	$40	; UnderWater
+		@Entry	$600,	$C,	$40	; + Speed Shoes
+
+		@Entry	$600,	$C,	$80	; Hops
+		@Entry	$C00,	$18,	$80	; + Speed Shoes
+		@Entry	$300,	$6,	$40	; UnderWater
+		@Entry	$600,	$C,	$40	; + Speed Shoes
+
+		@Entry	$500,	$10,	$C0	; Tammy
+		@Entry	$A00,	$20,	$C0	; + Speed Shoes
+		@Entry	$280,	$8,	$60	; UnderWater
+		@Entry	$500,	$10,	$60	; + Speed Shoes
+
+PlayerGetSpeed:
+		moveq	#0,d5
+		move.b	Character(a0),d5
+		lea	PlayerSpeedTable(pc,d5.w),a1
+		tst.w	speedshoes_time(a0)
+		beq.s	@NoShoes
+			addq.w	#4,a1
+		@NoShoes:
+		btst	#BitPlayerStatusWater,status(a0)
+		beq.s	@NotUnderwater
+			addq.w	#8,a1
+		@NotUnderwater:
+		move.w	(a1)+,d6
+		moveq	#0,d4
+		move.b	(a1)+,d5
+		move.b	(a1),d4
+		rts
+
+; ===========================================================================
 ObjPlayer_Init:
 		addq.b	#ObjPlayerID_Control,routine(a0)
-		move.b	#38/2,y_radius(a0)	; this sets Sonic's collision height (2*pixels)
-		move.b	#18/2,x_radius(a0)
-		move.l	#Map_Sonic,mappings(a0)
-		;move.l	#Map_Tails,mappings(a0)
+		move.b	#SonicStandHeight,y_radius(a0)
+		move.b	#SonicStandWidth,x_radius(a0)
 		move.w	#VRAM_Plr1/$20,art_tile(a0)
 		jsr	Adjust2PArtPointer
 		move.b	#2,priority(a0)
@@ -33,10 +88,6 @@ ObjPlayer_Init:
 		move.b	#4,render_flags(a0)
 
 		move.b	#30,air_left(a0)
-
-		move.w	#$600,(Sonic_top_speed).w	; set Sonic's top speed
-		move.w	#$C,(Sonic_acceleration).w	; set Sonic's acceleration
-		move.w	#$80,(Sonic_deceleration).w	; set Sonic's deceleration
 
 		move.b	#$C,top_solid_bit(a0)
 		move.b	#$D,lrb_solid_bit(a0)
@@ -115,9 +166,9 @@ loc_FAFE:
 	GenerateIndex	ObjPlayer, MdJump
 	dc.b	"I made a"
 	; Boom
-	GenerateIndex	ObjPlayer, MdNormal
+	GenerateIndex	ObjPlayer, MdNormalBoom
 	GenerateIndex	ObjPlayer, MdAir
-	GenerateIndex	ObjPlayer, MdRoll
+	GenerateIndex	ObjPlayer, MdRollBoom
 	GenerateIndex	ObjPlayer, MdJump
 	dc.b	"mistake "
 	; Tails
@@ -193,10 +244,6 @@ Sonic_Display:
 		beq.s	@DoNothing
 			subq.w	#1,speedshoes_time(a0)
 			bne.s	@DoNothing
-			inform	1, "TO DO : Expand Speed shoes related stuff for different characters"
-				move.w	#$600,(Sonic_top_speed).w
-				move.w	#$C,(Sonic_acceleration).w
-				move.w	#$80,(Sonic_deceleration).w
 				move.w	#$E3,d0
 				jmp	(PlaySound).l
 	@DoNothing:
@@ -278,9 +325,6 @@ ObjPlayer_InWater:
 		bsr.w	ObjPlayer_WaterResumeMusic
 		move.b	#ObjID_BubblesAndCountdown,(MainCharacter_Bubbles).w
 		move.b	#$80+1,(MainCharacter_Bubbles+subtype).w	; Countdown Subtype
-		move.w	#$300,(Sonic_top_speed).w
-		move.w	#6,(Sonic_acceleration).w
-		move.w	#$40,(Sonic_deceleration).w
 		asr	x_vel(a0)
 		asr	y_vel(a0)	; memory oprands can only be shifted one at a time
 		asr	y_vel(a0)
@@ -296,9 +340,7 @@ ObjPlayer_OutWater:
 		beq.s	locret_FC0A	; if already unset, branch
 
 		bsr.w	ObjPlayer_WaterResumeMusic
-		move.w	#$600,(Sonic_top_speed).w
-		move.w	#$C,(Sonic_acceleration).w
-		move.w	#$80,(Sonic_deceleration).w
+
 		asl	y_vel(a0)
 		beq.w	locret_FC0A
 		move.b	#8,(Water_Splash).w	; splash animation
@@ -317,8 +359,8 @@ loc_FC98:
 ; Called if Sonic is neither airborne nor rolling this frame
 ; ---------------------------------------------------------------------------
 
-ObjPlayer_MdNormalNoRoll:
-		bsr.w	Sonic_Jump
+ObjPlayer_MdNormalBoom:
+		bsr.w	Boom_Jump
 		bra.s	ObjPlayer_MdNormalReturn
 ObjPlayer_MdNormal:
 		bsr.w	Sonic_CheckSpindash
@@ -357,8 +399,12 @@ loc_FCEA:
 ; Start of subroutine ObjPlayer_MdRoll
 ; Called if Sonic is in a ball, but not airborne (thus, probably rolling)
 
+ObjPlayer_MdRollBoom:
+		bsr.w	Boom_Jump
+		bra.s	ObjPlayer_MdRollNoJump
 ObjPlayer_MdRoll:
 		bsr.w	Sonic_Jump
+ObjPlayer_MdRollNoJump:
 		bsr.w	Sonic_RollRepel
 		bsr.w	Sonic_RollSpeed
 		bsr.w	Sonic_LevelBound
@@ -397,9 +443,7 @@ loc_FD34:
 
 
 Sonic_Move:
-		move.w	(Sonic_top_speed).w,d6
-		move.w	(Sonic_acceleration).w,d5
-		move.w	(Sonic_deceleration).w,d4
+		bsr	PlayerGetSpeed
 		tst.b	($FFFFF7CA).w
 		bne.w	ObjPlayer_Traction
 		tst.w	move_lock(a0)
@@ -766,11 +810,9 @@ locret_1000C:
 
 
 Sonic_RollSpeed:
-		move.w	(Sonic_top_speed).w,d6
+		bsr	PlayerGetSpeed
 		asl.w	#1,d6
-		move.w	(Sonic_acceleration).w,d5
 		asr.w	#1,d5
-		move.w	(Sonic_deceleration).w,d4
 		asr.w	#2,d4
 		tst.b	($FFFFF7CA).w
 		bne.w	loc_1008A
@@ -810,8 +852,8 @@ loc_10068:
 		tst.w	ground_speed(a0)
 		bne.s	loc_1008A
 		bclr	#BitPlayerStatusSpin,status(a0)
-		move.b	#$13,y_radius(a0)
-		move.b	#9,x_radius(a0)
+		move.b	#SonicStandHeight,y_radius(a0)
+		move.b	#SonicStandWidth,x_radius(a0)
 		move.b	#5,anim(a0)
 		subq.w	#5,y_pos(a0)
 
@@ -847,8 +889,8 @@ Sonic_RollLeft:
 		bpl.s	loc_100D6
 
 loc_100C8:
-		bset	#BitPlayerStatusHFlip,status(a0)
-		move.b	#2,anim(a0)
+		;bset	#BitPlayerStatusHFlip,status(a0)
+		;move.b	#SonicAniID_Roll,anim(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -869,8 +911,8 @@ loc_100DE:
 Sonic_RollRight:
 		move.w	ground_speed(a0),d0
 		bmi.s	loc_100F8
-		bclr	#BitPlayerStatusHFlip,status(a0)
-		move.b	#2,anim(a0)
+		;bclr	#BitPlayerStatusHFlip,status(a0)
+		;move.b	#SonicAniID_Roll,anim(a0)
 		rts
 ; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
 
@@ -889,8 +931,7 @@ loc_10100:
 
 
 Sonic_ChgJumpDir:
-	move.w	(Sonic_top_speed).w,d6
-	move.w	(Sonic_acceleration).w,d5
+	bsr	PlayerGetSpeed
 	asl.w	#1,d5
 	btst	#BitPlayerStatusRollLock,status(a0)	; Roll Lock >:C
 	bne.s	loc_10150
@@ -1072,9 +1113,9 @@ loc_1023A:
 
 ObjPlayer_DoRoll:
 		bset	#BitPlayerStatusSpin,status(a0)
-		move.b	#$E,y_radius(a0)
-		move.b	#7,x_radius(a0)
-		move.b	#2,anim(a0)
+		move.b	#SonicRollHeight,y_radius(a0)
+		move.b	#SonicRollWidth,x_radius(a0)
+		move.b	#SonicAniID_Roll,anim(a0)
 		addq.w	#5,y_pos(a0)
 		move.w	#$BE,d0
 		jsr	(PlaySound_Special).l
@@ -1087,19 +1128,76 @@ locret_10276:
 ; End of function Sonic_Roll
 
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ---------------------------------------------------------------------------
+Boom_Jump:
+	cmpi.b	#BoomAniID_Dash,Anim(a0)
+	beq	@DoNothing
+		move.b	(Ctrl_1_Press_Logical).w,d0
+		andi.b	#btnABC,d0
+		beq	@DoNothing
+			btst	#BitUp,(Ctrl_1_Held_Logical).w
+			beq	@DashForward
+				moveq	#0,d0
+				move.b	angle(a0),d0
+				addi.b	#$80,d0
+				bsr.w	sub_13102
+				cmpi.w	#6,d1
+				blt.w	@DoNothing	; Do nothing if ceiling is too low
+					move.w	#$640,d2	; Jump height
+					move.w	x_vel(a0),d0
+					asr.w	#4,d0
+					move.w	d0,x_vel(a0)
+					moveq	#0,d0
+					move.b	angle(a0),d0
+					subi.b	#$40,d0
+					btst	#BitL,(Ctrl_1_Held_Logical).w
+					beq.s	@NotLeft
+						sub.b	#$10,d0
+					@NotLeft:
+					btst	#BitR,(Ctrl_1_Held_Logical).w
+					beq.s	@NotRight
+						add.b	#$10,d0
+					@NotRight:
+					jsr	(CalcSine).l
+					muls.w	d2,d0
+					asr.l	#8,d0
+					add.w	d0,x_vel(a0)
+					muls.w	d2,d1
+					asr.l	#8,d1
+					move.w	d1,y_vel(a0)
+					bsr	ObjPlayer_HasJumped
+					move.b	#BoomAniID_Dash,anim(a0)
+					move.l	#ObjectMove,(sp)
+					bclr	#BitPlayerStatusRollLock,status(a0)
+					rts
+			@DashForward:
+			btst	#BitL,(Ctrl_1_Held_Logical).w
+			beq.s	@Right
+				sub.w	#$0200,ground_speed(a0)
+				bra	@dash
+			@Right:
+			btst	#BitR,(Ctrl_1_Held_Logical).w
+			beq.s	@DoNothing
+				add.w	#$0200,ground_speed(a0)
+				@dash:
+				bsr	ObjPlayer_DoRoll
+				move.b	#BoomAniID_Dash,anim(a0)
+				move.l	#ObjectMove,(sp)
+	@DoNothing:
+		rts
 
 
+; ---------------------------------------------------------------------------
 Sonic_Jump:
 	move.b	(Ctrl_1_Press_Logical).w,d0
 	andi.b	#btnABC,d0
-	beq.w	@DoNothing
+	beq	ObjPlayer_Jump_DoNothing
 		moveq	#0,d0
 		move.b	angle(a0),d0
 		addi.b	#$80,d0
 		bsr.w	sub_13102
 		cmpi.w	#6,d1
-		blt.w	@DoNothing	; Do nothing if ceiling is too low
+		blt	ObjPlayer_Jump_DoNothing	; Do nothing if ceiling is too low
 			move.w	#$680,d2	; Jump height
 			btst	#BitPlayerStatusWater,status(a0)
 			beq.s	@NotUnderwater
@@ -1115,32 +1213,29 @@ Sonic_Jump:
 			muls.w	d2,d1
 			asr.l	#8,d1
 			add.w	d1,y_vel(a0)
-			bset	#BitPlayerStatusAir,status(a0)
-			bclr	#BitPlayerStatusPush,status(a0)
-			move.l	#ObjectMove,(sp)
-			move.b	#1,jumping(a0)
-			clr.b	stick_to_convex(a0)
 			move.w	#$A0,d0
 			jsr	(PlaySound_Special).l	; Play Jump Sound
-			move.b	#$13,y_radius(a0)
-			move.b	#9,x_radius(a0)
+			move.l	#ObjectMove,(sp)
+ObjPlayer_HasJumped:
+			bset	#BitPlayerStatusAir,status(a0)
+			bclr	#BitPlayerStatusPush,status(a0)
+			move.b	#1,jumping(a0)
+			clr.b	stick_to_convex(a0)
+
 			btst	#BitPlayerStatusSpin,status(a0)
-			bne.s	@AlreadySpinning
-				move.b	#$E,y_radius(a0)
-				move.b	#7,x_radius(a0)
+			bne.s	ObjPlayer_AlreadySpinning
+				move.b	#SonicRollHeight,y_radius(a0)
+				move.b	#SonicRollWidth,x_radius(a0)
 				move.b	#SonicAniID_Roll,anim(a0)
 				bset	#BitPlayerStatusSpin,status(a0)
-				addq.w	#5,y_pos(a0)
-	@DoNothing:
+				addq.w	#SonicStandHeight-SonicRollHeight,y_pos(a0)
+	ObjPlayer_Jump_DoNothing:
 		rts
-	@AlreadySpinning:
+	ObjPlayer_AlreadySpinning:
 		bset	#BitPlayerStatusRollLock,status(a0)
 		rts
 ; End of function Sonic_Jump
-
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
+; ---------------------------------------------------------------------------
 
 Sonic_JumpHeight:
 		tst.b	jumping(a0)
@@ -1176,33 +1271,32 @@ loc_10352:
 
 ; Sonic_Spindash:
 Sonic_CheckSpindash:
-		tst.b	spindash_flag(a0)
-		bne.s	Sonic_UpdateSpindash
-		cmpi.b	#8,anim(a0)
+	tst.b	spindash_flag(a0)
+	bne.s	Sonic_UpdateSpindash
+		cmpi.b	#SonicAniID_Duck,anim(a0)
 		bne.s	locret_10394
-		move.b	(Ctrl_1_Press_Logical).w,d0
-		andi.b	#btnABC,d0
-		beq.w	locret_10394
-		move.b	#9,anim(a0)
-		move.w	#$BE,d0
-		jsr	(PlaySound_Special).l
-		addq.l	#4,sp
-		move.b	#1,spindash_flag(a0)
-
-locret_10394:
+			move.b	(Ctrl_1_Press_Logical).w,d0
+			andi.b	#btnABC,d0
+			beq.w	locret_10394
+				move.b	#SonicAniID_Spindash,anim(a0)
+				move.w	#$BE,d0
+				jsr	(PlaySound_Special).l
+				addq.l	#4,sp
+				move.b	#1,spindash_flag(a0)
+		locret_10394:
 		rts
 ; ===========================================================================
 ; loc_10396:
 Sonic_UpdateSpindash:
-		move.b	(Ctrl_1_Held_Logical).w,d0
-		btst	#bitDn,d0
-		bne.s	Sonic_ChargingSpindash
+	move.b	(Ctrl_1_Held_Logical).w,d0
+	btst	#bitDn,d0
+	bne.s	Sonic_ChargingSpindash
 
 		; unleash the charged spindash and start rolling quickly:
-		move.b	#$E,y_radius(a0)
-		move.b	#7,x_radius(a0)
-		move.b	#2,anim(a0)
-		addq.w	#5,y_pos(a0)	; add the difference between Sonic's rolling and standing heights
+		move.b	#SonicRollHeight,y_radius(a0)
+		move.b	#SonicRollWidth,x_radius(a0)
+		move.b	#SonicAniID_Roll,anim(a0)
+		addq.w	#SonicStandHeight-SonicRollHeight,y_pos(a0)	; add the difference between heights
 		move.b	#0,spindash_flag(a0)
 		move.w	#$2000,(Horiz_scroll_delay_val).w
 		move.w	#$800,ground_speed(a0)
@@ -1212,15 +1306,15 @@ Sonic_UpdateSpindash:
 
 loc_103D4:
 		bset	#BitPlayerStatusSpin,status(a0)
+		addq.l	#4,sp
 		rts
 ; ===========================================================================
 ; loc_103DC:
 Sonic_ChargingSpindash:
-		move.b	(Ctrl_1_Press_Logical).w,d0
-		andi.b	#btnABC,d0	
-		beq.w	loc_103EA
+	move.b	(Ctrl_1_Press_Logical).w,d0
+	andi.b	#btnABC,d0	
+	beq.w	loc_103EA
 		nop
-
 loc_103EA:
 		addq.l	#4,sp
 		rts
@@ -1589,12 +1683,12 @@ Sonic_ResetOnFloor:
 		bclr	#BitPlayerStatusRollLock,status(a0)
 		bclr	#BitPlayerStatusSpin,status(a0)
 		beq.s	@NotRolling
-			move.b	#$13,y_radius(a0)
-			move.b	#9,x_radius(a0)
+			move.b	#SonicStandHeight,y_radius(a0)
+			move.b	#SonicStandWidth,x_radius(a0)
 			move.b	#0,anim(a0)
-			subq.w	#5,y_pos(a0)
+			subq.w	#SonicStandHeight-SonicRollHeight,y_pos(a0)
 		@NotRolling:
-		move.b	#0,jumping(a0)
+		sf	jumping(a0)
 		move.w	#0,($FFFFF7D0).w
 		move.b	#0,flip_angle(a0)
 		rts

@@ -12,7 +12,7 @@
 	GenerateIndexID	BoomAni, Balance
 	GenerateIndexID	BoomAni, LookUp
 	GenerateIndexID	BoomAni, Duck
-	GenerateIndexID	BoomAni, Spindash
+	GenerateIndexID	BoomAni, Dash
 	GenerateIndexID	BoomAni, WallRecoil1
 	GenerateIndexID	BoomAni, WallRecoil2
 	GenerateIndexID	BoomAni, WallRecoil3
@@ -96,9 +96,9 @@ BoomAni_LookUp:		dc.b	5
 BoomAni_Duck:		dc.b	5
 		dc.b	7, afBack, 1
 
-BoomAni_Spindash:	dc.b	0
+BoomAni_Dash:	dc.b	1
 		dc.b	1,2,1,2,1,2,1,2,1,2
-		dc.b	afEnd
+		dc.b	afChange, BoomAniID_Roll
 
 BoomAni_WallRecoil1:	dc.b	$3F
 		dc.b	1
