@@ -15,37 +15,37 @@ Obj3C_Index:	dc.w loc_C8DC-Obj3C_Index
 ; ===========================================================================
 
 loc_C8DC:	
-		addq.b	#2,routine(a0)
-		move.l	#Map_Obj3C,mappings(a0)
-		move.w	#$4590,art_tile(a0)
-		bsr.w	Adjust2PArtPointer
-		move.b	#4,render_flags(a0)
-		move.b	#$10,width_pixels(a0)
-		move.b	#4,priority(a0)
-		move.b	$28(a0),mapping_frame(a0)
+	addq.b	#2,routine(a0)
+	move.l	#Map_Obj3C,mappings(a0)
+	move.w	#$4590,art_tile(a0)
+	bsr.w	Adjust2PArtPointer
+	move.b	#ByteRenderCoord,render_flags(a0)
+	move.b	#$10,width_pixels(a0)
+	move.b	#4,priority(a0)
+	move.b	subtype(a0),mapping_frame(a0)
 
 loc_C90A:	
-		move.w	(MainCharacter+x_vel).w,$30(a0)
-		move.w	#$1B,d1
-		move.w	#$20,d2	; ' '
-		move.w	#$20,d3	; ' '
-		move.w	x_pos(a0),d4
-		bsr.w	SolidObject
-		btst	#5,status(a0)
-		bne.s	loc_C92E
-
+	move.w	(MainCharacter+x_vel).w,$30(a0)
+	move.w	#$1B,d1
+	move.w	#$20,d2
+	move.w	#$20,d3
+	move.w	x_pos(a0),d4
+	bsr.w	SolidObject
+	lea	(MainCharacter).w,a1
+	cmpi.b	#SonicAniID_Roll,anim(a1)
+	bne.s	locret_C92C
+		tst.w	x_vel(a1)
+		beq.s	loc_C92E
+		; Hey, if you're implementing knuckles, this is
+		; the right spot to add a check for him, wink wink!
 locret_C92C:	
 		rts
 ; ---------------------------------------------------------------------------
 
 loc_C92E:	
-		lea	(MainCharacter).w,a1
-		cmpi.b	#2,anim(a1)
-		bne.s	locret_C92C
 		move.w	$30(a0),d0
 		bpl.s	loc_C942
 		neg.w	d0
-
 loc_C942:	
 		cmpi.w	#$480,d0
 		bcs.s	locret_C92C
@@ -59,11 +59,12 @@ loc_C942:
 		lea	(Obj3C_FragSpdLeft).l,a4
 
 loc_C96E:	
+		addq.b	#2,routine(a0)
 		move.w	x_vel(a1),ground_speed(a1)
-		bclr	#5,status(a0)
-		bclr	#5,status(a1)
-		moveq	#7,d1
-		move.w	#$70,d2	; 'p'
+		bclr	#BitStatusP1Push,status(a0)
+		bclr	#BitPlayerStatusPush,status(a1)
+		moveq	#8-1,d1	; Number of pieces
+		move.w	#$70,d2	; gravity of pieces
 		bsr.s	SmashObject
 
 loc_C988:	
