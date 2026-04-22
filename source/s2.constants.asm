@@ -92,25 +92,17 @@ HW_TMSS:		equ $A14101	; TMSS
 
 ; ---------------------------------------------------------------------------
 ; Joypad input
-btnStart:	equ %10000000 ; Start button	($80)
-btnA:		equ %01000000 ; A		($40)
-btnC:		equ %00100000 ; C		($20)
-btnB:		equ %00010000 ; B		($10)
-btnR:		equ %00001000 ; Right		($08)
-btnL:		equ %00000100 ; Left		($04)
-btnDn:		equ %00000010 ; Down		($02)
-btnUp:		equ %00000001 ; Up		($01)
-btnDir:		equ %00001111 ; Any direction	($0F)
-btnABC:		equ %01110000 ; A, B or C	($70)
-btnBC:		equ %00110000 ; B or C		($30)
-bitStart:	equ 7
-bitA:		equ 6
-bitC:		equ 5
-bitB:		equ 4
-bitR:		equ 3
-bitL:		equ 2
-bitDn:		equ 1
-bitUp:		equ 0
+	DefBit Start,	7, Btn	; ($80)	Start button
+	DefBit A,	6, Btn	; ($40)	A
+	DefBit C,	5, Btn	; ($20)	C
+	DefBit B,	4, Btn	; ($10)	B
+	DefBit R,	3, Btn	; ($08) Right
+	DefBit L,	2, Btn	; ($04) Left
+	DefBit Dn,	1, Btn	; ($02) Down
+	DefBit Up,	0, Btn	; ($01) Up
+BtnABC:		equ %01110000		; ($70) A, B or C
+BtnBC:		equ %00110000		; ($30) B or C
+BtnDir:		equ %00001111 		; ($0F) Any direction
 
 ; ---------------------------------------------------------------------------
 ; Extended RAM constants (for routines that would convert data for STI's use)
@@ -119,12 +111,13 @@ ConvertedChunksLoc:		equ $00FE0000
 ASCII_Linebreak:		equ $0D0A
 ; ---------------------------------------------------------------------------
 ; Animation flags
-afEnd:		equ -1	; $FF return to beginning of animation
-afBack:		equ -2	; $FE go back (specified number) bytes
-afChange:	equ -3	; $FD run specified animation
-afRoutine:	equ -4	; $FC increment routine counter
-afReset:	equ -5	; $FB reset animation and 2nd object routine counter
-af2ndRoutine:	equ -6	; $FA increment 2nd routine counter
+	rsset	-1
+afEnd:		rs.b -1	; $FF return to beginning of animation
+afBack:		rs.b -1	; $FE go back (specified number) bytes
+afChange:	rs.b -1	; $FD run specified animation
+afRoutine:	rs.b -1	; $FC increment routine counter
+afReset:	rs.b -1	; $FB reset animation and 2nd object routine counter
+af2ndRoutine:	rs.b -1	; $FA increment 2nd routine counter
 ; ===========================================================================
 ; These constants will be replaced by an automated system for ease of modification
 ; see macros

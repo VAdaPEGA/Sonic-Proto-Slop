@@ -635,14 +635,14 @@ loc_F8C2:				; CODE XREF: sub_F7F2+1AAj
 		move.w	d2,y_pos(a1)
 ; sub_F8F8:
 RideObject_SetRide:
-		btst	#StatusBitP1Stand,status(a1)
+		btst	#BitStatusP1Stand,status(a1)
 		beq.s	loc_F916
 		moveq	#0,d0
 		move.b	interact(a1),d0
 		lsl.w	#6,d0
 		addi.l	#Object_Space,d0
 		movea.l	d0,a3
-		bclr	#StatusBitP1Stand,status(a3)
+		bclr	#BitStatusP1Stand,status(a3)
 
 loc_F916:
 		move.w	a0,d0
@@ -653,7 +653,7 @@ loc_F916:
 		move.b	#0,angle(a1)
 		move.w	#0,y_vel(a1)
 		move.w	x_vel(a1),ground_speed(a1)
-		btst	#PlayerStatusBitAir,status(a1)
+		btst	#BitPlayerStatusAir,status(a1)
 		beq.s	loc_F95C
 		move.l	a0,-(sp)
 		movea.l	a1,a0
@@ -671,7 +671,7 @@ loc_F95A:
 		movea.l	(sp)+,a0
 
 loc_F95C:
-		bset	#PlayerStatusBitOnObject,status(a1)
+		bset	#BitPlayerStatusOnObject,status(a1)
 		bset	d6,status(a0)
 
 locret_F966:
@@ -726,7 +726,7 @@ MonitorPlatformTopCheckPlayer:	; giving it the least intuitive name in the world
 		move.w	d1,d2
 		add.w	d2,d2
 		lea	(MainCharacter).w,a1	; Only checks for one player
-		btst	#PlayerStatusBitAir,status(a1)
+		btst	#BitPlayerStatusAir,status(a1)
 		bne.s	@GetOffObject
 		move.w	x_pos(a1),d0
 		sub.w	x_pos(a0),d0
@@ -735,9 +735,9 @@ MonitorPlatformTopCheckPlayer:	; giving it the least intuitive name in the world
 		cmp.w	d2,d0
 		bcs.s	@DoNothing
 	@GetOffObject:
-		bclr	#PlayerStatusBitOnObject,status(a1)
+		bclr	#BitPlayerStatusOnObject,status(a1)
 		move.b	#2,routine(a0)
-		bclr	#StatusBitP1Stand,status(a0)
+		bclr	#BitStatusP1Stand,status(a0)
 	@DoNothing:
 		rts
 ; ===========================================================================

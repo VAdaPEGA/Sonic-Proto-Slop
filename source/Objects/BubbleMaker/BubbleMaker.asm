@@ -107,11 +107,11 @@ Bub_ChkWater:	; Routine 4
 		move.b	#SonicAniID_Bubble,anim(a1)	; use bubble-collecting animation
 		move.w	#35,move_lock(a1)
 		move.b	#0,bub_chanceTable(a1)
-		bclr	#PlayerStatusBitPush,Status(a1)
-		bclr	#PlayerStatusBitRollLock,Status(a1)
-		btst	#PlayerStatusBitSpin,Status(a1)
+		bclr	#BitPlayerStatusPush,Status(a1)
+		bclr	#BitPlayerStatusRollLock,Status(a1)
+		btst	#BitPlayerStatusSpin,Status(a1)
 		beq.w	@Burst
-		bclr	#PlayerStatusBitSpin,Status(a1)
+		bclr	#BitPlayerStatusSpin,Status(a1)
 		move.b	#19,y_radius(a1)
 		move.b	#9,x_radius(a1)
 		subq.w	#5,y_pos(a1)

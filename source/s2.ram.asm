@@ -30,7 +30,21 @@ Object_RAM:		equ $40		; RAM per object
 ; universally followed object conventions:
 id:			equ 0		; object ID
 render_flags:		equ 1		; bitfield ; bit 7 = onscreen flag, bit 0 = x mirror, bit 1 = y mirror, bit 2 = coordinate system, bit 6 = render subobjects
+	DefBit RenderVis,	7 ; Set if the object is on-screen, clear otherwise. 
+	DefBit RenderSub,	6 ; Subsprite toggle
+	DefBit RenderRaw,	5 ; Use Raw Mappings
+	DefBit RenderHeight,	4 ; Use ObHeight
+	DefBit RenderCoord2,	3 ; Background alligned Sprite
+	DefBit RenderCoord,	2 ; Absolute or Relative coordinates (clear for HUD sprite)
+	DefBit RenderVFlip,	1 ; Vertical Flip
+	DefBit RenderHFlip,	0 ; Horizontal Flip
 art_tile:		equ 2		; 2 bytes - ; start of sprite's art
+	DefBit GfxPri,		15 ; Sprite Priority
+	DefBit GfxPal2,		14 ; Palette bit
+	DefBit GfxPal,		13 ; Palette bit 
+	DefBit GfxVFlip,	12 ; Vertical Flip
+	DefBit GfxHFlip,	11 ; Horizontal Flip
+	; The rest is VRAM location divided by $20
 mappings:		equ 4		; 4 bytes -
 x_pos:			equ 8		; 2 bytes - ... some objects use $A and $B as well when extra precision is required (see ObjectMove) ... for screen-space objects this is called x_pixel instead
 x_sub:			equ $A		; 2 bytes -
@@ -49,24 +63,23 @@ prev_anim:		equ $1D
 anim_frame_duration:	equ $1E
 status:			equ $22		; note: exact meaning depends on the object... 
 ;for Player: 
-PlayerStatusBitHFlip	equ	0	; left-facing. 
-PlayerStatusBitAir	equ	1	; in-air. 
-PlayerStatusBitSpin	equ	2	; spinning. 
-PlayerStatusBitOnObject	equ	3	; on-object. 
-PlayerStatusBitRollLock	equ	4	; roll-jumping. 
-PlayerStatusBitPush	equ	5	; pushing. 
-PlayerStatusBitWater	equ	6	; underwater.
-PlayerStatusBitChunk	equ	7	; Chunk related.
+	DefBit	PlayerStatusHFlip,	0	; left-facing. 
+	DefBit	PlayerStatusAir,	1	; in-air. 
+	DefBit	PlayerStatusSpin,	2	; spinning. 
+	DefBit	PlayerStatusOnObject,	3	; on-object. 
+	DefBit	PlayerStatusRollLock,	4	; roll-jumping. 
+	DefBit	PlayerStatusPush,	5	; pushing. 
+	DefBit	PlayerStatusWater,	6	; underwater.
+	DefBit	PlayerStatusChunk,	7	; Chunk related.
 ;for anything else (generally): 
-StatusBitHFlip		equ	0	; left-facing. 
-StatusBitVFlip		equ	1	; upside-down facing. 
-StatusBit2		equ	2	; ?. 
-StatusBitP1Stand	equ	3	; Player 1 stands on this object. 
-StatusBitP2Stand	equ	4	; Player 2 stands on this object. 
-StatusBitP1Push		equ	5	; Player 1 is pushing on this object. 
-StatusBitP2Push		equ	6	; Player 2 is pushing on this object. 
-StatusBit7		equ	7	; Object specific
-
+	DefBit	StatusHFlip,	0	; left-facing. 
+	DefBit	StatusVFlip,	1	; upside-down facing. 
+	DefBit	Status2,	2	; ?. 
+	DefBit	StatusP1Stand,	3	; Player 1 stands on this object. 
+	DefBit	StatusP2Stand,	4	; Player 2 stands on this object. 
+	DefBit	StatusP1Push,	5	; Player 1 is pushing on this object. 
+	DefBit	StatusP2Push,	6	; Player 2 is pushing on this object. 
+	DefBit	Status7,	7	; Object specific
 routine:		equ $24
 routine_secondary:	equ $25
 angle:			equ $26		; angle about the z axis (360 degrees = 256)

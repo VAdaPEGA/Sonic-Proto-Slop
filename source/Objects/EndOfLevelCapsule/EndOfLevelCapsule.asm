@@ -70,8 +70,8 @@ loc_1959C:				; CODE XREF: ROM:00019584j
 		tst.b	routine_secondary(a0)
 		beq.s	loc_195B2
 		clr.b	routine_secondary(a0)
-		bclr	#PlayerStatusBitOnObject,(MainCharacter+status).w
-		bset	#PlayerStatusBitAir,(MainCharacter+status).w
+		bclr	#BitPlayerStatusOnObject,(MainCharacter+status).w
+		bset	#BitPlayerStatusAir,(MainCharacter+status).w
 
 loc_195B2:				; CODE XREF: ROM:000195A0j
 		move.b	#2,mapping_frame(a0)
@@ -98,8 +98,8 @@ Obj3E_Switched:				; DATA XREF: ROM:00019514o
 		move.b	#1,($FFFFF7CC).w
 		move.w	#btnR<<8,(Ctrl_1_Logical).w	; force right held input
 		clr.b	routine_secondary(a0)
-		bclr	#PlayerStatusBitOnObject,(MainCharacter+status).w
-		bset	#PlayerStatusBitAir,(MainCharacter+status).w
+		bclr	#BitPlayerStatusOnObject,(MainCharacter+status).w
+		bset	#BitPlayerStatusAir,(MainCharacter+status).w
 
 locret_19620:	
 		rts

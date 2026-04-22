@@ -223,7 +223,7 @@ Obj09_Jump:
 		muls.w	#$680,d1
 		asr.l	#8,d1
 		move.w	d1,y_vel(a0)
-		bset	#PlayerStatusBitAir,status(a0)
+		bset	#BitPlayerStatusAir,status(a0)
 		bset	#7,Status(a0)
 		move.w	#$A0,d0
 		jmp	(PlaySound_Special).l

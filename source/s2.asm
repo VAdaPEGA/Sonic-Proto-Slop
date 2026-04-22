@@ -3607,12 +3607,12 @@ ScrollVertical:
 		bpl.s	@NoVerticalWrap			; if not, branch
 		andi.w	#$7FF,d0
 	@NoVerticalWrap:
-		btst	#PlayerStatusBitSpin,status(a0)
+		btst	#BitPlayerStatusSpin,status(a0)
 		beq.s	@NotSpinning
 		subq.w	#5,d0
 
 	@NotSpinning:	
-		btst	#PlayerStatusBitAir,status(a0)
+		btst	#BitPlayerStatusAir,status(a0)
 		beq.s	@NotInTheAir
 
 		addi.w	#32,d0		

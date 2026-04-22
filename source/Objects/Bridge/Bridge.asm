@@ -264,7 +264,7 @@ sub_7DC0:				; CODE XREF: ROM:00007D1Ep
 sub_7DDA:				; CODE XREF: sub_7DC0+Cp
 		btst	d6,status(a0)
 		beq.s	loc_7E3E
-		btst	#PlayerStatusBitAir,status(a1)
+		btst	#BitPlayerStatusAir,status(a1)
 		bne.s	loc_7DFA
 		moveq	#0,d0
 		move.w	x_pos(a1),d0
@@ -275,7 +275,7 @@ sub_7DDA:				; CODE XREF: sub_7DC0+Cp
 		bcs.s	loc_7E08
 
 loc_7DFA:				; CODE XREF: sub_7DDA+Cj sub_7DDA+1Aj
-		bclr	#PlayerStatusBitOnObject,status(a1)
+		bclr	#BitPlayerStatusOnObject,status(a1)
 		bclr	d6,status(a0)
 		moveq	#0,d4
 		rts

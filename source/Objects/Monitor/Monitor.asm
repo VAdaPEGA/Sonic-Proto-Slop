@@ -57,7 +57,7 @@ Monitor_Solid:	; Routine 2
 			move.b	width_pixels(a0),d1
 			addi.w	#22/2,d1
 			bsr.w	MonitorPlatformTopCheckPlayer	; check if player has left the monitor
-			btst	#PlayerStatusBitOnObject,status(a1)
+			btst	#BitPlayerStatusOnObject,status(a1)
 			bne.w	@OnTop
 				clr.b	routine_secondary(a0)
 				bra.w	Monitor_Animate
@@ -118,18 +118,18 @@ Monitor_Solid:	; Routine 2
 		move.w	#0,ground_speed(a1)	
 		move.w	#0,x_vel(a1)
 @PlayerIsPushing:	
-		btst	#PlayerStatusBitAir,status(a1)
+		btst	#BitPlayerStatusAir,status(a1)
 		bne.s	@OnlyClearPush
-			bset	#StatusBitP1Push,status(a0)
-			bset	#PlayerStatusBitPush,status(a1)
+			bset	#BitStatusP1Push,status(a0)
+			bset	#BitPlayerStatusPush,status(a1)
 			bra.s	Monitor_Animate
 ;----------------------------------------------------
 @NoCollision:	
-	btst	#StatusBitP1Push,status(a0)
+	btst	#BitStatusP1Push,status(a0)
 	beq.s	Monitor_Animate			; Branch if player wasn't pushing
 		move.w	#1,anim(a1)	; set player animation to "walking" (this is part of the cause for the "jump walk" bug)
-@OnlyClearPush:	bclr	#StatusBitP1Push,status(a0)
-		bclr	#PlayerStatusBitPush,status(a1)
+@OnlyClearPush:	bclr	#BitStatusP1Push,status(a0)
+		bclr	#BitPlayerStatusPush,status(a1)
 ;----------------------------------------------------
 Monitor_Animate:
 	lea	(Ani_Monitor).l,a1

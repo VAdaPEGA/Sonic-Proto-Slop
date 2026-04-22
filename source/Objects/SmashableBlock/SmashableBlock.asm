@@ -15,7 +15,7 @@ SmBlock_Speeds		= $34		; (2 bytes)	Speed Table (and pieces)
 		move.w	d2,d3
 		move.w	x_pos(a0),d4
 		jsr	SolidObject
-		btst	#StatusBitP1Stand,status(a0)	; has Player landed on the block?
+		btst	#BitStatusP1Stand,status(a0)	; has Player landed on the block?
 		bne.s	@smash				; if yes, branch
 
 		out_of_range	DeleteObject
@@ -27,15 +27,15 @@ SmBlock_Speeds		= $34		; (2 bytes)	Speed Table (and pieces)
 		cmpi.b	#SonicAniID_Roll,SmBlock_PlayerAniSave(a0) ; is Player rolling/jumping?
 		bne.s	@notspinning	; if not, branch
 
-		bset	#PlayerStatusBitSpin,status(a1)
+		bset	#BitPlayerStatusSpin,status(a1)
 		move.b	#$E,y_radius(a1)
 		move.b	#7,x_radius(a1)
 		move.b	#SonicAniID_Roll,anim(a1)	; make Player roll
 		move.w	#-$300,y_vel(a1)		; rebound Player
-		bset	#PlayerStatusBitAir,status(a1)
-		bclr	#PlayerStatusBitOnObject,status(a1)
+		bset	#BitPlayerStatusAir,status(a1)
+		bclr	#BitPlayerStatusOnObject,status(a1)
 
-		bclr	#StatusBitP1Stand,status(a0)
+		bclr	#BitStatusP1Stand,status(a0)
 		move.b	#1,mapping_frame(a0)
 		move.l	SmBlock_Speeds(a0),a4	; load broken fragment speed data
 		move.w	(a4)+,d1	; set number of	fragments

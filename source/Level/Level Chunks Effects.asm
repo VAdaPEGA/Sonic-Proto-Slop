@@ -44,13 +44,13 @@ c	=	c/2	; warning for if someone forgets to add an entry
 	bsr.s	@GetChunk
 	sub.b	#8,d1		; S Tube Chunks
 	bcs.w	loc_1023A	; Force Player to roll ala S1 (a.k.a wrong)
-		moveq	#StatusBitP1Stand,d6
+		moveq	#BitStatusP1Stand,d6
 		cmpi.b	#11,d1		; Corkscrew Chunks
 		bcs	PlayerQuirkyCorkscrew
-			bclr	#PlayerStatusBitChunk,status(a0)	; Get off the Corkscrew
+			bclr	#BitPlayerStatusChunk,status(a0)	; Get off the Corkscrew
 			beq.s	@DoNothing
 				move.b	#4,flip_speed(a0)
-				bclr	#PlayerStatusBitOnObject,status(a0)
+				bclr	#BitPlayerStatusOnObject,status(a0)
 				tst.b	angle(a0)
 				bne.s	@DoNothing
 					clr.b	flip_angle(a0)
@@ -72,11 +72,11 @@ c	=	c/2	; warning for if someone forgets to add an entry
 ; Getting on the Corkxcrew / Spiral / Twisting Pathway, whatever ya call it
 ; ---------------------------------------------------------------------------
 PlayerQuirkyCorkscrew:
-	btst	#PlayerStatusBitChunk,status(a0)	; is player in corkscrew?
+	btst	#BitPlayerStatusChunk,status(a0)	; is player in corkscrew?
 	bne.s	@OnCorkscrew		; if yes, branch
 		cmpi.b	#5,d1	; can you enter this corkscrew chunk?
 		bcc.s	@DoNothing
-			btst	#PlayerStatusBitAir,status(a0)
+			btst	#BitPlayerStatusAir,status(a0)
 			bne.s	@DoNothing
 				; attempt to get player on Corkscrew
 				move.w	x_pos(a0),d0
@@ -88,14 +88,14 @@ PlayerQuirkyCorkscrew:
 				cmpi.w	#16,d0
 				bgt.s	@DoNothing
 					; add Y check here if something goes wrong, wait for Jeff to complain
-					bset	#PlayerStatusBitChunk,status(a0)	; Enter Corkscrew
-					bset	#PlayerStatusBitOnObject,status(a0)
+					bset	#BitPlayerStatusChunk,status(a0)	; Enter Corkscrew
+					bset	#BitPlayerStatusOnObject,status(a0)
 				@DoNothing:
 				rts
 ; ===========================================================================
 	@GetOffCorkscrew:
-		bclr	#PlayerStatusBitChunk,status(a0)	; Exit Corkscrew
-		bclr	#PlayerStatusBitOnObject,status(a0)
+		bclr	#BitPlayerStatusChunk,status(a0)	; Exit Corkscrew
+		bclr	#BitPlayerStatusOnObject,status(a0)
 		move.b	#0,flips_remaining(a0)
 		move.b	#4,flip_speed(a0)
 		and.b	#-4,flip_angle(a0)

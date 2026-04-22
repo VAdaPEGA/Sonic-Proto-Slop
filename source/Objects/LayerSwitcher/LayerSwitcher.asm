@@ -91,7 +91,7 @@ Obj03_Vertical:
 		swap	d0	; store player's X position (???)
 		move.b	subtype(a0),d0
 		bpl.s	@NoFloorCheck
-		btst	#PlayerStatusBitAir,status(a1)
+		btst	#BitPlayerStatusAir,status(a1)
 		bne.s	@NotOnGround
 	@NoFloorCheck:	
 		move.w	x_pos(a1),d4
@@ -188,7 +188,7 @@ loc_14012:				; CODE XREF: ROM:00013FF0j
 		swap	d0
 		move.b	subtype(a0),d0
 		bpl.s	loc_14028
-		btst	#PlayerStatusBitAir,status(a1)
+		btst	#BitPlayerStatusAir,status(a1)
 		bne.s	loc_140A4
 
 loc_14028:				; CODE XREF: ROM:0001401Ej

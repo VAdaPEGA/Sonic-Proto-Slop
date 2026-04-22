@@ -81,6 +81,18 @@ _getyear	=	_year-100	; somehow this works
 		endif
 		endm
 ; ---------------------------------------------------------------------------
+; Define Byte and Bit constants without having to do it twice
+; 3rd argument to rename Byte to anything else
+; ---------------------------------------------------------------------------
+DefBit	macro	name, val, rename
+Bit\name	equ	val
+	if	(narg<3)
+Byte\name	equ	(1<<val)
+	else
+\rename\\name	equ	(1<<val)
+	endif
+	endm
+; ---------------------------------------------------------------------------
 ; Lagometer (uses Window Layer)
 ; ---------------------------------------------------------------------------
 LagOn	macro
