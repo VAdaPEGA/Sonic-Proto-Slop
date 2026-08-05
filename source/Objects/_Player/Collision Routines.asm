@@ -917,7 +917,7 @@ loc_12B84:				; CODE XREF: Sonic_Angle+6j
 		bne.s	loc_12B90
 		move.b	d2,angle(a0)
 		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 
 loc_12B90:				; CODE XREF: Sonic_Angle+12j
 		move.b	angle(a0),d2
@@ -927,7 +927,7 @@ loc_12B90:				; CODE XREF: Sonic_Angle+12j
 		rts
 ; End of function Sonic_Angle
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+; ===========================================================================
 ; START	OF FUNCTION CHUNK FOR AnglePos
 
 Sonic_WalkVertR:			; CODE XREF: AnglePos+76j
@@ -1112,10 +1112,30 @@ loc_12D5C:				; CODE XREF: AnglePos+358j
 		rts
 ; END OF FUNCTION CHUNK	FOR AnglePos
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; ---------------------------------------------------------------------------
+; Subroutine to	find which block the object is standing on
 
+; input:
+;	d2 = y-position of object's bottom edge
+;	d3 = x-position of object
 
-Floor_ChkTile:	
+; output:
+;	a1 = address within 256x256 mappings where object is standing
+;	(a1) = 16x16 block ID, x/yflip, solidness
+;	uses d0, d1
+; ---------------------------------------------------------------------------
+;	SSSS YXII IIII IIII
+; S = solidity of the block (Both layers get 1 byte each)
+;	00 not solid
+;	01 top solid
+;	10 left/right/bottom solid 
+;	11 all solid
+; Y = Y-flip flag
+; X = X-flip flag
+; I = index of the 16x16 block to use. 
+; ---------------------------------------------------------------------------
+
+FindNearestBlock:	
 		move.w	d2,d0
 		add.w	d0,d0		; y*2
 		andi.w	#$F00,d0	; Masked, only upper nibble matters
@@ -1123,11 +1143,11 @@ Floor_ChkTile:
 		lsr.w	#7,d1		; Divide X position by 128
 		andi.w	#$7F,d1		; mask
 		add.w	d1,d0		; add both numbers
-		moveq	#-1,d1		; ???
+		moveq	#-1,d1		; prepare for RAM shenanigans later
 		lea	(Level_Layout).w,a1
 		move.b	(a1,d0.w),d1	; Get current chunk
 
-		andi.w	#$FF,d1
+		andi.w	#$FF,d1		; IT DOES MATH
 		lsl.w	#7,d1
 		move.w	d2,d0
 		andi.w	#$70,d0
@@ -1136,9 +1156,9 @@ Floor_ChkTile:
 		lsr.w	#3,d0
 		andi.w	#$E,d0
 		add.w	d0,d1
-		movea.l	d1,a1	; block at a1
+		movea.l	d1,a1		; block at a1
 		rts
-; End of function Floor_ChkTile
+; End of function FindNearestBlock
 
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
@@ -1146,7 +1166,7 @@ Floor_ChkTile:
 
 FindFloor:				; CODE XREF: AnglePos+A0p
 					; AnglePos+CEp ...
-		bsr.s	Floor_ChkTile
+		bsr.s	FindNearestBlock
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$3FF,d0
@@ -1172,13 +1192,13 @@ loc_12DCC:				; CODE XREF: FindFloor+Ej
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d3,d1
-		btst	#$A,d4
+		btst	#10,d4
 		beq.s	loc_12DF0
 		not.w	d1
 		neg.b	(a4)
 
 loc_12DF0:				; CODE XREF: FindFloor+3Cj
-		btst	#$B,d4
+		btst	#11,d4
 		beq.s	loc_12E00
 		addi.b	#$40,(a4) ; '@'
 		neg.b	(a4)
@@ -1191,7 +1211,7 @@ loc_12E00:				; CODE XREF: FindFloor+46j
 		move.b	(a2,d1.w),d0
 		ext.w	d0
 		eor.w	d6,d4
-		btst	#$B,d4
+		btst	#11,d4
 		beq.s	loc_12E1C
 		neg.w	d0
 
@@ -1227,9 +1247,8 @@ loc_12E44:				; CODE XREF: FindFloor+78j
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
 
-FindFloor2:				; CODE XREF: FindFloor+12p
-					; FindFloor+98p
-		bsr.w	Floor_ChkTile
+FindFloor2:	
+		bsr.w	FindNearestBlock
 		move.w	(a1),d0
 		move.w	d0,d4
 		andi.w	#$3FF,d0
@@ -1237,8 +1256,7 @@ FindFloor2:				; CODE XREF: FindFloor+12p
 		btst	d5,d4
 		bne.s	loc_12E72
 
-loc_12E64:				; CODE XREF: FindFloor2+Cj
-					; FindFloor2+2Aj ...
+loc_12E64:	
 		move.w	#$F,d1
 		move.w	d2,d0
 		andi.w	#$F,d0
@@ -1255,13 +1273,13 @@ loc_12E72:				; CODE XREF: FindFloor2+10j
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d3,d1
-		btst	#$A,d4
+		btst	#10,d4
 		beq.s	loc_12E96
 		not.w	d1
 		neg.b	(a4)
 
 loc_12E96:				; CODE XREF: FindFloor2+3Ej
-		btst	#$B,d4
+		btst	#11,d4
 		beq.s	loc_12EA6
 		addi.b	#$40,(a4) ; '@'
 		neg.b	(a4)
@@ -1274,7 +1292,7 @@ loc_12EA6:				; CODE XREF: FindFloor2+48j
 		move.b	(a2,d1.w),d0
 		ext.w	d0
 		eor.w	d6,d4
-		btst	#$B,d4
+		btst	#11,d4
 		beq.s	loc_12EC2
 		neg.w	d0
 
@@ -1299,162 +1317,182 @@ loc_12ED8:				; CODE XREF: FindFloor2+74j
 		rts
 ; End of function FindFloor2
 
+; ===========================================================================
+; Subroutine to	find a wall
 
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
+; input:
+;	d2 = y position of object's bottom edge
+;	d3 = x position of object
+;	d5 = bit to test for solidness: $D = top solid; $E = left/right/bottom solid; no, it can't do "all solid"
+;	d6 = eor bitmask for 16x16 tile
+;	a3 = Width of 16x16 tiles: 16 or -16 if object is inverted
+;	a4 = RAM address to write angle byte
 
+; output:
+;	d1 = distance to the wall
+;	a1 = address within 256x256 mappings where object is standing
+;	(a1) = 16x16 tile number, x/yflip, solidness
+;	(a4) = floor angle
+;	uses d0, d3, d4
+; ---------------------------------------------------------------------------
+;	SSSS YXII IIII IIII
+; S = solidity of the block (Both layers get 1 byte each)
+;	00 not solid
+;	01 top solid
+;	10 left/right/bottom solid 
+;	11 all solid
+; Y = Y-flip flag
+; X = X-flip flag
+; I = index of the 16x16 block to use. 
+; ---------------------------------------------------------------------------
 
-FindWall:				; CODE XREF: AnglePos+1CEp
-					; AnglePos+1FAp ...
-		bsr.w	Floor_ChkTile
-		move.w	(a1),d0
-		move.w	d0,d4
-		andi.w	#$3FF,d0
-		beq.s	loc_12EFA
+FindWall:
+	bsr.w	FindNearestBlock	
+	move.w	(a1),d0		; Get Block
+	move.w	d0,d4		; Copy
+	andi.w	#$3FF,d0
+	beq.s	@NoCollision	; branch if tile is blank
 		btst	d5,d4
-		bne.s	loc_12F08
+		bne.s	@IsSolid
+	@NoCollision:
+	add.w	a3,d3
+	bsr.w	FindWall2
+	sub.w	a3,d3
+	addi.w	#16,d1
+	rts
+; ---------------------------------------------------------------------------
+	@IsSolid:	
+	movea.l	(Collision_addr).w,a2
+	add.w	d0,d0
+	move.w	(a2,d0.w),d0
+	beq.s	@NoCollision	; Do nothing if Collision ID 0
 
-loc_12EFA:				; CODE XREF: FindWall+Cj FindWall+2Aj	...
-		add.w	a3,d3
-		bsr.w	FindWall2
-		sub.w	a3,d3
-		addi.w	#$10,d1
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_12F08:				; CODE XREF: FindWall+10j
-		movea.l	(Collision_addr).w,a2
-		add.w	d0,d0
-		move.w	(a2,d0.w),d0
-		beq.s	loc_12EFA
-		lea	(AngleMap).l,a2
-		move.b	(a2,d0.w),(a4)
-		lsl.w	#4,d0
-		move.w	d2,d1
-		btst	#$B,d4
-		beq.s	loc_12F34
+	; Angle Fetching
+	lea	(AngleMap).l,a2
+	move.b	(a2,d0.w),(a4)
+	move.w	d2,d1
+	btst	#11,d4
+	beq.s	@SkipAngleYFlip
 		not.w	d1
-		addi.b	#$40,(a4) ; '@'
+		addi.b	#$40,(a4)
 		neg.b	(a4)
-		subi.b	#$40,(a4) ; '@'
-
-loc_12F34:				; CODE XREF: FindWall+3Ej
-		btst	#$A,d4
-		beq.s	loc_12F3C
+		subi.b	#$40,(a4)
+	@SkipAngleYFlip:	
+	btst	#10,d4
+	beq.s	@SkipAngleXFlip
 		neg.b	(a4)
+	@SkipAngleXFlip:
 
-loc_12F3C:				; CODE XREF: FindWall+50j
-		andi.w	#$F,d1
-		add.w	d0,d1
-		lea	(ColArray2).l,a2
-		move.b	(a2,d1.w),d0
-		ext.w	d0
-		eor.w	d6,d4
-		btst	#$A,d4
-		beq.s	loc_12F58
+	; Distance Fetching
+	lsl.w	#4,d0
+	andi.w	#$F,d1
+	add.w	d0,d1
+	lea	(ColArray2).l,a2
+	move.b	(a2,d1.w),d0
+	ext.w	d0
+	eor.w	d6,d4
+	btst	#10,d4
+	beq.s	@SkipXFlip2
 		neg.w	d0
-
-loc_12F58:				; CODE XREF: FindWall+6Cj
-		tst.w	d0
-		beq.s	loc_12EFA
-		bmi.s	loc_12F74
-		cmpi.b	#$10,d0
-		beq.s	loc_12F80
+	@SkipXFlip2:	
+	tst.w	d0
+	beq	@NoCollision
+		bmi.s	@Negative
+			cmpi.b	#16,d0
+			beq.s	@Max
+				move.w	d3,d1
+				andi.w	#$F,d1
+				add.w	d1,d0
+				move.w	#15,d1
+				sub.w	d0,d1
+				rts
+; ---------------------------------------------------------------------------
+		@Negative:	
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		move.w	#$F,d1
-		sub.w	d0,d1
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+		bpl.w	@NoCollision
 
-loc_12F74:				; CODE XREF: FindWall+74j
+			@Max:	
+			sub.w	a3,d3
+			bsr.w	FindWall2
+			add.w	a3,d3
+			subi.w	#16,d1
+			rts
+; ===========================================================================
+
+FindWall2:	
+	bsr.w	FindNearestBlock
+	move.w	(a1),d0
+	move.w	d0,d4
+	andi.w	#$3FF,d0
+	beq.s	@NoCollision
+		btst	d5,d4
+		bne.s	@IsSolid
+@NoCollision:	
+	move.w	#15,d1	; always set collision to max distance
+	move.w	d3,d0	; get object X position
+	andi.w	#$F,d0	; limit to nearest 16
+	sub.w	d0,d1	; subtract with distance
+	rts
+; ---------------------------------------------------------------------------
+
+@IsSolid:	
+	movea.l	(Collision_addr).w,a2
+	add.w	d0,d0
+	move.w	(a2,d0.w),d0
+	beq.s	@NoCollision
+
+	; Angle Fetching
+
+	lea	(AngleMap).l,a2
+	move.b	(a2,d0.w),(a4)
+	move.w	d2,d1
+	btst	#11,d4
+	beq.s	@SkipAngleYFlip
+		not.w	d1
+		addi.b	#$40,(a4)
+		neg.b	(a4)
+		subi.b	#$40,(a4)
+	@SkipAngleYFlip:
+	btst	#10,d4
+	beq.s	@SkipAngleXFlip
+		neg.b	(a4)
+	@SkipAngleXFlip:
+
+	; Distance fetching
+
+	lsl.w	#4,d0
+	andi.w	#$F,d1
+	add.w	d0,d1
+	lea	(ColArray2).l,a2
+	move.b	(a2,d1.w),d0
+	ext.w	d0
+	eor.w	d6,d4
+	btst	#10,d4
+	beq.s	@SkipXFlip
+		neg.w	d0
+	@SkipXFlip:	
+	tst.w	d0
+	beq.s	@NoCollision
+		bmi.s	@Negative
+			move.w	d3,d1
+			andi.w	#$F,d1
+			add.w	d1,d0
+			move.w	#$F,d1
+			sub.w	d0,d1
+			rts
+; ---------------------------------------------------------------------------
+		@Negative:	
 		move.w	d3,d1
 		andi.w	#$F,d1
 		add.w	d1,d0
-		bpl.w	loc_12EFA
+		bpl.w	@NoCollision
+			not.w	d1
+			rts
 
-loc_12F80:				; CODE XREF: FindWall+7Aj
-		sub.w	a3,d3
-		bsr.w	FindWall2
-		add.w	a3,d3
-		subi.w	#$10,d1
-		rts
 ; End of function FindWall
-
-
-; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
-
-
-FindWall2:				; CODE XREF: FindWall+14p FindWall+9Ap
-		bsr.w	Floor_ChkTile
-		move.w	(a1),d0
-		move.w	d0,d4
-		andi.w	#$3FF,d0
-		beq.s	loc_12FA0
-		btst	d5,d4
-		bne.s	loc_12FAE
-
-loc_12FA0:				; CODE XREF: FindWall2+Cj
-					; FindWall2+2Aj ...
-		move.w	#$F,d1
-		move.w	d3,d0
-		andi.w	#$F,d0
-		sub.w	d0,d1
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_12FAE:				; CODE XREF: FindWall2+10j
-		movea.l	(Collision_addr).w,a2
-		add.w	d0,d0
-		move.w	(a2,d0.w),d0
-		beq.s	loc_12FA0
-		lea	(AngleMap).l,a2
-		move.b	(a2,d0.w),(a4)
-		lsl.w	#4,d0
-		move.w	d2,d1
-		btst	#$B,d4
-		beq.s	loc_12FDA
-		not.w	d1
-		addi.b	#$40,(a4) ; '@'
-		neg.b	(a4)
-		subi.b	#$40,(a4) ; '@'
-
-loc_12FDA:				; CODE XREF: FindWall2+3Ej
-		btst	#$A,d4
-		beq.s	loc_12FE2
-		neg.b	(a4)
-
-loc_12FE2:				; CODE XREF: FindWall2+50j
-		andi.w	#$F,d1
-		add.w	d0,d1
-		lea	(ColArray2).l,a2
-		move.b	(a2,d1.w),d0
-		ext.w	d0
-		eor.w	d6,d4
-		btst	#$A,d4
-		beq.s	loc_12FFE
-		neg.w	d0
-
-loc_12FFE:				; CODE XREF: FindWall2+6Cj
-		tst.w	d0
-		beq.s	loc_12FA0
-		bmi.s	loc_13014
-		move.w	d3,d1
-		andi.w	#$F,d1
-		add.w	d1,d0
-		move.w	#$F,d1
-		sub.w	d0,d1
-		rts
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-
-loc_13014:				; CODE XREF: FindWall2+74j
-		move.w	d3,d1
-		andi.w	#$F,d1
-		add.w	d1,d0
-		bpl.w	loc_12FA0
-		not.w	d1
-		rts
-; End of function FindWall2
+; ===========================================================================
 
 ; ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ S U B	R O U T	I N E ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ
 
@@ -1799,9 +1837,6 @@ Sonic_DontRunOnWalls:			; This label is a lie
 		bra.w	loc_131BE
 ; End of function Sonic_DontRunOnWalls
 
-; ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
-		move.w	y_pos(a0),d2
-		move.w	x_pos(a0),d3
 ; START	OF FUNCTION CHUNK FOR CalcRoomInFront
 
 loc_133B0:				; CODE XREF: CalcRoomInFront+6Ej
