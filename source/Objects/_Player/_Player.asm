@@ -85,7 +85,7 @@ ObjPlayer_Init:
 		jsr	Adjust2PArtPointer
 		move.b	#2,priority(a0)
 		move.b	#24,width_pixels(a0)
-		move.b	#4,render_flags(a0)
+		move.b	#ByteRenderCoord,render_flags(a0)
 
 		move.b	#30,air_left(a0)
 
@@ -1793,7 +1793,7 @@ Sonic_GameOver:
 		addi.w	#$100,d0
 		cmp.w	y_pos(a0),d0	; has player fallen off the bottom of the screen
 		bcc.w	locret_108B4
-		move.w	#$FFC8,y_vel(a0)
+		move.w	#-$0038,y_vel(a0)
 		pea	ObjPlayer_ResetLevel
 		clr.b	(Update_HUD_timer).w
 		addq.b	#1,(Update_HUD_lives).w
