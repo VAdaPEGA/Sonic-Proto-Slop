@@ -76,7 +76,7 @@ Touch_Height:
 	if	(DevHitboxes)
 		movem.l	a0-a1,-(sp)
 		move.l	a1,a0
-		jsr	SingleObjLoad2
+		jsr	SingleObjLoad
 		bne.s	@Devfailsafe2
 		move.b	#ObjId_DisplayHitbox,(a1)
 		move.w	x_pos(a0),x_pos(a1)
