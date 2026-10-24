@@ -8523,6 +8523,31 @@ SNK_Entry:
 ; ---------------------------------------------------------------------------
 		endif
 
+		dc.b	"Don't mind this part, I need it for Sonic CD hacking"
+		even
+SCDPalCycle1 = $FFFFFBDA-$80
+SCDPalCycle2 = $FFFFFBF4-$80
+SCDPalCycle3 = $FFFFFBFA-$80
+		DoesThisEvenWork:
+		move.w	$FFFF190C,d0
+		and.b	#7,d0
+		bne.s	@nocode
+		lea	(SCDPalCycle1).w,a1
+		bsr.s	@cycle
+		adda.w	#SCDPalCycle2-SCDPalCycle1,a1
+		bsr.s	@cycle
+		adda.w	#SCDPalCycle3-SCDPalCycle2,a1
+		bsr.s	@cycle
+		bra.s	@nocode
+		@cycle:
+		move.l	2(a1),d0
+		move.w	(a1),4(a1)
+		move.l	d0,(a1)
+		rts
+		@nocode:
+		rts
+
+
 c	=	*
 d	=	(c/($200000/100))
 		inform 0,"ROM : \#c\ (\#d\%) bytes before final padding"
