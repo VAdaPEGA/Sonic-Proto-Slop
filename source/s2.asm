@@ -5387,6 +5387,21 @@ loc_73E6:
 ; End of function LevelLayoutLoad
 
 	include	"Level\Dynamic Level Events.asm"
+; ===========================================================================
+; Initialize Object RAM with pre-determined values
+; a1 = Init Data
+; ---------------------------------------------------------------------------
+InitializeObject:
+		move.l	(a1)+,mappings(a0)
+InitializeObjectNoMap:
+		move.w	(a1)+,art_tile(a0)
+InitializeObjectNoArt:
+		move.w	(a1)+,y_radius(a0)
+		move.b	(a1)+,mapping_frame(a0)
+		move.b	(a1)+,collision_flags(a0)
+		bset	#2,render_flags(a0)	; Use world coordinates
+		addq.b	#2,routine(a0)		; Advance Routine
+		rts
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
