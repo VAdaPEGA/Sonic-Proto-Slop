@@ -182,17 +182,17 @@
                 }
             ],
             "art": {
-                "path": "Objects\\_Player\\Sonic.ArtUnc",
+                "path": "Objects\\_Player\\ArtData\\Sonic.ArtUnc",
                 "compression": "Uncompressed",
                 "offset": 0
             },
             "mappings": {
-                "path": "Objects\\_Player\\Sonic.SprMAP",
+                "path": "Objects\\_Player\\ArtData\\Sonic.SprMAP",
                 "label": ""
             },
             "dplcs": {
                 "enabled": true,
-                "path": "Objects\\_Player\\Sonic.DPLC",
+                "path": "Objects\\_Player\\ArtData\\Sonic.DPLC",
                 "label": ""
             },
             "uuid": "bb06f0bb-a48c-4775-a92f-cdc105c9cb67"
