@@ -11,18 +11,18 @@
 	GenerateIndex	 Decoration, DrawStill
 	GenerateIndex	 Decoration, DrawAnimated
 Obj1C_Conf:	
-@macro	macro	Mappings, Frame, VRAM, Width, Priority
+@macro	macro	Mappings, Frame, Width, Priority, VRAM
 	dc.l Mappings+Frame<<24	; Mappings
 	dc.w VRAM		; VRAM
 	dc.b Width,  Priority	; Width, Priority
 	endm
-	;	Mappings,		Frame,	VRAM,	Width,	Priority
-	@macro	Map_Bridge_HPZ,		3,	$6300,	4,	1
-	@macro	Map_Decoration,		0,	$E35A,	16,	1
-	@macro	Map_Bridge_EHZ,		1,	$43C6,	4,	1
-	@macro	Map_Bridge_GHZ,		1,	$44C6,	16,	1
-	@macro	Map_LiftDiagonal,	1,	$43E6,	8,	4
-	@macro	Map_LiftDiagonal,	2,	$43E6,	8,	4
+	;	Mappings,		Frame,	Width,	Priority,	VRAM
+	@macro	Map_Bridge_HPZ,		3,	4,	1, 	($6000+VRAM_Bridge_HPZ/$20)
+	@macro	Map_Decoration,		0,	16,	1, 	($E000+VRAM_HPZ_PulsingBall/$20)
+	@macro	Map_Bridge_EHZ,		1,	4,	1,	$43C6
+	@macro	Map_Bridge_GHZ,		1,	16,	1,	$44C6
+	@macro	Map_LiftDiagonal,	1,	8,	4,	$43E6
+	@macro	Map_LiftDiagonal,	2,	8,	4,	$43E6
 ; ===========================================================================
 Decoration_INIT:	
 		addq.b	#2,routine(a0)

@@ -40,7 +40,7 @@ Obj11_Child2	=	$34
 		bne.s	@NotHPZ
 		addq.b	#4,routine(a0)
 		move.l	#Map_Bridge_HPZ,mappings(a0)
-		move.w	#$6300,art_tile(a0)
+		move.w	#$6000+(VRAM_Bridge_HPZ/$20),art_tile(a0)
 
 	@NotHPZ:	
 		bsr.w	Adjust2PArtPointer

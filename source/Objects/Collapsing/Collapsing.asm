@@ -22,7 +22,7 @@ loc_8C58:
 		cmpi.b	#ZoneID_HPZ,(Current_Zone).w
 		bne.s	loc_8CB0
 		move.l	#MAP_PlatformHPZ,mappings(a0)
-		move.w	#$434A,art_tile(a0)
+		move.w	#$4000+(VRAM_Platform_HPZ/$20),art_tile(a0)
 		bsr.w	Adjust2PArtPointer
 		move.b	#$30,width_pixels(a0)
 		move.l	#Obj1A_Conf_HPZ,$3C(a0)

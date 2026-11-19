@@ -499,7 +499,6 @@ ZoneCount	=	0
 IncludeZone	macro	Name, water, debug
 ZoneID_\Name\:		equ	ZoneCount
 ZoneName\#ZoneCount:		equs	\debug
-UncArt_Zone_\#ZoneCount:	equ	filesize("Level/\Name\/Art.Artunc")
 _ZoneFolder\#ZoneCount:		equs	"Level/\Name\/"
 _ZoneName\#ZoneCount:		equs	"\Name\"
 ZonePal_Water\#ZoneCount	=	water

@@ -15,7 +15,7 @@ Obj13_Index:	dc.w @Init-Obj13_Index
 	@Init:	
 		addq.b	#2,routine(a0)
 		move.l	#Map_Obj13,mappings(a0)
-		move.w	#$E000+$315,art_tile(a0)
+		move.w	#$E000+(VRAM_HPZWaterfall/$20),art_tile(a0)
 		bsr.w	Adjust2PArtPointer
 		move.b	#4,render_flags(a0)
 		move.b	#$10,width_pixels(a0)

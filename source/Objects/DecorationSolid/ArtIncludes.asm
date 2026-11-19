@@ -21,7 +21,7 @@ DecorationSolid_Data:
 	dc.l	Speeds+RenderW<<24
 	endm ;	VRAM,		Width,	Height,	RenderWidth,	Speeds
 	@macro	($6C0+$6000),	27,	32,	19,	SmashSpd_2Pieces	; GHZ Rock
-	@macro	($392+$6000),	32,	32,	30,	SmashSpd_2Pieces	; HPZ Emerald
+	@macro	($6000+VRAM_HPZ_Diamond/$20),	32,	32,	30,	SmashSpd_2Pieces	; HPZ Emerald
 ; ---------------------------------------------------------------------------
 SmashSpd_2Pieces:	;X_Vel	;Y_Vel
 	dc.w	2-1

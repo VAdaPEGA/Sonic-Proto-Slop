@@ -15,7 +15,7 @@ Obj04_Index:	dc.w Obj04_Init-Obj04_Index
 Obj04_Init:				; DATA XREF: ROM:Obj04_Indexo
 		addq.b	#2,routine(a0)
 		move.l	#Map_Obj04,mappings(a0)
-		move.w	#$8400,art_tile(a0)
+		move.w	#$8000+(VRAM_HPZWaterSurface/$20),art_tile(a0)
 		jsr	Adjust2PArtPointer
 		move.b	#4,render_flags(a0)
 		move.b	#$80,width_pixels(a0)

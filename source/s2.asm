@@ -7948,7 +7948,9 @@ locret_1B23C:
 ; End of function AddPoints
 
 	include	"Routines\HUD.asm"
-
+; ===========================================================================
+; All the Zone data you could need, all included in one neat little package!
+	include	"Level\Level Data.asm"
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LISTS
@@ -8002,14 +8004,26 @@ locret_1B23C:
 PLC_Start	macro	name
 		PLC_\name\:
 		dc.w	((PLC_\name\_End-PLC_\name\)/6)-1
+VRAM	=	0
 		endm
 PLC_End		macro	name
 		PLC_\name\_End:
 		endm
 PLC_Entry 	macro	toVRAMaddr,fromROMaddr
-		dc.l	fromROMaddr		; art to load
-		dc.w	toVRAMaddr		; VRAM address to load it at
+		dc.l	fromROMaddr	; art to load
+		dc.w	toVRAMaddr	; VRAM address to load it at
 		endm
+
+PLC_Entry_Dyn 	macro	zone, name
+		dc.l	ArtNem_\name	; art to load
+		dc.w	VRAM	; VRAM address to load it at
+VRAM_\zone\\name	=	VRAM
+VRAM	=	VRAM+UncSize_Art_\name
+		if	(UncSize_Art_\name)=-1
+		inform	2, "Can't determine art size \name\ for \zone\, ArtUnc missing"
+		endif
+		endm
+
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
 ; Standard 1 - loaded for every level
@@ -8182,14 +8196,14 @@ PLC_Entry 	macro	toVRAMaddr,fromROMaddr
 ; Hidden Palace Zone primary
 ; --------------------------------------------------------------------------------------
 	PLC_Start	HPZ
-	PLC_Entry	0,		ArtNem_HPZ
-	PLC_Entry	($300*$20),	ArtNem_Bridge_HPZ
-	PLC_Entry	($315*$20),	ArtNem_HPZWaterfall
-	PLC_Entry	($34A*$20),	ArtNem_Platform_HPZ
-	PLC_Entry	($35A*$20),	ArtNem_HPZ_PulsingBall
-	PLC_Entry	($37C*$20),	ArtNem_HPZ_Various
-	PLC_Entry	($392*$20),	ArtNem_HPZ_Diamond
-	PLC_Entry	($400*$20),	ArtNem_WaterSurface
+	PLC_Entry_Dyn	, HPZ
+	PLC_Entry_Dyn	, Bridge_HPZ
+	PLC_Entry_Dyn	, HPZWaterfall
+	PLC_Entry_Dyn	, Platform_HPZ
+	PLC_Entry_Dyn	, HPZ_PulsingBall
+	PLC_Entry_Dyn	, HPZ_Various
+	PLC_Entry_Dyn	, HPZ_Diamond
+	PLC_Entry_Dyn	HPZ, WaterSurface
 	PLC_End		HPZ
 ; --------------------------------------------------------------------------------------
 ; PATTERN LOAD REQUEST LIST
@@ -8351,9 +8365,6 @@ S1SS_5:		incbin	"SpecialStage/Layout/Layout5.bin"
 S1SS_6:		incbin	"SpecialStage/Layout/Layout6.bin"
 S1SS_7:		incbin	"SpecialStage/Layout/Layout7.bin"
 		even
-; ===========================================================================
-; All the Zone data you could need, all included in one neat little package!
-		include	"Level\Level Data.asm"
 ; ---------------------------------------------------------------------------
 LevelSelectText:
 	dc.b "     Green Hill -Stage 1"	; Temporary
