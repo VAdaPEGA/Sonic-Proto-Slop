@@ -1467,10 +1467,10 @@ locret_104FA:
 Sonic_DoLevelCollision:
 		move.l	#Primary_Collision,(Collision_addr).w
 		cmpi.b	#$C,top_solid_bit(a0)
-		beq.s	loc_10514
+		beq.s	@UsePrimary
 		move.l	#Secondary_Collision,(Collision_addr).w
 
-loc_10514:
+	@UsePrimary:
 		move.b	lrb_solid_bit(a0),d5
 		move.w	x_vel(a0),d1
 		move.w	y_vel(a0),d2

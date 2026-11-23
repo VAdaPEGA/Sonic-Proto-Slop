@@ -2669,32 +2669,29 @@ WaterEffects:				; CODE XREF: ROM:00003D56p
 		Include	"Level/Dynamic Water Events.asm"
 		Include	"Routines/Demo Recording.asm"
 ; ===========================================================================
-
-
-
+; ---------------------------------------------------------------------------
+; Load collision indexes to RAM
+; ===========================================================================
 LoadCollisionIndexes:		; these are Kosinski compressed in the final
-		moveq	#0,d0
-		move.b	(Current_Zone).w,d0
-		lsl.w	#3,d0
-;		move.l	#Primary_Collision,(Collision_addr).w	; Both players write here anyway, I hate it
-		movea.l	Col_Index(pc,d0.w),a1
-		lea	(Primary_Collision).w,a2
-		bsr.s	Col_Load
-		movea.l	Col_Index+4(pc,d0.w),a1
-		lea	(Secondary_Collision).w,a2
-; End of function LoadCollisionIndexes
+	moveq	#0,d0
+	move.b	(Current_Zone).w,d0
+	lsl.w	#3,d0	; zone*8 ... WAIT, LONG??? OH PLEASE WE CAN WORD THIS COME ON AAAAAAAAAAAA
+;	move.l	#Primary_Collision,(Collision_addr).w	; Both players write here anyway, I hate it
+	movea.l	Col_Index(pc,d0.w),a1
+	lea	(Primary_Collision).w,a2
+	bsr.s	Col_Load
+	; This is definitely done in preparation for a compressed format
+	movea.l	Col_Index+4(pc,d0.w),a1
+	lea	(Secondary_Collision).w,a2
 
-; ||||||||||||||| S U B R O U T I N E |||||||||||||||||||||||||||||||||||||||
-
-Col_Load:
-		move.w	#$300-1,d1
-		moveq	#0,d2
-
-loc_4616:
-		move.b	(a1)+,d2
-		move.w	d2,(a2)+
-		dbf	d1,loc_4616
-		rts
+Col_Load:	; placeholder routine that dumps collision indexes into RAM inefficiently
+	move.w	#$300-1,d1	; only the first $300 get written to RAM, anything past is invalid
+	moveq	#0,d2
+	@loop:
+		move.b	(a1)+,d2	; get byte
+		move.w	d2,(a2)+	; and dump it as a WORD (I hate this)
+		dbf	d1,@loop	; WHY WOULD YOU DO THIS???? a-anyway, loop back
+	rts
 ; End of function Col_Load
 
 ; ===========================================================================
