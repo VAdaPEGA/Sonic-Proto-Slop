@@ -28,6 +28,27 @@ DPLC_Boom:
 	dc.w	DPLC_Boom_25-DPLC_Boom
 	dc.w	DPLC_Boom_26-DPLC_Boom
 	dc.w	DPLC_Boom_27-DPLC_Boom
+	dc.w	DPLC_Boom_28-DPLC_Boom
+	dc.w	DPLC_Boom_29-DPLC_Boom
+	dc.w	DPLC_Boom_30-DPLC_Boom
+	dc.w	DPLC_Boom_31-DPLC_Boom
+	dc.w	DPLC_Boom_32-DPLC_Boom
+	dc.w	DPLC_Boom_33-DPLC_Boom
+	dc.w	DPLC_Boom_34-DPLC_Boom
+	dc.w	DPLC_Boom_35-DPLC_Boom
+	dc.w	DPLC_Boom_36-DPLC_Boom
+	dc.w	DPLC_Boom_37-DPLC_Boom
+	dc.w	DPLC_Boom_38-DPLC_Boom
+	dc.w	DPLC_Boom_39-DPLC_Boom
+	dc.w	DPLC_Boom_40-DPLC_Boom
+	dc.w	DPLC_Boom_41-DPLC_Boom
+	dc.w	DPLC_Boom_42-DPLC_Boom
+	dc.w	DPLC_Boom_43-DPLC_Boom
+	dc.w	DPLC_Boom_44-DPLC_Boom
+	dc.w	DPLC_Boom_45-DPLC_Boom
+	dc.w	DPLC_Boom_46-DPLC_Boom
+	dc.w	DPLC_Boom_47-DPLC_Boom
+	dc.w	DPLC_Boom_48-DPLC_Boom
 
 DPLC_Boom_0:	dc.w 3
 	dc.w $B000
@@ -62,94 +83,201 @@ DPLC_Boom_5:	dc.w 3
 	dc.w $5076
 	dc.w $107C
 
-DPLC_Boom_6:	dc.w 3
+DPLC_Boom_6:	dc.w 1
 	dc.w $F07E
-	dc.w $108E
-	dc.w $1090
 
-DPLC_Boom_7:	dc.w 1
-	dc.w $F092
+DPLC_Boom_7:	dc.w 2
+	dc.w $708E
+	dc.w $5096
 
 DPLC_Boom_8:	dc.w 1
-	dc.w $F0A2
+	dc.w $B09C
 
-DPLC_Boom_9:	dc.w 1
-	dc.w $F0B2
+DPLC_Boom_9:	dc.w 2
+	dc.w $B0A8
+	dc.w $10B4
 
 DPLC_Boom_10:	dc.w 1
-	dc.w $F0C2
+	dc.w $F0B6
 
-DPLC_Boom_11:	dc.w 1
-	dc.w $F0D2
+DPLC_Boom_11:	dc.w 2
+	dc.w $70C6
+	dc.w $50CE
 
 DPLC_Boom_12:	dc.w 1
-	dc.w $F0E2
+	dc.w $B0D4
 
-DPLC_Boom_13:	dc.w 4
-	dc.w $B0F2
-	dc.w $30FE
-	dc.w $5102
-	dc.w $1108
+DPLC_Boom_13:	dc.w 2
+	dc.w $B0E0
+	dc.w $10EC
 
-DPLC_Boom_14:	dc.w 6
-	dc.w $B10A
-	dc.w $3116
-	dc.w $111A
-	dc.w $111C
-	dc.w $111E
-	dc.w $1120
+DPLC_Boom_14:	dc.w 3
+	dc.w $F0EE
+	dc.w $10FE
+	dc.w $1100
 
-DPLC_Boom_15:	dc.w 3
-	dc.w $B122
-	dc.w $312E
-	dc.w $7132
+DPLC_Boom_15:	dc.w 1
+	dc.w $F102
 
-DPLC_Boom_16:	dc.w 2
-	dc.w $B13A
-	dc.w $5146
+DPLC_Boom_16:	dc.w 1
+	dc.w $F112
 
-DPLC_Boom_17:	dc.w 3
-	dc.w $B14C
-	dc.w $3158
-	dc.w $115C
+DPLC_Boom_17:	dc.w 1
+	dc.w $F122
 
-DPLC_Boom_18:	dc.w 3
-	dc.w $715E
-	dc.w $B166
-	dc.w $1172
+DPLC_Boom_18:	dc.w 1
+	dc.w $F132
 
-DPLC_Boom_19:	dc.w 4
-	dc.w $B174
-	dc.w $3180
-	dc.w $3184
-	dc.w $5188
+DPLC_Boom_19:	dc.w 1
+	dc.w $F142
 
-DPLC_Boom_20:	dc.w 3
-	dc.w $B18E
-	dc.w $319A
-	dc.w $519E
+DPLC_Boom_20:	dc.w 1
+	dc.w $F152
 
-DPLC_Boom_21:	dc.w 2
-	dc.w $B1A4
-	dc.w $71B0
+DPLC_Boom_21:	dc.w 4
+	dc.w $B162
+	dc.w $316E
+	dc.w $5172
+	dc.w $1178
 
-DPLC_Boom_22:	dc.w 2
-	dc.w $B1B8
-	dc.w $31C4
+DPLC_Boom_22:	dc.w 6
+	dc.w $B17A
+	dc.w $3186
+	dc.w $118A
+	dc.w $118C
+	dc.w $118E
+	dc.w $1190
 
-DPLC_Boom_23:	dc.w 1
-	dc.w $51C8
+DPLC_Boom_23:	dc.w 3
+	dc.w $B192
+	dc.w $319E
+	dc.w $71A2
 
-DPLC_Boom_24:	dc.w 1
-	dc.w $51CE
+DPLC_Boom_24:	dc.w 2
+	dc.w $B1AA
+	dc.w $51B6
 
-DPLC_Boom_25:	dc.w 1
-	dc.w $51D4
+DPLC_Boom_25:	dc.w 3
+	dc.w $B1BC
+	dc.w $31C8
+	dc.w $11CC
 
-DPLC_Boom_26:	dc.w 1
-	dc.w $51DA
+DPLC_Boom_26:	dc.w 3
+	dc.w $71CE
+	dc.w $B1D6
+	dc.w $11E2
 
-DPLC_Boom_27:	dc.w 1
-	dc.w $51E0
+DPLC_Boom_27:	dc.w 4
+	dc.w $B1E4
+	dc.w $31F0
+	dc.w $31F4
+	dc.w $51F8
+
+DPLC_Boom_28:	dc.w 3
+	dc.w $B1FE
+	dc.w $320A
+	dc.w $520E
+
+DPLC_Boom_29:	dc.w 2
+	dc.w $B214
+	dc.w $7220
+
+DPLC_Boom_30:	dc.w 2
+	dc.w $B228
+	dc.w $3234
+
+DPLC_Boom_31:	dc.w 6
+	dc.w $B238
+	dc.w $3244
+	dc.w $1248
+	dc.w $324A
+	dc.w $124E
+	dc.w $1250
+
+DPLC_Boom_32:	dc.w 3
+	dc.w $B252
+	dc.w $725E
+	dc.w $5266
+
+DPLC_Boom_33:	dc.w 5
+	dc.w $B26C
+	dc.w $3278
+	dc.w $127C
+	dc.w $327E
+	dc.w $5282
+
+DPLC_Boom_34:	dc.w 3
+	dc.w $B288
+	dc.w $7294
+	dc.w $329C
+
+DPLC_Boom_35:	dc.w 3
+	dc.w $F2A0
+	dc.w $32B0
+	dc.w $72B4
+
+DPLC_Boom_36:	dc.w 4
+	dc.w $F2BC
+	dc.w $32CC
+	dc.w $32D0
+	dc.w $12D4
+
+DPLC_Boom_37:	dc.w 6
+	dc.w $B2D6
+	dc.w $32E2
+	dc.w $12E6
+	dc.w $12E8
+	dc.w $52EA
+	dc.w $12F0
+
+DPLC_Boom_38:	dc.w 6
+	dc.w $32F2
+	dc.w $B2F6
+	dc.w $3302
+	dc.w $1306
+	dc.w $3308
+	dc.w $130C
+
+DPLC_Boom_39:	dc.w 3
+	dc.w $B30E
+	dc.w $531A
+	dc.w $1320
+
+DPLC_Boom_40:	dc.w 4
+	dc.w $B322
+	dc.w $332E
+	dc.w $1332
+	dc.w $5334
+
+DPLC_Boom_41:	dc.w 4
+	dc.w $F33A
+	dc.w $334A
+	dc.w $334E
+	dc.w $1352
+
+DPLC_Boom_42:	dc.w 3
+	dc.w $F354
+	dc.w $1364
+	dc.w $7366
+
+DPLC_Boom_43:	dc.w 3
+	dc.w $B36E
+	dc.w $537A
+	dc.w $1380
+
+DPLC_Boom_44:	dc.w 1
+	dc.w $5382
+
+DPLC_Boom_45:	dc.w 1
+	dc.w $5388
+
+DPLC_Boom_46:	dc.w 1
+	dc.w $538E
+
+DPLC_Boom_47:	dc.w 1
+	dc.w $5394
+
+DPLC_Boom_48:	dc.w 1
+	dc.w $539A
 
 	even

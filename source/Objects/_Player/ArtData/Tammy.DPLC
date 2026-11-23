@@ -27,6 +27,16 @@ DPLC_Tammy:
 	dc.w	DPLC_Tammy_24-DPLC_Tammy
 	dc.w	DPLC_Tammy_25-DPLC_Tammy
 	dc.w	DPLC_Tammy_26-DPLC_Tammy
+	dc.w	DPLC_Tammy_27-DPLC_Tammy
+	dc.w	DPLC_Tammy_28-DPLC_Tammy
+	dc.w	DPLC_Tammy_29-DPLC_Tammy
+	dc.w	DPLC_Tammy_30-DPLC_Tammy
+	dc.w	DPLC_Tammy_31-DPLC_Tammy
+	dc.w	DPLC_Tammy_32-DPLC_Tammy
+	dc.w	DPLC_Tammy_33-DPLC_Tammy
+	dc.w	DPLC_Tammy_34-DPLC_Tammy
+	dc.w	DPLC_Tammy_35-DPLC_Tammy
+	dc.w	DPLC_Tammy_36-DPLC_Tammy
 
 DPLC_Tammy_0:	dc.w 2
 	dc.w $F000
@@ -111,25 +121,81 @@ DPLC_Tammy_18:	dc.w 1
 DPLC_Tammy_19:	dc.w 1
 	dc.w $F170
 
-DPLC_Tammy_20:	dc.w 1
+DPLC_Tammy_20:	dc.w 3
 	dc.w $F180
+	dc.w $1190
+	dc.w $1192
 
-DPLC_Tammy_21:	dc.w 1
-	dc.w $B190
+DPLC_Tammy_21:	dc.w 4
+	dc.w $F194
+	dc.w $31A4
+	dc.w $11A8
+	dc.w $71AA
 
-DPLC_Tammy_22:	dc.w 1
-	dc.w $519C
+DPLC_Tammy_22:	dc.w 5
+	dc.w $B1B2
+	dc.w $31BE
+	dc.w $71C2
+	dc.w $11CA
+	dc.w $31CC
 
-DPLC_Tammy_23:	dc.w 1
-	dc.w $51A2
+DPLC_Tammy_23:	dc.w 5
+	dc.w $B1D0
+	dc.w $31DC
+	dc.w $71E0
+	dc.w $11E8
+	dc.w $31EA
 
-DPLC_Tammy_24:	dc.w 1
-	dc.w $51A8
+DPLC_Tammy_24:	dc.w 3
+	dc.w $B1EE
+	dc.w $31FA
+	dc.w $31FE
 
-DPLC_Tammy_25:	dc.w 1
-	dc.w $51AE
+DPLC_Tammy_25:	dc.w 3
+	dc.w $B202
+	dc.w $720E
+	dc.w $7216
 
-DPLC_Tammy_26:	dc.w 1
-	dc.w $51B4
+DPLC_Tammy_26:	dc.w 3
+	dc.w $F21E
+	dc.w $322E
+	dc.w $1232
+
+DPLC_Tammy_27:	dc.w 2
+	dc.w $F234
+	dc.w $7244
+
+DPLC_Tammy_28:	dc.w 2
+	dc.w $F24C
+	dc.w $125C
+
+DPLC_Tammy_29:	dc.w 2
+	dc.w $F25E
+	dc.w $326E
+
+DPLC_Tammy_30:	dc.w 2
+	dc.w $F272
+	dc.w $3282
+
+DPLC_Tammy_31:	dc.w 2
+	dc.w $F286
+	dc.w $1296
+
+DPLC_Tammy_32:	dc.w 1
+	dc.w $F298
+
+DPLC_Tammy_33:	dc.w 2
+	dc.w $F2A8
+	dc.w $32B8
+
+DPLC_Tammy_34:	dc.w 2
+	dc.w $F2BC
+	dc.w $32CC
+
+DPLC_Tammy_35:	dc.w 1
+	dc.w $F2D0
+
+DPLC_Tammy_36:	dc.w 1
+	dc.w $B2E0
 
 	even

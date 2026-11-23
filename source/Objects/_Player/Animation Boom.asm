@@ -46,34 +46,64 @@ BoomAni_TurnAround:	dc.b	1
 			dc.b	3, 2
 			dc.b	afChange, BoomAniID_Walk ; Turning around
 
+BoomAni_Dash:	dc.b	1
+f	=	7	
+		AnimIncRept	8, 1
+		dc.b	afChange, BoomAniID_Roll
+
+
 BoomAni_Roll3:	
 BoomAni_Roll4:		dc.b 	-5
-f	=	8+6
+f	=	16+6
 		AnimIncRept	6,-1
 		dc.b	afEnd
 
 BoomAni_Roll2:
 BoomAni_Roll:		dc.b 	-5
-f	=	8
+f	=	16
 		AnimIncRept	6,+1
 		dc.b	afEnd
 
-BoomAni_Run:
 BoomAni_Walk:		dc.b 	-5
 		AnimIncRept	10,+1
 		dc.b	afEnd
 
-BoomAni_SkidToWalk:	dc.b	1
-		dc.b	1,1,1
-		dc.b	afChange, BoomAniID_Walk
+BoomAni_Run:	dc.b 	-5
+		AnimIncRept	4,+1
+		dc.b	afEnd
 
-BoomAni_SkidToWalk2:	dc.b	2
+BoomAni_Stop:	dc.b	4
+		AnimIncRept	2,+1
+		dc.b	afEnd
+BoomAni_SkidToWalk3:
+BoomAni_SkidToWalk2:
+BoomAni_SkidToWalk:	dc.b	4
 		dc.b	1
 		dc.b	afChange, BoomAniID_Walk
 
-BoomAni_SkidToWalk3:	dc.b	1
-		dc.b	1, 1
-		dc.b	afChange, BoomAniID_Walk
+BoomAni_Balance2:
+BoomAni_Balance:	dc.b	8
+		AnimIncRept	2,+1
+		dc.b	afEnd
+
+BoomAni_LookUp:		dc.b	5
+		AnimIncRept	1,+1
+		dc.b	afBack, 1
+
+BoomAni_Duck:		dc.b	5
+		AnimIncRept	1,+1
+		dc.b	afBack, 1
+
+BoomAni_Hurt:		dc.b	12
+		AnimIncRept	1,+1
+		dc.b	afEnd
+
+BoomAni_Death1:		
+BoomAni_Drown:		
+BoomAni_Death2:	
+		AnimIncRept	1,+1
+		dc.b	afEnd
+
 
 BoomAni_Push:		dc.b 	-3
 		rept	3
@@ -81,24 +111,6 @@ BoomAni_Push:		dc.b 	-3
 		endr
 		dc.b	afEnd
 
-BoomAni_Balance:	dc.b	8
-		dc.b	1, 1
-		dc.b	afEnd
-
-BoomAni_Balance2:	dc.b	7
-		dc.b	1,1
-		dc.b	afEnd
-
-BoomAni_LookUp:		dc.b	5
-		dc.b	6
-		dc.b	7, afBack, 1
-
-BoomAni_Duck:		dc.b	5
-		dc.b	7, afBack, 1
-
-BoomAni_Dash:	dc.b	1
-		dc.b	1,2,1,2,1,2,1,2,1,2
-		dc.b	afChange, BoomAniID_Roll
 
 BoomAni_WallRecoil1:	dc.b	$3F
 		dc.b	1
@@ -111,10 +123,6 @@ BoomAni_WallRecoil2:	dc.b	7
 BoomAni_WallRecoil3:	dc.b	7
 		dc.b	1
 		dc.b	afChange, BoomAniID_Wait	; get up
-
-BoomAni_Stop:		dc.b	4
-		dc.b	1,1
-		dc.b	1,1, afBack, 2
 
 BoomAni_Float1:		dc.b	7
 		dc.b	1,1
@@ -136,25 +144,9 @@ BoomAni_Bubble:		dc.b	$B
 		dc.b	1,1,1,1
 		dc.b	afChange,  BoomAniID_Walk
 
-BoomAni_Death1:		dc.b	$20
-		dc.b	1
-		dc.b	afEnd
-
-BoomAni_Drown:		dc.b	$20
-		dc.b	1
-		dc.b	afEnd
-
-BoomAni_Death2:		dc.b	$20
-		dc.b	1
-		dc.b	afEnd
-
 BoomAni_Shrinking:	dc.b	3
 		dc.b	1,1,1,1,1
 		dc.b	0, afBack, 1
-
-BoomAni_Hurt:		dc.b	12
-		dc.b	1,1
-		dc.b	afEnd
 
 BoomAni_Null:		dc.b	$77
 		dc.b	0

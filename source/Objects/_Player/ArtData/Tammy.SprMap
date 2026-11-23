@@ -27,6 +27,16 @@ Map_Tammy:
 	dc.w	Map_Tammy_24-Map_Tammy
 	dc.w	Map_Tammy_25-Map_Tammy
 	dc.w	Map_Tammy_26-Map_Tammy
+	dc.w	Map_Tammy_27-Map_Tammy
+	dc.w	Map_Tammy_28-Map_Tammy
+	dc.w	Map_Tammy_29-Map_Tammy
+	dc.w	Map_Tammy_30-Map_Tammy
+	dc.w	Map_Tammy_31-Map_Tammy
+	dc.w	Map_Tammy_32-Map_Tammy
+	dc.w	Map_Tammy_33-Map_Tammy
+	dc.w	Map_Tammy_34-Map_Tammy
+	dc.w	Map_Tammy_35-Map_Tammy
+	dc.w	Map_Tammy_36-Map_Tammy
 
 Map_Tammy_0:	dc.w 2
 	dc.w $F20F, 0, 0, $FFE8
@@ -111,25 +121,81 @@ Map_Tammy_18:	dc.w 1
 Map_Tammy_19:	dc.w 1
 	dc.w $EB0F, 0, 0, $FFF1
 
-Map_Tammy_20:	dc.w 1
+Map_Tammy_20:	dc.w 3
+	dc.w $F20F, 0, 0, $FFEA
+	dc.w $201, $10, 8, $A
+	dc.w $A01, $12, 9, $FFE2
+
+Map_Tammy_21:	dc.w 4
+	dc.w $F00F, 0, 0, $FFEA
+	dc.w 3, $10, 8, $A
+	dc.w $801, $14, $A, $FFE2
+	dc.w $100D, $16, $B, $FFEA
+
+Map_Tammy_22:	dc.w 5
+	dc.w $EE0B, 0, 0, $FFF5
+	dc.w $F603, $C, 6, $FFED
+	dc.w $F607, $10, 8, $D
+	dc.w $FE01, $18, $C, $FFE5
+	dc.w $E05, $1A, $D, $FFF5
+
+Map_Tammy_23:	dc.w 5
+	dc.w $ED0B, 0, 0, $FFF3
+	dc.w $F503, $C, 6, $FFEB
+	dc.w $F507, $10, 8, $B
+	dc.w $FD01, $18, $C, $FFE3
+	dc.w $D05, $1A, $D, $FFF3
+
+Map_Tammy_24:	dc.w 3
+	dc.w $F30B, 0, 0, $FFF0
+	dc.w $FB03, $C, 6, $FFE8
+	dc.w $FB03, $10, 8, 8
+
+Map_Tammy_25:	dc.w 3
+	dc.w $F40B, 0, 0, $FFF5
+	dc.w $FC07, $C, 6, $FFE5
+	dc.w $FC07, $14, $A, $D
+
+Map_Tammy_26:	dc.w 3
+	dc.w $F40F, 0, 0, $FFEA
+	dc.w $405, $10, 8, $A
+	dc.w $1401, $14, $A, 2
+
+Map_Tammy_27:	dc.w 2
+	dc.w $EE0F, 0, 0, $FFF0
+	dc.w $E0D, $10, 8, $FFF0
+
+Map_Tammy_28:	dc.w 2
+	dc.w $F40F, 0, 0, $FFF0
+	dc.w $1401, $10, 8, 0
+
+Map_Tammy_29:	dc.w 2
+	dc.w $F20F, 0, 0, $FFE8
+	dc.w $F203, $10, 8, 8
+
+Map_Tammy_30:	dc.w 2
+	dc.w $F20F, 0, 0, $FFE8
+	dc.w $F203, $10, 8, 8
+
+Map_Tammy_31:	dc.w 2
+	dc.w $F20F, 0, 0, $FFEE
+	dc.w $A01, $10, 8, $E
+
+Map_Tammy_32:	dc.w 1
+	dc.w $F20F, 0, 0, $FFF1
+
+Map_Tammy_33:	dc.w 2
+	dc.w $F20F, 0, 0, $FFF1
+	dc.w $F203, $10, 8, $11
+
+Map_Tammy_34:	dc.w 2
+	dc.w $F20F, 0, 0, $FFF0
+	dc.w $F203, $10, 8, $10
+
+Map_Tammy_35:	dc.w 1
 	dc.w $F20F, 0, 0, $FFEC
 
-Map_Tammy_21:	dc.w 1
+Map_Tammy_36:	dc.w 1
 	dc.w $F20B, 0, 0, $FFF4
-
-Map_Tammy_22:	dc.w 1
-	dc.w $F909, 0, 0, $FFF5
-
-Map_Tammy_23:	dc.w 1
-	dc.w $F909, 0, 0, $FFF5
-
-Map_Tammy_24:	dc.w 1
-	dc.w $F909, 0, 0, $FFF5
-
-Map_Tammy_25:	dc.w 1
-	dc.w $F909, 0, 0, $FFF8
-
-Map_Tammy_26:	dc.w 1
-	dc.w $F909, 0, 0, $FFF7
 
 	even

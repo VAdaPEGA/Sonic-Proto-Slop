@@ -22,9 +22,9 @@
 	GenerateIndex	TammyAni, Spring
 	GenerateIndex	TammyAni, Hang
 	GenerateIndex	TammyAni, TurnAround
-	GenerateIndex	TammyAni, 13
-	GenerateIndex	TammyAni, 14
-	GenerateIndex	TammyAni, 14
+	GenerateIndex	TammyAni, SkidToWalk
+	GenerateIndex	TammyAni, SkidToWalk2
+	GenerateIndex	TammyAni, SkidToWalk3
 	GenerateIndex	TammyAni, Death1
 	GenerateIndex	TammyAni, Drown
 	GenerateIndex	TammyAni, Death2
@@ -48,7 +48,49 @@ TammyAni_Roll:		dc.b	-5
 		AnimIncRept	6,+1
 		dc.b	afEnd
 
+TammyAni_Stop:
+		dc.b	4
+		AnimIncRept	2,+1
+		dc.b	afEnd
+
+TammyAni_SkidToWalk3:
+TammyAni_SkidToWalk2:
+TammyAni_SkidToWalk:	dc.b	4
+		dc.b	1
+		dc.b	afChange, TammyAniID_Walk
+
+TammyAni_Balance2:
 TammyAni_Balance:
+		dc.b	8
+		AnimIncRept	2,+1
+		dc.b	afEnd
+
+TammyAni_LookUp:	dc.b	$3F
+		AnimIncRept	1,+1
+		dc.b	afEnd
+
+TammyAni_Duck:		dc.b	$3F
+		AnimIncRept	1,+1
+		dc.b	afEnd
+
+TammyAni_Hurt:		dc.b	12
+		AnimIncRept	1,+1
+			dc.b	afEnd
+
+TammyAni_Death1:	dc.b	$20
+		AnimIncRept	1,+1
+			dc.b	afEnd
+
+TammyAni_Drown:		dc.b	$2F
+		AnimIncRept	1,+1
+			dc.b	afEnd
+f	=	f+2	; dumb workaround
+
+TammyAni_TurnAround:	dc.b	1
+			dc.b	f+1, f
+			dc.b	afChange, TammyAniID_Walk ; Turning around
+
+
 TammyAni_Push:		dc.b	-3
 			dc.b	2, 3, 4	; flutter
 			dc.b	afEnd
@@ -56,26 +98,16 @@ TammyAni_Push:		dc.b	-3
 TammyAni_Wait:		dc.b	7
 		dc.b	1
 		dc.b	afEnd
-					
-TammyAni_LookUp:	dc.b	$3F
-		dc.b	1
-		dc.b	afEnd
-
-TammyAni_Duck:		dc.b	$3F
-		dc.b	1
-		dc.b	afEnd
+				
 
 TammyAni_Spindash:	dc.b	0		
 		dc.b	2, 3, 4	; flutter
 		dc.b	afEnd
 
-TammyAni_0A:		dc.b	$3F	; Wall Recoil 1
+TammyAni_0A:
 TammyAni_0B:
 TammyAni_0C:
-		dc.b	2, 3, 4	; flutter
-		dc.b	afEnd
-
-TammyAni_Stop:		dc.b	7
+		dc.b	$2	; Wall Recoil 1
 		dc.b	2, 3, 4	; flutter
 		dc.b	afEnd
 
@@ -92,45 +124,17 @@ TammyAni_Spring:	dc.b	3
 
 TammyAni_Hang:		dc.b	4
 		dc.b	2, 3, 4	; flutter
-		dc.b	afEnd
-
-TammyAni_TurnAround:	dc.b	$F	;S1 Unused Leap
-		dc.b	2, 3, 4	; flutter
-			dc.b	afChange, TammyAniID_Walk	; Turning around
-
-TammyAni_13:		dc.b	$F	;S1 Unused Leap2
-		dc.b	2, 3, 4	; flutter
-			dc.b	afChange, TammyAniID_Walk
-
-TammyAni_14:		dc.b	$3F	;S1 unused Slide
-		dc.b	2, 3, 4	; flutter
-			dc.b	afChange, TammyAniID_Walk	
+		dc.b	afEnd	
 
 TammyAni_Bubble:	dc.b	$B
 		dc.b	2, 3, 4	; flutter
 			dc.b	afChange,  TammyAniID_Walk
-
-TammyAni_Death1:	dc.b	$20
-		dc.b	2, 3, 4	; flutter
-			dc.b	afEnd
-
-TammyAni_Drown:		dc.b	$2F
-		dc.b	2, 3, 4	; flutter
-			dc.b	afEnd
 
 TammyAni_Death2:	dc.b	3
 		dc.b	2, 3, 4	; flutter
 			dc.b	afEnd
 
 TammyAni_Shrinking:	dc.b	3
-		dc.b	2, 3, 4	; flutter
-			dc.b	afEnd
-
-TammyAni_Hurt:		dc.b	12
-		dc.b	2, 3, 4	; flutter
-			dc.b	afEnd
-
-TammyAni_Balance2:	dc.b	7
 		dc.b	2, 3, 4	; flutter
 			dc.b	afEnd
 
