@@ -76,7 +76,8 @@ TammyAni_Duck:		dc.b	$3F
 TammyAni_Hurt:		dc.b	12
 		AnimIncRept	1,+1
 			dc.b	afEnd
-
+			
+TammyAni_Death2:	
 TammyAni_Death1:	dc.b	$20
 		AnimIncRept	1,+1
 			dc.b	afEnd
@@ -129,10 +130,6 @@ TammyAni_Hang:		dc.b	4
 TammyAni_Bubble:	dc.b	$B
 		dc.b	2, 3, 4	; flutter
 			dc.b	afChange,  TammyAniID_Walk
-
-TammyAni_Death2:	dc.b	3
-		dc.b	2, 3, 4	; flutter
-			dc.b	afEnd
 
 TammyAni_Shrinking:	dc.b	3
 		dc.b	2, 3, 4	; flutter
