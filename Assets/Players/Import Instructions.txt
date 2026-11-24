@@ -4,7 +4,7 @@
 ; ---------------------------------------------------------------------------
 
 	Step 1 - Open the desired character aseprite 
-		file from within "Working Files"
+		file from "Spritesheets" folder
 
 	Step 2 - Keep only the Spritesheet group visible
 
@@ -25,6 +25,7 @@
 ; ===========================================================================
  WARNING : This may not work with Windows 11's MSPaint
  WARNING : definitely doesn't work with 3D Paint.
+ WARNING : MIGHT WANNA LET SOMEONE WHO HAS ASEPRITE KNOW YOU CHANGED A THING
 ; ---------------------------------------------------------------------------
 
 	Step 1 - Open the desired "[Character].png" 
